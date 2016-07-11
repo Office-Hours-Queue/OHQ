@@ -1,0 +1,32 @@
+<nav>
+	<div class="nav-wrapper light-blue darken-3">
+		<a href="/" class="brand-logo center hide-on-small-only">{{ user_name + "'s Portal" }}</a>
+		<a href="/" class="brand-logo center hide-on-med-and-up">{{ user_name }}</a>
+
+		<a href="#"  data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
+		<ul class="right hide-on-med-and-down">        
+			<li><a href="/administration">Admin</a></li>
+			<li><a href="/analytics">Analytics</a></li>
+			<li><a href="/logout">Log Out</a></li>
+		</ul>
+		<ul class="side-nav" id="mobile-menu">
+			<li><a href="/administration">Admin</a></li>
+			<li><a href="/analytics">Analytics</a></li>
+			<li><a href="/logout">Log Out</a></li>
+		</ul>
+	</div>
+</nav>
+
+<div class="container">
+	<h3> Questions</h3>
+	<ul>
+	  <li ng-repeat="message in messages"> {{ message.text }}</li>
+	</ul>
+
+	<h3>Add Question</h3>
+	<input ng-model="woo" type="text"></input>
+	<button ng-click="add_msg(woo)">Add Question</button>
+
+	<h3> Sign Out </h3>
+	<button ng-click="logout()">Log out</button>
+</div>
