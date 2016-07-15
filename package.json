@@ -11,8 +11,22 @@
     "url": "git:edwdryer/15-112-Queue.git"
   },
   "contributors": [
-    { "name": "Kevin Zheng" },
-    { "name": "Eddie Dryer" }
+    {
+      "name": "Kevin Zheng"
+    },
+    {
+      "name": "Eddie Dryer"
+    }
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.0",
+    "knex": "^0.11.7",
+    "morgan": "^1.7.0",
+    "passport": "^0.3.2",
+    "passport-google-oauth20": "^1.0.0",
+    "pg": "^6.0.2"
+  }
 }
