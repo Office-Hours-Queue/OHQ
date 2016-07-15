@@ -1,0 +1,18 @@
+{
+  "name": "15-112-queue",
+  "version": "1.0.0",
+  "description": "Realtime queueing for office hours",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git:edwdryer/15-112-Queue.git"
+  },
+  "contributors": [
+    { "name": "Kevin Zheng" },
+    { "name": "Eddie Dryer" }
+  ],
+  "license": "MIT"
+}
