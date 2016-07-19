@@ -32,14 +32,29 @@ exports.up = function(knex, Promise) {
       table.integer   ('student_user_id'    ).references('id').inTable('users'    ).notNullable();
       table.integer   ('topic_id'           ).references('id').inTable('topics'   ).notNullable();
       table.integer   ('location_id'        ).references('id').inTable('locations').notNullable();
-      table.text      ('help_text'          )                                      .notNullable().defaultTo('');
-      table.dateTime  ('on'                 )                                      .notNullable().defaultTo(knex.fn.now());
-      table.dateTime  ('frozen_start'       );    // freeze times are null if not frozen
-      table.dateTime  ('frozen_end'         );    // null until unfrozen
-      table.dateTime  ('frozen_end_max'     );
-      table.dateTime  ('helped_start'       );    // null if not helped
-      table.integer   ('ca_user_id'         ).references('id').inTable('users'   );
-      table.dateTime  ('off'                );    // null indicates an open queston
+      table.text      ('help_text'          )                                      .notNullable();
+
+      // timings
+      table.dateTime  ('on_time'            )                                      .notNullable();
+
+      // freeze timings
+      table.integer   ('frozen_by'          ).references('id').inTable('users'    );
+      table.dateTime  ('frozen_time'        );
+      table.dateTime  ('frozen_end_max_time');
+      table.dateTime  ('frozen_end_time'    );
+
+      // help timings
+      // If the question was frozen by a ca after starting to answer it (eg. couldn't
+      // find student), then initial_help_time will reflect that first attempt, and help_time
+      // will reflect the actual help time.
+      // Otherwise, these two pairs of fields will be identical.
+      table.dateTime  ('help_time'          );
+      table.integer   ('ca_user_id'         ).references('id').inTable('users'    );
+
+      table.dateTime  ('initial_help_time'  );
+      table.integer   ('initial_ca_user_id' ).references('id').inTable('users'    );
+
+      table.dateTime  ('off_time'           );
       table.enum      ('off_reason', ['normal', 'self_kick', 'ca_kick']);
     }),
 
