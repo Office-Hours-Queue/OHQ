@@ -24,6 +24,7 @@ exports.up = function(knex, Promise) {
 
     knex.schema.createTable('valid_andrew_ids', function(table) {
       table.string    ('andrew_id').primary();
+      table.enum      ('role', ['student', 'ca', 'admin']).notNullable();
     }),
 
     knex.schema.createTable('questions', function(table) {
