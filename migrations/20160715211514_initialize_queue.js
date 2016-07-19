@@ -62,11 +62,13 @@ exports.up = function(knex, Promise) {
     knex.schema.createTable('topics', function(table) {
       table.increments('id'   ).notNullable().primary();
       table.string    ('topic').notNullable().unique();
+      table.boolean   ('enabled').notNullable().defaultTo(true);
     }),
 
     knex.schema.createTable('locations', function(table) {
       table.increments('id'      ).notNullable().primary();
       table.string    ('location').notNullable().unique();
+      table.boolean   ('enabled').notNullable().defaultTo(true);
     }),
 
     knex.schema.createTable('queue_meta', function(table) {
