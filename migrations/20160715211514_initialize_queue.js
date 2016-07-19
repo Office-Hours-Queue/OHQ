@@ -60,21 +60,28 @@ exports.up = function(knex, Promise) {
     }),
 
     knex.schema.createTable('topics', function(table) {
-      table.increments('id'   ).notNullable().primary();
+      table.increments('id'   ).primary();
       table.string    ('topic').notNullable().unique();
       table.boolean   ('enabled').notNullable().defaultTo(true);
     }),
 
     knex.schema.createTable('locations', function(table) {
-      table.increments('id'      ).notNullable().primary();
+      table.increments('id'      ).primary();
       table.string    ('location').notNullable().unique();
       table.boolean   ('enabled').notNullable().defaultTo(true);
     }),
 
     knex.schema.createTable('queue_meta', function(table) {
-      table.integer   ('id'  )      .primary()    .defaultTo(1);
-      table.boolean   ('open')      .notNullable();
+      table.increments('id'        ).primary();
+      table.boolean   ('open'      )           .notNullable();
       table.integer   ('max_freeze').unsigned().notNullable();
+      table.integer   ('time_limit').unsigned().notNullable();
+    }),
+
+    knex('queue_meta').insert({
+      open: true,
+      max_freeze: 10,
+      time_limit: 5,
     }),
 
   ]);
