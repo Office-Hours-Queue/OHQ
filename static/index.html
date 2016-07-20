@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#01579b"/>
+    <title>112Q</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <!-- Materialize -->
+    <link href="style/css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <script src="js/lib/materialize/materialize.js"></script>
+
+    <!-- Icons --> 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="style/font/ostrich/ostrich-sans.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+    <!-- 112 Style --> 
+    <link href="style/css/112style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link rel="shortcut icon" href="style/images/scs-logo.gif">
+
+    <!-- Angular -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script src="js/lib/angular-blocks.min.js"></script>
+
+    <!-- Angular Factories --> 
+    <script src="js/factory/student_model.js"></script>
+    <script src="js/factory/ca_model.js"></script>
+    <script src="js/factory/admin_model.js"></script>
+
+    <!-- Angular Controllers -->
+    <script src="js/controller/login.js"></script>
+    <script src="js/controller/student.js"></script>
+    <script src="js/controller/ca.js"></script>
+    <script src="js/controller/admin.js"></script>
+
+    <script src="app.js"></script>
+</head>
+
+<main>
+    <body ng-app="queue">
+        <div ng-view></div>
+    </body>
+</main>
+
+<footer class="page-footer light-blue darken-3">
+  <div class="footer-copyright">
+      <div class="left"></div>
+      <div class="center">
+         <a href="mailto:edryer@andrew.cmu.edu,kevinzhe@andrew.cmu.edu?subject=112 Queue Issue" class="white-text right-align">Issues? Email us.</a>
+      </div>
+  </div>
+</footer>
+
+</html>
