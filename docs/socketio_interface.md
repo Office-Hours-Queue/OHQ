@@ -33,11 +33,5 @@ Note: events that have lists can be updates or inserts. If the primary key exist
 
 ###Events that student can send 
 ```javascript
-.on("add_question"{topic,room,desc})
+.emit("add_question",{topic,room,desc})
 ```
-
-
-
-
-
-
