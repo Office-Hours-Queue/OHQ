@@ -4,7 +4,7 @@ var config = {};
 config.GOOGLE_OAUTH2_CONFIG = {
   clientID: 'myclientid.apps.googleusercontent.com',
   clientSecret: 'supersecret',
-  callbackURL: 'http://localhost:3000/success'
+  callbackURL: 'http://localhost:3000/login/success'
 };
 
 // Connection to database
