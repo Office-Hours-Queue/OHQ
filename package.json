@@ -4,7 +4,7 @@
   "description": "Realtime queueing for office hours",
   "private": true,
   "scripts": {
-    "start": "./node_modules/.bin/supervisor ./bin/www",
+    "start": "NODE_ENV=devlopment ./node_modules/.bin/supervisor ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
