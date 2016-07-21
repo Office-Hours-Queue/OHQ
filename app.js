@@ -33,6 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/queue', queue);
 app.use('/login', require('./routes/login'));
+app.use('/user', require('./routes/user'));
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 
