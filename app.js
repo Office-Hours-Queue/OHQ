@@ -9,10 +9,6 @@ var dbSessionStore = require('connect-session-knex')(session);
 var auth = require('./auth');
 var db = require('./db');
 
-// import the routes we've written
-var index = require('./routes/index');
-var queue = require('./routes/queue');
-
 var app = express();
 
 // uncomment after placing your favicon in /public
@@ -38,10 +34,10 @@ app.use(auth.passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // hook up routes
-app.use('/', index);
-app.use('/queue', queue);
-app.use('/login', require('./routes/login'));
-app.use('/user', require('./routes/user'));
+app.use('/', require('./components/index').routes);
+app.use('/queue', require('./components/queue').routes);
+app.use('/login', require('./components/login').routes);
+app.use('/user', require('./components/user').routes);
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 

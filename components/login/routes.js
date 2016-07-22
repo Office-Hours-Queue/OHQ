@@ -1,7 +1,6 @@
-var express = require('express');
+var router = require('express').Router();
 var config = require('../../config');
 var auth = require('../../auth');
-var router = express.Router();
 
 router.get('/', function(req, res) {
   res.send('<a href="/login/googleauth">login with google</a>' +
