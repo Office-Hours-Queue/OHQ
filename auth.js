@@ -26,6 +26,9 @@ passport.deserializeUser(function(id, done) {
       if (typeof user === 'undefined') {
         done('Invalid session cookie');
       } else {
+        delete user.pw_bcrypt;
+        delete user.is_temp_pw;
+        delete user.google_id;
         done(null, user);
       }
     })
