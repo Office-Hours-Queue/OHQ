@@ -44,23 +44,14 @@ passport.use(
         .first()
         .then(function(user) {
           if (typeof user === 'undefined') {
-            // could not find the user - create it
-            // we should check if they're in already here too
-            db.insert(getUserInfo(profile))
-              .into('users')
-              .returning('*')
-              .asCallback(function(err, rows) {
-                done(err, rows[0]);  
-              });
+            done(null, false);
           } else {
-            // found the user
             done(null, user);
           }
         })
         .catch(function(err) {
           done(err);  
         });
-
     }
   )
 );
