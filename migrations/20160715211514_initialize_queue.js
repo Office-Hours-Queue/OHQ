@@ -15,7 +15,7 @@ exports.up = function(knex, Promise) {
       table.string    ('google_id').unique();
 
       // local auth
-      table.binary    ('pw_bcrypt', 60);
+      table.string    ('pw_bcrypt', 60);
       table.boolean   ('is_temp_pw');
 
       // ca additional info

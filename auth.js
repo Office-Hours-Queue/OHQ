@@ -4,6 +4,8 @@
 
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcryptjs');
 var db = require('./db');
 var config = require('./config');
 
@@ -81,6 +83,33 @@ function getUserInfo(googleProfile) {
   return result;
 }
 
+passport.use(new LocalStrategy(
+  function(andrewid, password, done) {
+    db.select().from('users')
+      .where('andrew_id', andrewid)
+      .first()
+      .then(function(user) {
+        if (typeof user === 'undefined') {
+          done(null, false);
+        } else if (user.pw_bcrypt === null) {
+          done(null, false);
+        } else {
+          bcrypt.compare(password, user.pw_bcrypt, function(err, res) {
+            if (err) {
+              done(err);
+            } else if (res) {
+              done(null, user);
+            } else {
+              done(null, false);
+            }
+          });
+        }
+      })
+      .catch(function(err) {
+        done(err);
+      });
+  })
+);
 
 function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {

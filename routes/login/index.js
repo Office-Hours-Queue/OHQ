@@ -4,8 +4,34 @@ var auth = require('../../auth');
 var router = express.Router();
 
 router.get('/', function(req, res) {
-  res.send('<a href="/login/googleauth">login with google</a>');
+  res.send('<a href="/login/googleauth">login with google</a>' +
+           '<br />' +
+           '<a href="/login/localauth">login with username/pw</a>');
 });
+
+router.get('/localauth', function(req, res) {
+  res.send(
+'<form name="login" method="post">' +
+'  <ul>' +
+'    <li>' +
+'      <label for="username">Andrew ID</label>' +
+'      <input type="text" name="username" placeholder="username" required>' +
+'    </li>' +
+'    <li>' +
+'      <label for="password">Password</label>' +
+'      <input type="password" name="password" placeholder="password" required>' +
+'    </li>' +
+'    <li>' +
+'      <input type="submit" value="Login">' +
+'    </li>' +
+'  </ul>' +
+'</form>');
+});
+
+router.post('/localauth',
+  auth.passport.authenticate('local', { successRedirect: '/',
+                                        failureRedirect: '/login/localauth',
+                                        failureFlash: true }));
 
 router.get('/googleauth',
   auth.passport.authenticate('google', { scope: ['openid profile email'],
