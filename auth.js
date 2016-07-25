@@ -40,28 +40,40 @@ passport.use(
   new GoogleStrategy(
     config.GOOGLE_OAUTH2_CONFIG,
     function(accessToken, refreshToken, profile, done) {
-      db.select().from('users')
+      // see if user already exists
+      db.select()
+        .from('users')
         .where('google_id', profile.id)
         .first()
         .then(function(user) {
-          if (typeof user === 'undefined') {
-            // could not find the user - create it
-            // we should check if they're in already here too
-            db.insert(getUserInfo(profile))
-              .into('users')
-              .returning('*')
-              .asCallback(function(err, rows) {
-                done(err, rows[0]);  
-              });
-          } else {
-            // found the user
+          if (typeof user !== 'undefined') {
             done(null, user);
+          } else {
+
+      // user doesn't exist already - check the user's role
+            return db.select('role')
+                     .from('valid_andrew_ids')
+                     .where('andrew_id', getUserInfo(profile).andrew_id)
+                     .first();
           }
         })
-        .catch(function(err) {
-          done(err);  
-        });
+        .then(function(role) {
+          if (typeof role === 'undefined') {
+            throw new Error('Invalid AndrewID');
+          } else {
 
+      // insert the user
+            return db.insert(getUserInfo(profile))
+                     .into('users')
+                     .returning('*');
+          }
+        })
+        .then(function(newUser) {
+          done(null, newUser[0]);
+        })
+        .catch(function(err) {
+          done(err);
+        });
     }
   )
 );
