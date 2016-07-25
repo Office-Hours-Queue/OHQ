@@ -8,6 +8,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var db = require('./db');
 var config = require('./config');
+var cleanUser = require('./components/user/user').cleanUser;
 
 
 passport.serializeUser(function(user, done) {
@@ -26,10 +27,7 @@ passport.deserializeUser(function(id, done) {
       if (typeof user === 'undefined') {
         done('Invalid session cookie');
       } else {
-        delete user.pw_bcrypt;
-        delete user.is_temp_pw;
-        delete user.google_id;
-        done(null, user);
+        done(null, cleanUser(user));
       }
     })
     .catch(function(err) {
