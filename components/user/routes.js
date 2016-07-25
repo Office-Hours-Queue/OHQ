@@ -3,6 +3,7 @@ var bcrypt = require('bcryptjs');
 var validate = require('express-jsonschema').validate;
 var isAuthenticated = require('../../auth').isAuthenticated;
 var db = require('../../db');
+var cleanUser = require('./user').cleanUser;
 
 router.get('/', isAuthenticated, function(req, res, next) {
   res.send(cleanUser(req.user));
