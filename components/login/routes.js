@@ -41,4 +41,9 @@ router.get('/success',
                                          failureRedirect: '/login',
                                          failureFlash: true }));
 
+router.get('/endauth', function(req, res, next) {
+  req.logout();
+  res.redirect('/');
+});
+
 module.exports = router;
