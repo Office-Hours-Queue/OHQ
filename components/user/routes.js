@@ -102,11 +102,4 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
     });
 });
 
-function cleanUser(user) { 
-  delete user.pw_bcrypt;
-  delete user.is_temp_pw;
-  delete user.google_id;
-  return user;
-}
-
 module.exports = router;
