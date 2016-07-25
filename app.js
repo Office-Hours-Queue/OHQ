@@ -41,4 +41,17 @@ app.use('/user', require('./components/user').routes);
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 
+// handle json schema validation failures
+app.use(function(err, req, res, next) {
+  if (err.name === 'JsonSchemaValidation') {
+    res.status(400);
+    var responseData = {
+      errors: err.validations
+    };
+    res.send(responseData);
+  } else {
+    next(err);
+  }
+});
+
 module.exports = app;
