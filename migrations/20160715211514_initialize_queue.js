@@ -15,7 +15,7 @@ exports.up = function(knex, Promise) {
       table.string    ('google_id').unique();
 
       // local auth
-      table.binary    ('pw_bcrypt', 60);
+      table.string    ('pw_bcrypt', 60);
       table.boolean   ('is_temp_pw');
 
       // ca additional info
@@ -76,12 +76,14 @@ exports.up = function(knex, Promise) {
       table.boolean   ('open'      )           .notNullable();
       table.integer   ('max_freeze').unsigned().notNullable();
       table.integer   ('time_limit').unsigned().notNullable();
+      table.string    ('registration_code').notNullable();
     }),
 
     knex('queue_meta').insert({
       open: true,
       max_freeze: 10,
       time_limit: 5,
+      registration_code: 'private'
     }),
 
   ]);
