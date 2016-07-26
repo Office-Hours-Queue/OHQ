@@ -9,6 +9,42 @@ router.get('/', isAuthenticated, function(req, res, next) {
   res.send(cleanUser(req.user));
 });
 
+var UserEditSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    email: {
+      type: 'string',
+      format: 'email',
+      required: false
+    },
+    password: {
+      type: 'string',
+      minLength: 8,
+      required: false
+    }
+  }
+};
+
+router.post('/edit', isAuthenticated, validate({body: UserEditSchema}), function(req, res, next) {
+  var newFields = { };
+  var body = req.body;
+  if (body.hasOwnProperty('password')) {
+    body.pw_bcrypt = bcrypt.hashSync(body.password);
+    delete body.password;
+  }
+  db('users')
+    .where('id', req.user.id)
+    .update(body)
+    .returning('*')
+    .then(function(users) {
+      res.send(cleanUser(users[0]));
+    })
+    .catch(function(err) {
+      next(err);
+    });
+});
+
 
 var UserSchema = {
   type: 'object',
