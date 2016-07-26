@@ -11,6 +11,7 @@ Returns the current sessions' user info
       last_name : string
       role : ['ca', 'student']
       is_online : role === 'ca' ? boolean : null
+      auth_method : ['google', 'local']
     }
 
 ###POST /user/createlocal
