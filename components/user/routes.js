@@ -48,6 +48,7 @@ router.post('/edit', isAuthenticated, validate({body: UserEditSchema}), function
 
 var UserSchema = {
   type: 'object',
+  additionalProperties: false,
   properties: {
     andrew_id: {
       type: 'string',
