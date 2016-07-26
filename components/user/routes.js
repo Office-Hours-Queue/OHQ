@@ -29,19 +29,34 @@ var UserEditSchema = {
 router.post('/edit', isAuthenticated, validate({body: UserEditSchema}), function(req, res, next) {
   var newFields = { };
   var body = req.body;
-  if (body.hasOwnProperty('password')) {
-    body.pw_bcrypt = bcrypt.hashSync(body.password);
-    delete body.password;
-  }
-  db('users')
+  db.select('google_id')
+    .from('users')
     .where('id', req.user.id)
-    .update(body)
-    .returning('*')
-    .then(function(users) {
-      res.send(cleanUser(users[0]));
+    .first()
+    .then(function(google_id) {
+      google_id = google_id.google_id;
+      if (google_id !== null) {
+        throw { name: 'UserEditException', message: 'Use Google login' };
+      } else {
+        if (body.hasOwnProperty('password')) {
+          body.pw_bcrypt = bcrypt.hashSync(body.password);
+          delete body.password;
+        }
+        return db('users')
+                    .where('id', req.user.id)
+                    .update(body)
+                    .returning('*');
+      }
+    })
+    .then(function(updated_users) {
+      res.send(cleanUser(updated_users[0])); 
     })
     .catch(function(err) {
-      next(err);
+      if (err.name === 'UserEditException') {
+        res.status(400).send(err);
+      } else {
+        next(err);
+      }
     });
 });
 
