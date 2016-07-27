@@ -43,6 +43,12 @@ app.use('/queue', require('./components/queue').routes);
 app.use('/login', require('./components/login').routes);
 app.use('/user', require('./components/user').routes);
 
+// hook up socket handlers
+require('./components/queue').io({
+  student: io.of('/student'),
+  ca: io.of('/ca')
+});
+
 // custom error handlers (404, 500, ...) should go here when they're ready
 
 // handle json schema validation failures
