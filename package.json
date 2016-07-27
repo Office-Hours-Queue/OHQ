@@ -34,7 +34,8 @@
     "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
     "pg": "^6.0.2",
-    "serve-favicon": "^2.3.0"
+    "serve-favicon": "^2.3.0",
+    "socket.io": "^1.4.8"
   },
   "devDependencies": {
     "knex": "^0.11.7",

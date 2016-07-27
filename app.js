@@ -1,4 +1,6 @@
+var http = require('http');
 var express = require('express');
+var socketio = require('socket.io');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -10,6 +12,8 @@ var auth = require('./auth');
 var db = require('./db');
 
 var app = express();
+var server = http.Server(app);
+var io = socketio(server);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -54,4 +58,4 @@ app.use(function(err, req, res, next) {
   }
 });
 
-module.exports = app;
+module.exports = { app: app, server: server };
