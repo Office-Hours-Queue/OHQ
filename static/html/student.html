@@ -1,0 +1,126 @@
+<div data-extend-template="/html/base.html">
+
+  <!-- Nav Bar -->
+  <ul data-block-append="menu_links">
+    <li><a href="#modalhelp" modal>FAQ</a></li>
+    <li><a href="/logout">Log Out</a></li>
+  </ul>
+
+  <!-- Content --> 
+  <div data-block-append="content">
+      <div class="container">
+        <br />
+
+        <!-- Cards Display -->
+        <div class="center row">
+          <div class="col l4 m6 s12" id="questionCol">
+            <a href="#modalnewquestion" modal><div class="card  {{ ($db.model['questions'].length != 0) ? 'grey lighten-2' : 'green' }}">
+              <div class="center card-content {{ ($db.model['questions'].length != 0) ? 'grey-text text-lighten-1' : 'white-text' }}">
+                <p style="font-size:25px;">Ask a Question</p>
+              </div>
+            </div></a>
+          </div>
+          <div class="col l4 m6 s12">
+            <div class="card {{ ($db.model['questions'].length == 0) ? 'grey lighten-2' : '' }}">
+              <div class="center card-content {{ ($db.model['questions'].length == 0) ? 'grey-text text-lighten-1' : '' }} ">     
+                <span style="font-size:25px;">{{ ($db.model['questions'].length == 0) ? 'Position: NA' : 'Position: ' + $db.model["student_meta"][0]["queue_ps"]}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col l4 m6 s12">
+            <a href="" ng-click="freeze_question()"><div class="card {{ !($db.can_freeze())  || $db.is_frozen() ? 'grey lighten-2' : 'blue' }}">
+              <div class="center card-content {{ !($db.can_freeze()) || $db.is_frozen()   ? 'grey-text text-lighten-1' : 'white-text' }} ">     
+                <span style="font-size:25px;">{{ $db.is_frozen() ? 'Question Frozen' : 'Freeze'}}</span>
+              </div>
+            </div></a>
+          </div>
+        </div>
+
+        <!-- New Question Modal -->
+        <div class="modal modal-fixed-footer" id="modalnewquestion">
+            <div class="modal-content">
+                <h4 class="center">{{ ($db.model["questions"].length == 0) ? 'New Question' : 'You already have a question.' }}</h4>
+                <div ng-show="($db.model['questions'].length == 0)" class="container">
+                  <h6>Topic</h6>
+                  <div id="topics">
+                     <p ng-repeat="t in $db.model['topics']"><input tid="{{t.id}}" name="topic" type="radio" id="{{ 'topic_' + t.id }}" /><label for="{{ 'topic_' + t.id }}">{{ t.topic }}</label></p>
+                  </div>
+                  <h6>Location</h6>
+                  <div id="locations">
+                  <p ng-repeat="l in $db.model['locations']"><input lid="{{l.id}}" name="location" type="radio" id="{{ 'location_' + l.id }}" /><label for="{{ 'location_' + l.id }}">{{ l.location }}</label></p>
+                  </div>
+                  <h6>Description</h6>
+                  <textarea id="q_desc" class="materialize-textarea"></textarea>
+                </div>
+            </div>
+            <div ng-click="ask_question()" class="modal-footer">
+                <a id="prefbtn"  class="waves-effect btn-flat">{{ ($db.model["questions"].length == 0) ? 'Ask' : 'Okay' }}</a>
+            </div>
+        </div>
+
+        <!-- FAQ Modal -->
+        <div class="modal modal-fixed-footer" id="modalhelp">
+            <div class="center modal-content container">
+                <h4 class="center">FAQ</h4>
+                <ul>
+                    <li><h5> How does freezing work?</h5>
+                    <br />
+                    Freezing a question freezes you on the queue for a certain time length. This is useful if you want to go get food, or go to the bathroom. Each question can be frozen once.  CA's will not see you on the queue if you are frozen, but you'll retain your position. 
+                    </li>
+                    <br />
+
+                    <li><h5>Why did I get helped when there were people ahead of me?</h5>
+                    Some other students who are higher on the queue than you may have frozen
+                    their place on the queue. When they do this, they are still counted as
+                    ahead of you, but you will be helped first.
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+            </div>
+        </div>
+
+        <!-- Confirm Delete  -->
+        <div class="modal" id="modaldelete">
+            <div  class="modal-content">
+                <h4 class="center">Are you sure you want to delete your question?</h4>
+            </div>
+            <div class="modal-footer">
+                <div ng-click="delete_question()"><a id="prefbtn"  class="modal-action modal-close waves-effect btn-flat">Delete</a></div>
+                <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Cancel</a>
+            </div>
+        </div>
+
+        <!-- Questions Table -->
+        <div class="center row">
+            <h4>Your Question</h4>
+            <table class="highlight centered" id="questionList">
+                <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Location</th>
+                    <th>Question Description</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="q in $db.model['questions']">
+                    <td>{{ $db.get_topic_by_id(q.topic_id) }}</td>
+                    <td>{{ $db.get_location_by_id(q.location_id) }}</td>
+                    <td>{{ q.help_text }}</td>
+                    <td><a href="" ng-click=""><i  class="material-icons">edit</i></a></td>
+                    <td><a href="#modaldelete" modal><i class="material-icons">delete</i></a></td>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+      </div>
+  </div>
+
+
+</div>
+
+
+

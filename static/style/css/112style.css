@@ -6,6 +6,12 @@
   color: #0277bd;
 }
 
+#toast-container {
+  top: auto !important;
+  bottom: 10%;
+}
+
+
 input[type=text]:focus:not([readonly]),
 input[type=password]:focus:not([readonly]),
 input[type=email]:focus:not([readonly]),
