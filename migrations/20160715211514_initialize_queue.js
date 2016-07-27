@@ -90,5 +90,12 @@ exports.up = function(knex, Promise) {
 };
 
 exports.down = function(knex, Promise) {
-  return null;
+  return Promise.all([
+    knex.schema.dropTable('questions'),
+    knex.schema.dropTable('queue_meta'),
+    knex.schema.dropTable('locations'),
+    knex.schema.dropTable('topics'),
+    knex.schema.dropTable('valid_andrew_ids'),
+    knex.schema.dropTable('users')
+  ]);
 };
