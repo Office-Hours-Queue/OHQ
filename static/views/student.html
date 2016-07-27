@@ -1,0 +1,113 @@
+<div data-extend-template="/views/base.html">
+
+  <!-- Nav Bar -->
+  <ul data-block-append="menu_links">
+    <li><a href="#modalaccount" modal>Account Settings</a></li>
+    <li><a href="#modalhelp" modal>FAQ</a></li>
+    <li><a href="/logout">Log Out</a></li>
+  </ul>
+
+  <!-- Content --> 
+  <div data-block-append="content">
+      <div class="container">
+        <br />
+
+        <!-- Cards Display -->
+        <div class="center row">
+          <div class="col l4 m6 s12" id="questionCol">
+            <a href="#modalnewquestion" modal><div class="card green">
+              <div class="center card-content white-text">
+                <p style="font-size:25px;">Ask a Question</p>
+              </div>
+            </div></a>
+          </div>
+          <div class="col l4 m6 s12">
+            <div class="card grey lighten-2">
+              <div class="center card-content grey-text text-lighten-1">
+                <span style="font-size:25px;">No Question</span>
+              </div>
+            </div>
+          </div>
+          <div class="col l4 m6 s12">
+            <div id="notif" class="card grey lighten-2">
+              <div class="center card-content grey-text text-lighten-1">
+                <p style="font-size:25px;">No Messages</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal" id="modalaccount">
+            <div class="modal-content">
+                <h4 class="center">Account Settings</h4>
+                <div class="container">
+                    <label for="preferred">Preferred Name</label>
+                    <input type="text" id="preferred" name="preferred" value="" class="validate">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Save</a>
+            </div>
+        </div>
+
+        <!-- New Question Modal -->
+        <div class="modal" id="modalnewquestion">
+            <div class="modal-content">
+                <h4 class="center">New Question</h4>
+                <div class="container">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Ask</a>
+            </div>
+        </div>
+
+        <!-- FAQ Modal -->
+        <div class="modal modal-fixed-footer" id="modalhelp">
+            <div class="center modal-content container">
+                <h4 class="center">FAQ</h4>
+                <ul>
+                    <li><h5> How does freezing work?</h5>
+                    <br />
+                    Freezing a question freezes you on the queue for a certain time length. This is useful if you want to go get food, or go to the bathroom. Each question can be frozen once.  CA's will not see you on the queue if you are frozen, but you'll retain your position. 
+                    </li>
+                    <br />
+
+                    <li><h5>Why did I get helped when there were people ahead of me?</h5>
+                    Some other students who are higher on the queue than you may have frozen
+                    their place on the queue. When they do this, they are still counted as
+                    ahead of you, but you will be helped first.
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+            </div>
+        </div>
+
+        <!-- Questions Table -->
+        <div class="center row">
+            <h4>Your Question</h4>
+            <table class="highlight centered" id="questionList">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Topic Name</th>
+                    <th>Topic Description</th>
+                    <th>Question Description</th>
+                    <th>Room</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+      </div>
+  </div>
+
+
+</div>
+
+
+
