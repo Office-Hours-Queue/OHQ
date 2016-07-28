@@ -15,13 +15,7 @@ var app = express();
 var server = http.Server(app);
 var io = socketio(server);
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(session({
+var sessionMiddleware = session({
   secret: 'supersecret',
   resave: false,
   saveUninitialized: false,
@@ -32,10 +26,29 @@ app.use(session({
     knex: db,
     tablename: 'sessions'
   })
-}));
+});
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(sessionMiddleware);
 app.use(auth.passport.initialize());
 app.use(auth.passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// socket.io middleware checks session auth status
+io.use(function(socket, next) {
+  sessionMiddleware(socket.request, {}, next);
+});
+io.use(function(socket, next) {
+  auth.passport.initialize()(socket.request, {}, next);
+});
+io.use(function(socket, next) {
+  auth.passport.session()(socket.request, {}, next);
+});
 
 // hook up routes
 app.use('/', require('./components/index').routes);
