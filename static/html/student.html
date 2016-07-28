@@ -36,25 +36,78 @@
           </div>
         </div>
 
+         <!-- Questions Table -->
+        <div class="center row">
+            <h4>Your Question</h4>
+            <table class="highlight centered" id="questionList">
+                <thead>
+                <tr>
+                    <th>Topic</th>
+                    <th>Location</th>
+                    <th>Question Description</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody>
+                  <tr ng-repeat="q in $db.model['questions']">
+                    <td>{{ $db.get_topic_by_id(q.topic_id) }}</td>
+                    <td>{{ $db.get_location_by_id(q.location_id) }}</td>
+                    <td>{{ q.help_text }}</td>
+                    <td><a href="#modaleditquestion" modal><i class="material-icons">edit</i></a></td>
+                    <td><a href="#modaldelete" modal><i class="material-icons">delete</i></a></td>
+                  </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- New Question Modal -->
         <div class="modal modal-fixed-footer" id="modalnewquestion">
             <div class="modal-content">
                 <h4 class="center">{{ ($db.model["questions"].length == 0) ? 'New Question' : 'You already have a question.' }}</h4>
                 <div ng-show="($db.model['questions'].length == 0)" class="container">
-                  <h6>Topic</h6>
-                  <div id="topics">
-                     <p ng-repeat="t in $db.model['topics']"><input tid="{{t.id}}" name="topic" type="radio" id="{{ 'topic_' + t.id }}" /><label for="{{ 'topic_' + t.id }}">{{ t.topic }}</label></p>
+                  <h5>Topic</h5>
+                  <div input-field>
+                    <select class="" ng-model="selected.topic" id="woo"  material-select watch>
+                    <option value="{{ t.id }}" ng-repeat="t in $db.model['topics']">{{t.topic}}</option>
+                    </select>
                   </div>
-                  <h6>Location</h6>
-                  <div id="locations">
-                  <p ng-repeat="l in $db.model['locations']"><input lid="{{l.id}}" name="location" type="radio" id="{{ 'location_' + l.id }}" /><label for="{{ 'location_' + l.id }}">{{ l.location }}</label></p>
+                  <h5>Location</h5>
+                  <div input-field>
+                    <select class="" ng-model="selected.location" material-select watch>
+                    <option value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
+                    </select>
                   </div>
-                  <h6>Description</h6>
+                  <h5>Description</h5>
                   <textarea id="q_desc" class="materialize-textarea"></textarea>
                 </div>
             </div>
             <div ng-click="ask_question()" class="modal-footer">
                 <a id="prefbtn"  class="waves-effect btn-flat">{{ ($db.model["questions"].length == 0) ? 'Ask' : 'Okay' }}</a>
+            </div>
+        </div>
+
+        <!-- Edit Question Modal -->
+        <div class="modal modal-fixed-footer" id="modaleditquestion">
+            <div class="modal-content">
+                <h4 class="center">Edit Question</h4>
+                  <h5>Topic</h5>
+                  <div input-field>
+                    <select ng-model="selected.topic" class=""  material-select watch>
+                    <option value="{{ t.id }}" ng-repeat="t in $db.model['topics']">{{t.topic}}</option>
+                    </select>
+                  </div>
+                  <h5>Location</h5>
+                  <div input-field>
+                    <select ng-model="selected.location" class=""  material-select watch>
+                    <option value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
+                    </select>
+                  </div>
+                  <h5>Description</h5>
+                  <textarea id="q_desc_update" class="materialize-textarea">{{ $db.model['questions'][0].help_text }}</textarea>
+                </div>
+            <div ng-click="update_question()" class="modal-footer">
+                <a id="prefbtn"  class="waves-effect btn-flat">Submit Edit</a>
             </div>
         </div>
 
@@ -91,31 +144,7 @@
                 <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Cancel</a>
             </div>
         </div>
-
-        <!-- Questions Table -->
-        <div class="center row">
-            <h4>Your Question</h4>
-            <table class="highlight centered" id="questionList">
-                <thead>
-                <tr>
-                    <th>Topic</th>
-                    <th>Location</th>
-                    <th>Question Description</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                  <tr ng-repeat="q in $db.model['questions']">
-                    <td>{{ $db.get_topic_by_id(q.topic_id) }}</td>
-                    <td>{{ $db.get_location_by_id(q.location_id) }}</td>
-                    <td>{{ q.help_text }}</td>
-                    <td><a href="" ng-click=""><i  class="material-icons">edit</i></a></td>
-                    <td><a href="#modaldelete" modal><i class="material-icons">delete</i></a></td>
-                  </tr>
-                </tbody>
-            </table>
-        </div>
+       
       </div>
   </div>
 

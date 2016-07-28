@@ -76,6 +76,10 @@ var db = ["$rootScope", function ($rootScope) {
 	d.freeze_question = function(qid) {
 		d.sio.emit("freeze_question", qid)
 	}
+	d.update_question = function(payload) {
+		console.log(payload)
+		d.sio.emit("update_question",payload)
+	}
 
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {
