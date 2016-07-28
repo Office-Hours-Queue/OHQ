@@ -7,7 +7,7 @@ var db = ["$rootScope", function ($rootScope) {
 	var d = {};
 
 	/* Initialize SocketIO */
-	d.sio = io('http://localhost:7000/student'); //@TODO CHANGE THIS
+	d.sio = io('http://localhost:7000/ca'); //@TODO CHANGE THIS
 	d.io_connected = false
 	d.sio.on("connect", function() {
 		d.io_connected = true;
@@ -24,6 +24,7 @@ var db = ["$rootScope", function ($rootScope) {
 		"topics":[],
 		"locations":[],
 		"student_meta":[],
+		"ca_meta": [],
 		"queue_meta": []
 	}
 
@@ -32,6 +33,7 @@ var db = ["$rootScope", function ($rootScope) {
 	d.sio.on("locations",function (payload) { handle_db_update("locations",payload)})
 	d.sio.on("topics",function (payload) { handle_db_update("topics",payload)})
 	d.sio.on("student_meta",function(payload) { handle_db_update("student_meta",payload)});
+	d.sio.on("ca_meta",function(payload) { handle_db_update("ca_meta",payload)});
 	d.sio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload)})
 	d.sio.on("message", function (payload) { Materialize.toast(payload) })
 	var handle_db_update = function(db_name,event) {
@@ -79,6 +81,18 @@ var db = ["$rootScope", function ($rootScope) {
 	d.update_question = function(payload) {
 		console.log(payload)
 		d.sio.emit("update_question",payload)
+	}
+	d.close_queue = function() {
+		console.log("close_queue")
+		d.sio.emit('close_queue')
+	}
+	d.open_queue = function() {
+		console.log("open_queue")
+		d.sio.emit("open_queue")
+	}
+	d.update_minute_rule = function(new_rule) {
+		//Assumes server side validation, send "message" event if invalid
+		d.sio.emit("update_minute_rule",new_rule);
 	}
 
 	/* Helpers */
