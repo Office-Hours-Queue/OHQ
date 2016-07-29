@@ -84,7 +84,31 @@ module.exports = function(io) {
   // individual students
   var onstudentjoin = function(socket, userid) {
 
+    socket.on('add_question', function(question) {
+
+    });
+
+    socket.on('delete_question', function() {
+
+    });
+
+    socket.on('freeze_question', function() {
+
+    });
+
+    socket.on('update_question', function(question) {
+
+    });
+
   };
+
+  // server -> client
+  (function() {
+    queue.meta.emitter.on('update', function(meta) {
+      delete meta.timeLimit;
+      students.emit('queue_meta', makeMessage('update', meta));
+    });
+  })();
 
   //
   // utilities
