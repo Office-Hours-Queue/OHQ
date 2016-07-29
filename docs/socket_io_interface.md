@@ -2,10 +2,6 @@
 
 ##Some Notes Before Reading 
 
-###Warning
-I haven't integrated login yet, so I'm not sure what user info will 
-be sent up. Probably the methods will have some type of identity object that they send up, but since it's not finalized, I didn't add it to this doc. I will soon.
-
 ###Event Object Schema 
 This is the expected event that the client receives. 
 
@@ -81,13 +77,11 @@ The client has a single function that handles all of these events (for both ca a
 ```
 
 ```javascript
-// this will probably include an identity of object of some type, see warning above 
 //expects 'questions' event soon after
 .emit('delete_question')
 ```
 
 ```javascript
-// this will probably include an identity of object of some type, see warning above 
 //expects a change in student_meta soon after
 .emit('freeze_question')
 ```
@@ -147,29 +141,24 @@ The message event is the same as the student one.
 ##CA Methods (Sent to the Server)
 
 ```javascript
-//no arguments except will probably have an identity object, see warning above
 //these 3 are with respect to the question that the ca is answering
-.emit('freeze_question',)
-.emit('kick_question',)
-.emit('finish_question',)
+.emit('freeze_question')
+.emit('kick_question')
+.emit('finish_question')
 ```
 
 ```javascript
-//no arguments except will probably have an identity object, see warning above
 //pull question off queue, and send off ca_meta event with info
-.emit('answer_question',)
+.emit('answer_question')
 ```
 
 ```javascript
-//no arguments except will probably have an identity object, see warning above
 //with respect to queue_meta, expects change event from there 
-.emit('close_queue',)
-.emit('open_queue',)
+.emit('close_queue')
+.emit('open_queue')
 ```
 
 ```javascript
-//will probably have an identity object, see warning above
-//new_rule is an int
 //expects queue_meta soon after
 .emit('update_minute_rule',int)
 ```
