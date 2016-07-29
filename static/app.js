@@ -20,7 +20,6 @@ app.controller("ca_ctl",ca_ctl);
 app.config(function($routeProvider) {
     $routeProvider.when("/", {
         templateUrl : "html/login.html",
-        controller: "login_ctl"
     });
     $routeProvider.when("/student", {
         templateUrl : "html/student.html",

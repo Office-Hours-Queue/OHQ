@@ -14,17 +14,17 @@
 		    <div class="col offset-l2 l4 s6" style="margin-bottom:10px;">
 		        
 		    		<div ng-show="$db.model['queue_meta'][0].open">
-		        <a ng-click="close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
+		        <a ng-click="$db.close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
 		        </div>
 
 		        <div ng-show="!($db.model['queue_meta'][0].open)">
-		        <a ng-click="open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
+		        <a ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
 		        </div>
 
 		    </div>
 		    <div class="col l4 s6" style="margin-bottom:10px;">
 		        
-		            <a id="answer-btn" class="btn disabled">Answer Question</a>
+		            <a id="answer-btn" ng-click="$db.answer_question()" class="btn {{ $db.model['questions'].length > 0  ? '' : 'disabled' }}">Answer Question</a>
 		        
 		    </div>
 		</div>
@@ -86,12 +86,40 @@
       </table>
     </div>
 
+     <!-- Answer Question Modal -->
+     <div class="modal modal-fixed-footer" id="modalanswerquestion">
+          <div class="modal-content">
+          	<h3 class="center"> Answering Question </h3>
+						<br />
+          	<div class="center">
+								<h5>You are answering {{ $db.model['ca_meta'][0].question.first_name + '\'s'}} question in room {{ $db.model['ca_meta'][0].question.location}} . </h5>
+								<br />
+								<h5>Topic: {{ $db.model['ca_meta'][0].question.topic }} </h5>
+								<br />
+								<h5>Description: {{ $db.model['ca_meta'][0].question.help_text }} </h5>
+          	</div>
+          </div>
+          <div class="modal-footer">
+          		<div class="left">
+          			<a ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
+          		</div>
+          		<div class="right">
+	          		<a ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
+	          		<a ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
+          		</div>
+          </div>
+      </div>
+
+
+
 
 	</div>
 	</div>
 
 
 </div>
+
+
 
 
 

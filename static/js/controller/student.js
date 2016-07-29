@@ -24,18 +24,6 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 		}
 	});
 
-	$scope.freeze_question = function() {
-		if (($db.model["questions"].length) == 0) { return }
-		var q = $db.model["questions"][0]
-		$db.freeze_question(q.id)	
-	}
-
-	$scope.delete_question = function () {
-		if (($db.model["questions"].length) == 0) { return }
-		var q = $db.model["questions"][0]
-		$db.delete_question(q.id)	
-	}
-
 	$scope.ask_question = function () {
 		//Check if question exists
 		if (($db.model["questions"].length) != 0) {

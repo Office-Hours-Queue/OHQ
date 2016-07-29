@@ -28,7 +28,7 @@
             </div>
           </div>
           <div class="col l4 m6 s12">
-            <a href="" ng-click="freeze_question()"><div class="card {{ !($db.can_freeze())  || $db.is_frozen() ? 'grey lighten-2' : 'blue' }}">
+            <a href="" ng-click="$db.freeze_question()"><div class="card {{ !($db.can_freeze())  || $db.is_frozen() ? 'grey lighten-2' : 'blue' }}">
               <div class="center card-content {{ !($db.can_freeze()) || $db.is_frozen()   ? 'grey-text text-lighten-1' : 'white-text' }} ">     
                 <span style="font-size:25px;">{{ $db.is_frozen() ? 'Question Frozen' : 'Freeze'}}</span>
               </div>
@@ -140,7 +140,7 @@
                 <h4 class="center">Are you sure you want to delete your question?</h4>
             </div>
             <div class="modal-footer">
-                <div ng-click="delete_question()"><a id="prefbtn"  class="modal-action modal-close waves-effect btn-flat">Delete</a></div>
+                <div ng-click="$db.delete_question()"><a id="prefbtn"  class="modal-action modal-close waves-effect btn-flat">Delete</a></div>
                 <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Cancel</a>
             </div>
         </div>

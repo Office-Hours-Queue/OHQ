@@ -7,7 +7,7 @@ var db = ["$rootScope", function ($rootScope) {
 	var d = {};
 
 	/* Initialize SocketIO */
-	d.sio = io('http://localhost:7000/ca'); //@TODO CHANGE THIS
+	d.sio = io('http://localhost:7000/student'); //@TODO CHANGE THIS
 	d.io_connected = false
 	d.sio.on("connect", function() {
 		d.io_connected = true;
@@ -70,13 +70,16 @@ var db = ["$rootScope", function ($rootScope) {
 	
 	/* Events to send */
 	d.add_question = function(payload) {
+		console.log(payload)
 		d.sio.emit("new_question",payload)
 	}
-	d.delete_question = function(qid) { 
-		d.sio.emit("delete_question", qid)
+	d.delete_question = function() { 
+		console.log("delete")
+		d.sio.emit("delete_question", {})
 	}
-	d.freeze_question = function(qid) {
-		d.sio.emit("freeze_question", qid)
+	d.freeze_question = function() {
+		console.log("db freeze")
+		d.sio.emit("freeze_question", {})
 	}
 	d.update_question = function(payload) {
 		console.log(payload)
@@ -91,8 +94,21 @@ var db = ["$rootScope", function ($rootScope) {
 		d.sio.emit("open_queue")
 	}
 	d.update_minute_rule = function(new_rule) {
+		console.log("update min")
 		//Assumes server side validation, send "message" event if invalid
 		d.sio.emit("update_minute_rule",new_rule);
+	}
+	d.kick_question = function() {
+		console.log("db kick")
+		d.sio.emit("qick_question",{});
+	}
+	d.finish_question = function() {
+		console.log("db finish")
+		d.sio.emit("finish_question",{});
+	}
+	d.answer_question = function () {
+		console.log("Answer!")
+		d.sio.emit("answer_question",{})
 	}
 
 	/* Helpers */
