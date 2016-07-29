@@ -100,6 +100,12 @@ module.exports = function(io) {
 
     });
 
+    // emit the current data on connect
+    queue.meta.getCurrent().then(function(meta) {
+      delete meta.timeLimit;
+      socket.emit('queue_meta', makeMessage('update', meta));
+    });
+
   };
 
   // server -> client
