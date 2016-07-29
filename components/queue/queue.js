@@ -91,23 +91,40 @@ var meta = (function() {
   var result = {
     get: selectMeta,
     getCurrent: selectCurrentMeta,
+    close: setQueueState(false),
+    open: setQueueState(true),
+    setTimeLimit: setTimeLimit,
     emitter: new EventEmitter()
   };
-  dbEvents.queueMeta.on('update', function(id) {
-    selectMeta(id).then(function(queueMeta) {
-      result.emitter.emit('update', queueMeta);
+  dbEvents.queue_meta.on('update', function(id) {
+    selectCurrentMeta().then(function(meta) {
+      result.emitter.emit('update', cleanMeta(meta));
     });
-  });
-  dbEvents.queueMeta.on('insert', function(id) {
-    selectMeta(id).then(function(queueMeta) {
-      result.emitter.emit('insert', queueMeta);
-    });
-  });
-  dbEvents.queueMeta.on('delete', function(id) {
-    result.emitter.emit('delete', id);
   });
   return result;
 })();
+
+function setTimeLimit(minutes) {
+  if (Number.isInteger(parseInt(minutes)) && minutes > 0) {
+    db('queue_meta')
+      .update({ time_limit: minutes })
+      .return(null);
+  }
+}
+
+function cleanMeta(meta) {
+  delete meta.registration_code;
+  delete meta.id;
+  return meta;
+}
+
+function setQueueState(state) {
+  return function() {
+    db('queue_meta')
+      .update({ open: state })
+      .return(null);
+  }
+}
 
 function selectMeta(id) {
   return db.select(

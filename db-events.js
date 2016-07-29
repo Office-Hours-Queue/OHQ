@@ -10,7 +10,7 @@ client.connect();
 // we'll unpack and forward notifications via these emitters
 var emitters = {};
 emitters.questions = new EventEmitter();
-emitters.queueMeta = new EventEmitter();
+emitters.queue_meta = new EventEmitter();
 
 // pg sends us events when certain tables get updated
 client.on('notification', function(msg) {

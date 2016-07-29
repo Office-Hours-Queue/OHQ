@@ -3,50 +3,77 @@ var auth = require('../../auth');
 
 module.exports = function(io) {
 
+  // make sure that this endpoint is protected
+  io.use(auth.ioIsAuthenticated);
+
+  // on client connection, join appropriate room, and
+  // handle subsequent client -> server communications
+  io.on('connection', function(socket) {
+    var userid = socket.request.user.id;
+    if (socket.request.user.role === 'ca') {
+      socket.join('ca');
+      oncajoin(socket, userid);
+    } else if (socket.request.user.role === 'student') {
+      socket.join('student');
+      onstudentjoin(socket, userid);
+    } else {
+      throw new Error('Not authorized');
+    }
+  });
+
+  // ca/student global rooms
+  var cas = io.to('ca');
+  var students = io.to('student');
+
+
   //
   // CA handling
   //
-  (function() {
 
-    // make sure that connections are actually cas
-    io.ca.use(auth.ioHasRole('ca'));
+  // individual cas
+  var oncajoin = function(socket, userid) {
 
-    // listen for future questions, and send to all cas
-    var sendQuestion = function(question) {
-      io.ca.emit('question', question);
-    };
+    // listen for events
+    socket.on('freeze_question', function() {
 
-    queue.questions.emitter.on('update', sendQuestion);
-    queue.questions.emitter.on('insert', sendQuestion);
-    queue.questions.emitter.on('delete', function(id) {
-      io.ca.emit('questionDelete', { id: id });
     });
 
-    // listen for changes on queue meta state
-    var sendMeta = function(meta) {
-      io.ca.emit('meta', meta);
-    };
+    socket.on('kick_question', function() {
 
-    queue.meta.emitter.on('update', sendMeta);
-    queue.meta.emitter.on('insert', sendMeta);
+    });
 
-    // when a ca connects, send them everything
-    io.ca.on('connection', function(socket) {
+    socket.on('finish_question', function() {
 
-      // send all open questions
-      queue.questions.openQuestions().then(function(questions) {
-        for (var i = 0; i < questions.length; i++) {
-          socket.emit('question', questions[i]);
-        }
-      });
+    });
 
-      // send over queue status
-      queue.meta.getCurrent().then(function(meta) {
-        socket.emit('meta', meta);
-      });
+    socket.on('answer_question', function() {
 
     });
     
+    socket.on('close_queue', function() {
+      queue.meta.close();
+    });
+
+    socket.on('open_queue', function() {
+      queue.meta.open();
+    });
+
+    socket.on('update_minute_rule', function(minutes) {
+      queue.meta.setTimeLimit(minutes);
+    });
+
+    // emit the current data on connect
+    queue.meta.getCurrent().then(function(meta) {
+      socket.emit('queue_meta', makeMessage('update', meta));
+    });
+
+  };
+
+  // server -> client
+  (function() {
+    queue.meta.emitter.on('update', function(meta) {
+      cas.emit('queue_meta', makeMessage('update', meta));
+    });
   })();
 
 
@@ -54,14 +81,19 @@ module.exports = function(io) {
   // Student handling
   //
 
-  (function() {
+  // individual students
+  var onstudentjoin = function(socket, userid) {
 
-    io.student.use(auth.ioHasRole('student'));
+  };
 
-    io.student.on('connection', function(socket) {
-
-    });
-
-  })();
+  //
+  // utilities
+  //
+  var makeMessage = function(type, payload) {
+    return {
+      type: type,
+      payload: payload
+    };
+  };
 
 };

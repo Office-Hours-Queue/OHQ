@@ -151,12 +151,17 @@ function ioIsAuthenticated(socket, next) {
 
 function ioHasRole(role) {
   return function(socket, next) {
-    if (socket.request.isAuthenticated() &&
-        socket.request.user.role === role) {
-      next();
-    } else {
-      next(new Error('Not authorized'));
+    if (socket.request.isAuthenticated()) {
+      if (Array.isArray(role) &&
+          role.indexOf(socket.request.user.role) !== -1) {
+        next();
+        return;
+      } else if (socket.request.user.role === role) {
+        next();
+        return;
+      }
     }
+    next(new Error('Not authorized'));
   };
 }
 
