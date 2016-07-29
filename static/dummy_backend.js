@@ -1,7 +1,7 @@
 var Server = require('socket.io');
 var io = new Server(7000);
-var student_room = io.of('/student')
 
+var student_room = io.of('/queue')
 //Normally do this on student connect
 setInterval(function(){
 	// student_room.emit("questions",{
@@ -39,7 +39,7 @@ setInterval(function(){
 
 
 // //CA Room 
-// var ca_room = io.of('/ca')
+// var ca_room = io.of('/queue')
 // setInterval(function(){
 // 	ca_room.emit("questions",{
 // 		"type":"insert",
