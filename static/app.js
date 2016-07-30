@@ -13,6 +13,8 @@ app.factory("$db",db);
  */
 app.controller("student_ctl",student_ctl);
 app.controller("ca_ctl",ca_ctl);
+app.controller("login_ctl",login_ctl);
+
 
 /*
  *  Setup routes
@@ -20,6 +22,7 @@ app.controller("ca_ctl",ca_ctl);
 app.config(function($routeProvider) {
     $routeProvider.when("/", {
         templateUrl : "html/login.html",
+        controller: "login_ctl"
     });
     $routeProvider.when("/student", {
         templateUrl : "html/student.html",

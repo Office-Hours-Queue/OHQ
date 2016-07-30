@@ -4,6 +4,7 @@ exports.seed = function(knex, Promise) {
   return Promise.all([
 
     knex.insert([
+      { andrew_id: 'edryer',role:'ca'},
       { andrew_id: 'aaa', role: 'ca' },
       { andrew_id: 'bbb', role: 'ca' },
       { andrew_id: 'ccc', role: 'ca' },

@@ -34,10 +34,9 @@ app.use(auth.passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // hook up routes
-app.use('/', require('./components/index').routes);
-app.use('/queue', require('./components/queue').routes);
+app.use('/', express.static('./static'));
 app.use('/login', require('./components/login').routes);
-app.use('/user', require('./components/user').routes);
+app.use('/user', require('./components/user').routes );
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 

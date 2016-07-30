@@ -7,7 +7,7 @@ var db = ["$rootScope", function ($rootScope) {
 	var d = {};
 
 	/* Initialize SocketIO */
-	d.sio = io('http://localhost:7000/queue'); //@TODO CHANGE THIS
+	d.sio = io('http://localhost:3000/queue');
 	d.io_connected = false
 	d.sio.on("connect", function() {
 		d.io_connected = true;
