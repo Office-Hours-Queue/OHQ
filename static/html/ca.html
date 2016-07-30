@@ -1,0 +1,125 @@
+<div data-extend-template="/html/base.html">
+
+	<!-- Nav Bar -->
+	<ul data-block-append="menu_links">
+		<li><a href="/logout">Log Out</a></li>
+	</ul>
+
+	<!-- Content --> 
+	<div data-block-append="content">
+	<div class="container">
+   	<br />
+
+		<div class="center row">
+		    <div class="col offset-l2 l4 s6" style="margin-bottom:10px;">
+		        
+		    		<div ng-show="$db.model['queue_meta'][0].open">
+		        <a ng-click="$db.close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
+		        </div>
+
+		        <div ng-show="!($db.model['queue_meta'][0].open)">
+		        <a ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
+		        </div>
+
+		    </div>
+		    <div class="col l4 s6" style="margin-bottom:10px;">
+		        
+		            <a id="answer-btn" ng-click="$db.answer_question()" class="btn {{ $db.model['questions'].length > 0  ? '' : 'disabled' }}">Answer Question</a>
+		        
+		    </div>
+		</div>
+
+		<div class="center row">
+		    <div class="col m4 s6">
+		        <div class="card light-blue darken-3">
+		            <div class="center card-content white-text">
+		                  <span class="card-title" style="font-size:20px;">CAs</span>
+		                  <p id="numCAs" style="font-size:50px;">{{ $db.model["ca_meta"][0].n_cas }}</p>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="col m4 s6">
+		        <div class="card cyan darken-1">
+		            <div class="center card-content white-text">
+		                  <span class="card-title" style="font-size:20px;">Questions</span>
+		                  <p id="numQuestions" style="font-size:50px;">{{ $db.model["ca_meta"][0].n_questions }}</p>
+		            </div>
+		        </div>
+		    </div>
+		    <div class="col m4 s6">
+		        <div class="card orange">
+		            <div class="center card-content white-text">
+		                  <span class="card-title" style="font-size:20px;">MinRule</span>
+		                  <p style="font-size:50px;">{{ $db.model['queue_meta'][0].time_limit }}</p>
+		                  <a class="activator white-text right" style="margin-top:-10px;"><i class="material-icons right" style="font-size:20px; margin-bottom:5px; margin-right:-10px;">more_vert</i></a>
+		            </div>
+		            <div class="card-reveal">
+		                <span class="card-title grey-text text-darken-4" style="font-size:20px; margin-left:-30px;">Edit<a id="minbtn"><i ng-click="update_minute_rule()" class="grey-text material-icons right" style="font-size:20px;">close</i></a></span>
+		                <input type="text" id="minuteRule" name="minuteRule" value="{{ $db.model['queue_meta'][0].time_limit }}" class="validate" style="margin-top:15px;">
+		            </div>
+		        </div>
+		    </div>
+		</div>
+
+  	<!-- Questions Table -->
+    <div class="center row">
+      <h4>Queue</h4>
+      <table class="highlight centered" id="questionList">
+          <thead>
+          <tr>
+          		<th>Name</th>
+          		<th>Andrew ID</th>
+              <th>Topic</th>
+              <th>Location</th>
+              <th>Question Description</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="q in $db.model['questions']">
+            	<td>{{ q.first_name }}</td>
+            	<td>{{ q.andrew_id }}</td>
+              <td>{{ q.topic }}</td>
+              <td>{{ q.location }}</td>
+              <td>{{ q.help_text }}</td>
+            </tr>
+          </tbody>
+      </table>
+    </div>
+
+     <!-- Answer Question Modal -->
+     <div class="modal modal-fixed-footer" id="modalanswerquestion">
+          <div class="modal-content">
+          	<h3 class="center"> Answering Question </h3>
+						<br />
+          	<div class="center">
+								<h5>You are answering {{ $db.model['ca_meta'][0].question.first_name + '\'s'}} question in room {{ $db.model['ca_meta'][0].question.location}} . </h5>
+								<br />
+								<h5>Topic: {{ $db.model['ca_meta'][0].question.topic }} </h5>
+								<br />
+								<h5>Description: {{ $db.model['ca_meta'][0].question.help_text }} </h5>
+          	</div>
+          </div>
+          <div class="modal-footer">
+          		<div class="left">
+          			<a ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
+          		</div>
+          		<div class="right">
+	          		<a ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
+	          		<a ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
+          		</div>
+          </div>
+      </div>
+
+
+
+
+	</div>
+	</div>
+
+
+</div>
+
+
+
+
+
