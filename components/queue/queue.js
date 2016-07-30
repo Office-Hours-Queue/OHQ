@@ -1,6 +1,7 @@
 var db = require('../../db');
 var dbEvents = require('../../db-events');
 var EventEmitter = require('events');
+var validator = require('jsonschema').validate;
 
 //
 // Queue questions
@@ -8,17 +9,21 @@ var EventEmitter = require('events');
 
 var questions = (function() {
   var result = {
-    get: selectQuestion,
-    openQuestions: selectOpenQuestions,
+    getId: selectQuestionId,
+    getOpen: selectQuestionsOpen,
+    add: addQuestion,
+    update: updateQuestion,
+    close: closeQuestion,
+    freeze: freezeQuestion,
     emitter: new EventEmitter()
   };
   dbEvents.questions.on('update', function(id) {
-    selectQuestion(id).then(function(question) {
+    selectQuestionId(id).then(function(question) {
       result.emitter.emit('update', question);
     });
   });
   dbEvents.questions.on('insert', function(id) {
-    selectQuestion(id).then(function(question) {
+    selectQuestionId(id).then(function(question) {
       result.emitter.emit('insert', question);
     });
   });
@@ -27,6 +32,153 @@ var questions = (function() {
   });
   return result;
 })();
+
+// get question by id
+function selectQuestionId(id) {
+  return selectQuestionFields()
+    .where('q.id', id)
+    .first();
+}
+
+// get open questions
+function selectQuestionsOpen() {
+  return selectQuestionFields()
+    .where('q.off_time', null)
+    .andWhere(function() {
+      // not frozen: frozen_end_max_time < now() && frozen_end_time < now()
+      this
+        .where(function() {
+          this.where('q.frozen_end_max_time', null)
+              .orWhere('q.frozen_end_max_time', '<', db.fn.now());
+        })
+        .andWhere(function() {
+          this.where('q.frozen_end_time', null)
+              .orWhere('q.frozen_end_time', '<', db.fn.now());
+        });
+    })
+    .orderBy('q.on_time', 'desc');
+}
+
+// add a new question
+function addQuestion(question) {
+  // do some validation
+  var questionInsertionSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      student_user_id: {
+        type: 'integer',
+        required: true
+      },
+      topic_id: {
+        type: 'integer',
+        required: true
+      },
+      location_id: {
+        type: 'integer',
+        required: true
+      },
+      help_text: {
+        type: 'string',
+        required: true
+      }
+    }
+  };
+
+  var valid = validator(question, questionInsertionSchema);
+
+  if (!valid.valid) {
+    throw new Error('Invalid input');
+  }
+
+  // prepare the full object
+  var insertQuestion = {
+    student_user_id: question.student_user_id,
+    topic_id: question.topic_id,
+    location_id: question.location_id,
+    help_text: question.help_text,
+    on_time: db.fn.now()
+  };
+
+  // insert the question
+  db.count('*')
+    .from('questions')
+    .where('student_user_id', insertQuestion.student_user_id)
+    .first()
+    .then(function(activeQuestions) {
+      if (parseInt(activeQuestions.count) !== 0) {
+        throw new Error('Student has question already');
+      } else {
+        db.insert(insertQuestion)
+          .into('questions')
+          .return(null);
+      }
+    })
+    .catch(function(error) {
+      console.log(error);
+    });
+}
+
+// update a question's details
+function updateQuestion(userId, question) {
+  var questionUpdateSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      location_id: {
+        type: 'integer',
+        required: false
+      },
+      topic_id: {
+        type: 'integer',
+        required: false
+      },
+      help_text: {
+        type: 'string',
+        required: false
+      }
+    }
+  };
+
+  var valid = validator(question, questionUpdateSchema);
+  
+  if (!valid.valid) {
+    throw new Error('Invalid input');
+  }
+
+  db('questions')
+    .update(question)
+    .where('student_user_id', userId)
+    .andWhere('off_time', null)
+    .return(null);
+}
+
+// close a question
+function closeQuestion(userId, userRole) {
+  db('questions')
+    .update({
+      off_time: db.fn.now(),
+      off_reason: userRole === 'student' ? 'self_kick' : 'ca_kick'
+    })
+    .where('student_user_id', userId)
+    .andWhere('off_time', null)
+    .return(null);
+}
+
+// freeze a question
+function freezeQuestion(userId) {
+  db('questions')
+    .update({
+      frozen_by: userId,
+      frozen_time: db.fn.now(),
+      frozen_end_max_time: db.raw(
+        'NOW() + INTERVAL \'1 second\' * (SELECT max_freeze FROM queue_meta ORDER BY id DESC LIMIT 1)')
+    })
+    .where('student_user_id', userId)
+    .andWhere('off_time', null)
+    .andWhere('frozen_time', null)
+    .return(null);
+}
 
 function selectQuestionFields() {
   return db.select(
@@ -56,30 +208,6 @@ function selectQuestionFields() {
     .leftJoin('users AS ue', 'ue.id', 'q.initial_ca_user_id')
     .leftJoin('topics AS t', 't.id', 'q.topic_id')
     .leftJoin('locations AS l', 'l.id', 'q.location_id');
-}
-
-function selectQuestion(id) {
-  return selectQuestionFields()
-    .where('q.id', id)
-    .first();
-}
-
-function selectOpenQuestions() {
-  return selectQuestionFields()
-    .where('q.off_time', null)
-    .andWhere(function() {
-      // not frozen: end_max_time < now() && end_time < now()
-      this
-        .where(function() {
-          this.where('q.frozen_end_max_time', null)
-              .orWhere('q.frozen_end_max_time', '<', db.fn.now());
-        })
-        .andWhere(function() {
-          this.where('q.frozen_end_time', null)
-              .orWhere('q.frozen_end_time', '<', db.fn.now());
-        });
-    })
-    .orderBy('q.on_time', 'desc');
 }
 
 

@@ -85,19 +85,28 @@ module.exports = function(io) {
   var onstudentjoin = function(socket, userid) {
 
     socket.on('add_question', function(question) {
-
-    });
-
-    socket.on('delete_question', function() {
-
-    });
-
-    socket.on('freeze_question', function() {
-
+      question.student_user_id = userid;
+      try {
+        queue.questions.add(question);
+      } catch(error) {
+        console.log(error);
+      }
     });
 
     socket.on('update_question', function(question) {
+      try {
+        queue.questions.update(userid, question);
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
+    socket.on('delete_question', function() {
+      queue.questions.close(userid, socket.request.user.role);
+    });
+
+    socket.on('freeze_question', function() {
+      queue.questions.freeze(userid);
     });
 
     // emit the current data on connect
