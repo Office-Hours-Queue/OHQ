@@ -3,7 +3,7 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 
 	//Get login user object
 	$http.get('/user', {}).then(function (data) {
-		if (data["statusText"] == "OK") {
+		if (data["data"]["first_name"] != undefined) {
 			$rootScope.user = data["data"];
 			console.log($rootScope.user)
 		} else {
