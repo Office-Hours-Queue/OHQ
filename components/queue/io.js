@@ -111,8 +111,29 @@ module.exports = function(io) {
 
     // emit the current data on connect
     queue.meta.getCurrent().then(function(meta) {
-      delete meta.timeLimit;
-      socket.emit('queue_meta', makeMessage('update', meta));
+      socket.emit('queue_meta', makeMessage('insert', [{
+        open: meta.open
+      }]));
+    });
+
+    queue.questions.getUserId(userid).then(function(question) {
+      if (typeof question === 'undefined') {
+        return;
+      }
+      socket.emit('questions', makeMessage('insert', [{
+        id: question.id,
+        topic_id: question.topic_id,
+        location_id: question.location_id,
+        help_text: question.help_text
+      }]));
+    });
+
+    queue.locations.getEnabled().then(function(locations) {
+      socket.emit('locations', makeMessage('insert', locations));
+    });
+
+    queue.topics.getEnabled().then(function(topics) {
+      socket.emit('topics', makeMessage('insert', topics));
     });
 
   };

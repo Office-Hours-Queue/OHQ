@@ -11,6 +11,7 @@ var questions = (function() {
   var result = {
     getId: selectQuestionId,
     getOpen: selectQuestionsOpen,
+    getUserId: selectQuestionUserId,
     add: addQuestion,
     update: updateQuestion,
     close: closeQuestion,
@@ -40,23 +41,25 @@ function selectQuestionId(id) {
     .first();
 }
 
+// get question by user id
+function selectQuestionUserId(id) {
+  return selectQuestionFields()
+    .where('q.student_user_id', id)
+    .first();
+}
+
 // get open questions
 function selectQuestionsOpen() {
   return selectQuestionFields()
-    .where('q.off_time', null)
-    .andWhere(function() {
-      // not frozen: frozen_end_max_time < now() && frozen_end_time < now()
-      this
-        .where(function() {
-          this.where('q.frozen_end_max_time', null)
-              .orWhere('q.frozen_end_max_time', '<', db.fn.now());
-        })
-        .andWhere(function() {
-          this.where('q.frozen_end_time', null)
-              .orWhere('q.frozen_end_time', '<', db.fn.now());
-        });
-    })
+    .where(questionOpen())
     .orderBy('q.on_time', 'desc');
+}
+
+// condition for a question to be open
+function questionOpen() {
+  return db.raw('(q.off_time = NULL) ' +
+            'AND (q.frozen_end_max_time = NULL OR q.frozen_end_max_time < NOW()) ' +
+            'AND (q.frozen_end_time = NULL OR q.frozen_end_time < NOW()) ');
 }
 
 // add a new question
@@ -182,6 +185,7 @@ function freezeQuestion(userId) {
 
 function selectQuestionFields() {
   return db.select(
+      'q.id                  AS id',
       'us.first_name         AS student_first_name',
       'us.last_name          AS student_last_name',
       'uf.first_name         AS frozen_by_first_name',
@@ -190,7 +194,9 @@ function selectQuestionFields() {
       'uc.last_name          AS ca_last_name',
       'ue.first_name         AS initial_ca_first_name',
       'ue.last_name          AS initial_ca_last_name',
+      't.id                  AS topic_id', 
       't.topic               AS topic',
+      'l.id                  AS location_id',
       'l.location            AS location',
       'q.help_text           AS help_text',
       'q.on_time             AS on_time',
@@ -276,5 +282,54 @@ function selectCurrentMeta() {
     .first();
 }
 
+//
+// locations
+//
+var locations = (function() {
+  return {
+    getAll: selectAllLocations,
+    getEnabled: selectEnabledLocations
+  };
+})();
+
+function selectAllLocations() {
+  return db.select(
+      'id',
+      'location',
+      'enabled'
+    )
+    .from('locations');
+}
+
+function selectEnabledLocations() {
+  return selectAllLocations().where('enabled', true);
+}
+
+//
+// topics
+//
+var topics = (function() {
+  return {
+    getAll: selectAllTopics,
+    getEnabled: selectEnabledTopics
+  };
+})();
+
+function selectAllTopics() {
+  return db.select(
+      'id',
+      'topic',
+      'enabled'
+    )
+    .from('topics');
+}
+
+function selectEnabledTopics() {
+  return selectAllTopics().where('enabled', true);
+}
+
+
 module.exports.questions = questions;
 module.exports.meta = meta;
+module.exports.locations = locations;
+module.exports.topics = topics;
