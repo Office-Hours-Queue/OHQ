@@ -12,6 +12,7 @@ var questions = (function() {
     getId: selectQuestionId,
     getOpen: selectQuestionsOpen,
     getUserId: selectQuestionUserId,
+    getOpenUserId: selectOpenQuestionUserId,
     add: addQuestion,
     update: updateQuestion,
     close: closeQuestion,
@@ -34,32 +35,77 @@ var questions = (function() {
   return result;
 })();
 
+function selectDefaultQuestionFields() {
+  return db.select(
+      'q.id                  AS id',
+      'us.first_name         AS student_first_name',
+      'us.last_name          AS student_last_name',
+      'uf.first_name         AS frozen_by_first_name',
+      'uf.last_name          AS frozen_by_last_name',
+      'uc.first_name         AS ca_first_name',
+      'uc.last_name          AS ca_last_name',
+      'ue.first_name         AS initial_ca_first_name',
+      'ue.last_name          AS initial_ca_last_name',
+      't.id                  AS topic_id',
+      't.topic               AS topic',
+      'l.id                  AS location_id',
+      'l.location            AS location',
+      'q.help_text           AS help_text',
+      'q.on_time             AS on_time',
+      'q.frozen_time         AS frozen_time',
+      'q.frozen_end_max_time AS frozen_end_max_time',
+      'q.frozen_end_time     AS frozen_end_time',
+      'q.help_time           AS help_time',
+      'q.initial_help_time   AS initial_help_time',
+      'q.off_time            AS off_time',
+      'q.off_reason          AS off_reason',
+      function() {
+        this.count('aq.id')
+            .from('questions AS aq')
+            .where('aq.off_time', null)
+            .andWhere(db.raw('aq.on_time < q.on_time'))
+            .as('queue_position')
+      }
+    )
+    .from('questions AS q')
+    .leftJoin('users AS us', 'us.id', 'q.student_user_id')
+    .leftJoin('users AS uf', 'uf.id', 'q.frozen_by')
+    .leftJoin('users AS uc', 'uc.id', 'q.ca_user_id')
+    .leftJoin('users AS ue', 'ue.id', 'q.initial_ca_user_id')
+    .leftJoin('topics AS t', 't.id', 'q.topic_id')
+    .leftJoin('locations AS l', 'l.id', 'q.location_id');
+}
+
 // get question by id
 function selectQuestionId(id) {
-  return selectQuestionFields()
+  return selectDefaultQuestionFields()
     .where('q.id', id)
     .first();
 }
 
 // get question by user id
 function selectQuestionUserId(id) {
-  return selectQuestionFields()
-    .where('q.student_user_id', id)
+  return selectDefaultQuestionFields()
+    .where('q.student_user_id', id);
+}
+
+// get active question by user id
+function selectOpenQuestionUserId(id) {
+  return selectQuestionUserId(id)
+    .where(questionOpen())
     .first();
 }
 
 // get open questions
 function selectQuestionsOpen() {
-  return selectQuestionFields()
+  return selectDefaultQuestionFields()
     .where(questionOpen())
     .orderBy('q.on_time', 'desc');
 }
 
 // condition for a question to be open
 function questionOpen() {
-  return db.raw('(q.off_time = NULL) ' +
-            'AND (q.frozen_end_max_time = NULL OR q.frozen_end_max_time < NOW()) ' +
-            'AND (q.frozen_end_time = NULL OR q.frozen_end_time < NOW()) ');
+  return db.raw('(q.off_time = NULL)');
 }
 
 // add a new question
@@ -181,39 +227,6 @@ function freezeQuestion(userId) {
     .andWhere('off_time', null)
     .andWhere('frozen_time', null)
     .return(null);
-}
-
-function selectQuestionFields() {
-  return db.select(
-      'q.id                  AS id',
-      'us.first_name         AS student_first_name',
-      'us.last_name          AS student_last_name',
-      'uf.first_name         AS frozen_by_first_name',
-      'uf.last_name          AS frozen_by_last_name',
-      'uc.first_name         AS ca_first_name',
-      'uc.last_name          AS ca_last_name',
-      'ue.first_name         AS initial_ca_first_name',
-      'ue.last_name          AS initial_ca_last_name',
-      't.id                  AS topic_id', 
-      't.topic               AS topic',
-      'l.id                  AS location_id',
-      'l.location            AS location',
-      'q.help_text           AS help_text',
-      'q.on_time             AS on_time',
-      'q.frozen_time         AS frozen_time',
-      'q.frozen_end_max_time AS frozen_end_max_time',
-      'q.frozen_end_time     AS frozen_end_time',
-      'q.help_time           AS help_time',
-      'q.initial_help_time   AS initial_help_time',
-      'q.off_time            AS off_time',
-      'q.off_reason          AS off_reason')
-    .from('questions AS q')
-    .leftJoin('users AS us', 'us.id', 'q.student_user_id')
-    .leftJoin('users AS uf', 'uf.id', 'q.frozen_by')
-    .leftJoin('users AS uc', 'uc.id', 'q.ca_user_id')
-    .leftJoin('users AS ue', 'ue.id', 'q.initial_ca_user_id')
-    .leftJoin('topics AS t', 't.id', 'q.topic_id')
-    .leftJoin('locations AS l', 'l.id', 'q.location_id');
 }
 
 

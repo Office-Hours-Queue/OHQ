@@ -116,15 +116,25 @@ module.exports = function(io) {
       }]));
     });
 
-    queue.questions.getUserId(userid).then(function(question) {
+    queue.questions.getOpenUserId(userid).then(function(question) {
       if (typeof question === 'undefined') {
         return;
       }
+
       socket.emit('questions', makeMessage('insert', [{
         id: question.id,
         topic_id: question.topic_id,
         location_id: question.location_id,
         help_text: question.help_text
+      }]));
+
+      socket.emit('student_meta', makeMessage('insert', [{
+        id: 0,
+        queue_ps: parseInt(question.queue_position),
+        is_frozen: (question.frozen_time !== null &&
+                    question.frozen_end_time > Date.now() &&
+                    question.frozen_end_max_time > Date.now()),
+        can_freeze: question.frozen_time === null
       }]));
     });
 
