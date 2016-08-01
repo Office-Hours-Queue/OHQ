@@ -112,6 +112,7 @@ module.exports = function(io) {
     // emit the current data on connect
     queue.meta.getCurrent().then(function(meta) {
       socket.emit('queue_meta', makeMessage('insert', [{
+        id: 0,
         open: meta.open
       }]));
     });
