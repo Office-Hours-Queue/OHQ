@@ -151,10 +151,15 @@ module.exports = function(io) {
 
   // server -> client
   (function() {
+
+    // listen for updates on queue_meta
     queue.meta.emitter.on('update', function(meta) {
-      delete meta.timeLimit;
-      students.emit('queue_meta', makeMessage('update', meta));
+      students.emit('queue_meta', makeMessage('update', [{
+        open: meta.open
+      }]));
     });
+
+
   })();
 
   //
