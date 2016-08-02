@@ -11,27 +11,30 @@
     <div class="row">
       <a href="/login/googleauth" id="lets_begin" class="waves-effect waves-light btn-large light-blue darken-3" style="font-size: 30px; font-family: Ostrich Sans, Trebuchet, sans-serif;">Let's begin.</a>
     </div>
+    &nbsp;
+   <div class="row">
+    <a class="black-text" style="font-size:20px; font-weight:bold; font-family:Ostrich Sans,Trebuchet, sans-serif;" href='#non-google-modal' modal>Don't have Google Apps? Click here.</a>
+  </div>
   </div>
 </div>
 
 <!-- Modal for non-google login (currently not being used) -->
-<div id="modal1" class="modal">
+<div id="non-google-modal" class="modal">
     <div class="modal-content container">
       <h4 class="center">Log In</h4>
 
-        <form action="/" method="post">
-        <div style="display:none;"><input id="csrf_token" name="csrf_token" type="hidden" value="1468178661##2f88839b2f4449e70cf2b884857a3698e6fe442e"></div>
+        <form>
 
         <div class="row">
             <div class="col m6 s12">
                 <div class="input-field">
-                  <input id="andrewID" name="andrewID" type="text" class="validate">
-                  <label for="andrewID">Andrew ID</label>
+                  <input id="username" name="username" type="text" class="validate" required>
+                  <label for="username">Andrew ID</label>
                 </div>
             </div>
             <div class="col m6 s12">
                 <div class="input-field">
-                  <input id="password" name="password" type="password" class="validate">
+                  <input id="password" name="password" type="password" class="validate" required>
                   <label for="password">Password</label>
                 </div>
             </div>
@@ -39,14 +42,14 @@
 
         <div class="center row">
             <div class="center col s12">
-                <input name="no_google_submit" class="btn light-blue darken-3" type="submit" value="Sign in">
+                <input ng-click="login_submit()" name="no_google_submit" class="btn light-blue darken-3" type="submit" value="Sign in">
             </div>
         </div>
 
         </form>
         
         <div class="center row">    
-            <a class="light-blue-text text-darken-3" href="/register" style="font-family:Roboto; font-size:15px;">Register</a>
+            <a class="light-blue-text text-darken-3 modal-action modal-close" href="/#/register" style="font-family:Roboto; font-size:15px;">Register</a>
         </div>
     </div>
     <a class="modal-action modal-close waves-effect btn-flat right" style="margin-top:-40px; margin-bottom:5px;">Close</a>

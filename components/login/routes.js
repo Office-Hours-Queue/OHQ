@@ -29,8 +29,8 @@ router.get('/localauth', function(req, res) {
 
 router.post('/localauth',
   auth.passport.authenticate('local', { successRedirect: '/',
-                                        failureRedirect: '/login/localauth',
-                                        failureFlash: true }));
+                                        failureRedirect: '/login/localauth'
+                                         }));
 
 router.get('/googleauth',
   auth.passport.authenticate('google', { scope: ['openid profile email'],
@@ -39,7 +39,7 @@ router.get('/googleauth',
 router.get('/success', 
   auth.passport.authenticate('google', { successRedirect: '/',
                                          failureRedirect: '/login',
-                                         failureFlash: true }));
+                                         }));
 
 router.get('/endauth', function(req, res, next) {
   req.logout();
