@@ -65,6 +65,15 @@ function selectDefaultQuestionFields() {
             .where('aq.off_time', null)
             .andWhere(db.raw('aq.on_time < q.on_time'))
             .as('queue_position');
+      },
+      function() {
+        this.select(db.raw(
+              'q.frozen_time IS NOT NULL AND ' +
+              'q.frozen_end_time > NOW() AND ' +
+              'q.frozen_end_max_time > NOW()'
+          ))
+          .first()
+          .as('is_frozen');
       }
     )
     .from('questions AS q')

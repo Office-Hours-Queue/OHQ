@@ -130,17 +130,12 @@ module.exports = function(io) {
         id: question.id,
         topic_id: question.topic_id,
         location_id: question.location_id,
-        help_text: question.help_text
-      }]));
-
-      socket.emit('student_meta', makeMessage('insert', [{
-        id: 0,
+        help_text: question.help_text,
         queue_ps: parseInt(question.queue_position),
-        is_frozen: (question.frozen_time !== null &&
-                    question.frozen_end_time > Date.now() &&
-                    question.frozen_end_max_time > Date.now()),
+        is_frozen: question.is_frozen,
         can_freeze: question.frozen_time === null
       }]));
+
     });
 
     queue.locations.getEnabled().then(function(locations) {
@@ -162,6 +157,7 @@ module.exports = function(io) {
         open: meta.open
       }]));
     });
+
 
 
   })();
