@@ -161,8 +161,9 @@ function addQuestion(question) {
 
   // insert the question
   db.count('*')
-    .from('questions')
-    .where('student_user_id', insertQuestion.student_user_id)
+    .from('questions AS q')
+    .where('q.student_user_id', insertQuestion.student_user_id)
+    .where(questionOpen())
     .first()
     .then(function(activeQuestions) {
       if (parseInt(activeQuestions.count) !== 0) {
