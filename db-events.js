@@ -12,13 +12,24 @@ var emitters = {};
 emitters.questions = new EventEmitter();
 emitters.queue_meta = new EventEmitter();
 
-// pg sends us events when certain tables get updated
+// pg sends us events when certain tables get updated.
+// unpack them and forward them to the right emitter.
 client.on('notification', function(msg) {
   var payload = JSON.parse(msg.payload);
   var table = payload.table;
-  var action = payload.action.toLowerCase();
-  var id = payload.id;
-  emitters[table].emit(action, id);
+  var action = payload.action;
+  var emitter = emitters[table];
+  switch (action) {
+    case 'insert':
+      emitter.emit(action, payload.new);
+      break;
+    case 'update':
+      emitter.emit(action, payload.new, payload.old);
+      break;
+    case 'delete':
+      emitter.emit(action, payload.old);
+      break;
+  }
 });
 
 // subscribe to the update stream
