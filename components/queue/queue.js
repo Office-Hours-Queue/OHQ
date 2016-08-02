@@ -100,8 +100,9 @@ function selectQuestionUserId(id) {
 
 // get active question by user id
 function selectOpenQuestionUserId(id) {
-  return selectQuestionUserId(id)
-    .where(questionOpen())
+  return selectDefaultQuestionFields()
+    .where('q.student_user_id', id)
+    .andWhere(questionOpen())
     .first();
 }
 
