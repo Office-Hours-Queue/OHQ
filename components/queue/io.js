@@ -15,6 +15,7 @@ module.exports = function(io) {
       oncajoin(socket, userid);
     } else if (socket.request.user.role === 'student') {
       socket.join('student');
+      socket.join('student_' + socket.request.user.id);
       onstudentjoin(socket, userid);
     } else {
       throw new Error('Not authorized');
@@ -24,6 +25,9 @@ module.exports = function(io) {
   // ca/student global rooms
   var cas = io.to('ca');
   var students = io.to('student');
+  var student = function(userid) {
+    return io.to('student_' + userid);
+  };
 
 
   //
