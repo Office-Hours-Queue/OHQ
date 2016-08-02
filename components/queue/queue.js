@@ -64,7 +64,7 @@ function selectDefaultQuestionFields() {
             .from('questions AS aq')
             .where('aq.off_time', null)
             .andWhere(db.raw('aq.on_time < q.on_time'))
-            .as('queue_position')
+            .as('queue_position');
       }
     )
     .from('questions AS q')
@@ -105,7 +105,7 @@ function selectQuestionsOpen() {
 
 // condition for a question to be open
 function questionOpen() {
-  return db.raw('(q.off_time = NULL)');
+  return db.raw('q.off_time IS NULL');
 }
 
 // add a new question
