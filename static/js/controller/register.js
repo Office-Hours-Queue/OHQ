@@ -11,6 +11,10 @@ var register_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootSc
 				return 
 			}
 		}
+		if (!(/.+@.+\..+/.test($scope.register_info["email"]))) {
+			Materialize.toast("Invalid email.")
+			return
+		}
 		if ($scope.register_info["password"].length <= 8) {
 			Materialize.toast("Password must have more than 8 characters!")
 			return
@@ -22,7 +26,7 @@ var register_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootSc
 		var payload = $scope.register_info
 		$http.post("/user/createlocal",payload).then(
 			function(successData) {
-				Materialize.toast("Success!")
+				Materialize.toast("Success! Click &nbsp <a href='/#/'>here</a> &nbsp to return to the login page.")
 			}, function(failData) {
 				console.log(failData)
 				if (failData.data.message == undefined) {

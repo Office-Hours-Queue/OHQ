@@ -19,12 +19,16 @@ var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope
 		var username = $("#username").val();
 		var pass = $("#password").val();
 		if (username == "" || pass == "") { return }
-		$http.post("/login/localauth").then(function (successData) {
+		var payload = {
+			"username": username,
+			"password": pass,
+		};
+		$http.post("/login/localauth",payload).then(function (successData) {
 			Materialize.toast("Success!")
 			check_login()
 		}, function (failData) {
 			console.log(failData)
-			Materialize.toast("There was an error logging in. Please see a CA.")
+			Materialize.toast("Login Failed.")
 		});
 	}
 
