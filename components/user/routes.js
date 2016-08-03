@@ -63,7 +63,6 @@ router.post('/edit', isAuthenticated, validate({body: UserEditSchema}), function
 
 var UserSchema = {
   type: 'object',
-  additionalProperties: false,
   properties: {
     andrew_id: {
       type: 'string',
@@ -105,7 +104,7 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
     .then(function(reg_code) {
       reg_code = reg_code.registration_code;
       if (reg_code !== body.registration_code) {
-        throw { name: 'UserCreationException', message: 'Invalid registration code' };
+        throw { name: 'UserCreationException', message: 'Invalid registration code.' };
       } else {
 
   // check if andrewid is already registered
@@ -117,7 +116,7 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
     })
     .then(function(existingUser) {
       if (typeof existingUser !== 'undefined') {
-        throw { name: 'UserCreationException', message: 'Andrew ID already registered' };
+        throw { name: 'UserCreationException', message: 'Andrew ID already registered.' };
       } else {
 
   // find the role of this andrew id
@@ -129,7 +128,7 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
     })
     .then(function(role) {
       if (typeof role === 'undefined') {
-        throw { name: 'UserCreationError', message: 'Invalid Andrew ID' };
+        throw { name: 'UserCreationException', message: 'Your Andrew ID is not marked as in 15-112.' };
       } else {
 
   // insert and return the new user

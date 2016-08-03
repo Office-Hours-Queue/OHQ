@@ -4,44 +4,49 @@
 	</div>
 </nav>
 
-
 <div class="container">
 	<div class="row">
 		<br />
-
+		<form>
 		<div input-field>
-		    <input type="text" >
+		    <input ng-model="register_info.andrew_id" type="text" required>
 		    <label>Andrew ID</label>
 		</div>
 
 		<div input-field>
-		    <input type="text" >
+		    <input ng-model="register_info.email" type="text" required>
 		    <label>Email</label>
 		</div>
 
 		<div input-field>
-		    <input type="text" >
+		    <input ng-model="register_info.password" type="password" required>
 		    <label>Password</label>
 		</div>
 
 		<div input-field>
-		    <input type="text" >
+		    <input ng-model="register_info.conf_password" type="password" required>
 		    <label>Confirm Password</label>
 		</div>
 
 		<div input-field>
-		    <input type="text" >
+		    <input ng-model="register_info.first_name" type="text" required>
 		    <label>First Name</label>
 		</div>
 
 		<div input-field>
-		    <input type="text" >
+		    <input ng-model="register_info.last_name" type="text" required>
 		    <label>Last Name</label>
 		</div>
 
-		<div input-field class="center">
-			<input class="btn light-blue darken-3" type="submit" value="Register">
+		<div input-field>
+		    <input ng-model="register_info.registration_code" type="text" required>
+		    <label>Registration Code</label>
 		</div>
+
+		<div input-field class="center">
+			<input ng-click="register()" class="btn light-blue darken-3" type="submit">
+		</div>
+		</form>
 
 	</div>
 </div>
