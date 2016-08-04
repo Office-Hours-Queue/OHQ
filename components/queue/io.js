@@ -43,19 +43,19 @@ module.exports = function(io) {
 
     // listen for events
     socket.on('freeze_question', function() {
-
+      queue.questions.freezeCa(userid);
     });
 
     socket.on('kick_question', function() {
-
+      queue.questions.closeCa(userid, 'ca_kick');
     });
 
     socket.on('finish_question', function() {
-
+      queue.questions.closeCa(userid, 'normal');
     });
 
     socket.on('answer_question', function() {
-
+      queue.questions.answer(userid);
     });
     
     socket.on('close_queue', function() {
@@ -111,18 +111,18 @@ module.exports = function(io) {
 
     socket.on('update_question', function(question) {
       try {
-        queue.questions.update(userid, question);
+        queue.questions.updateMeta(userid, question);
       } catch (error) {
         console.log(error);
       }
     });
 
     socket.on('delete_question', function() {
-      queue.questions.close(userid, socket.request.user.role);
+      queue.questions.closeStudent(userid);
     });
 
     socket.on('freeze_question', function() {
-      queue.questions.freeze(userid);
+      queue.questions.freezeStudent(userid);
     });
 
     // emit the current data on connect

@@ -14,26 +14,38 @@ var questions = (function() {
     getUserId: selectQuestionUserId,
     getOpenUserId: selectOpenQuestionUserId,
     add: addQuestion,
-    update: updateQuestion,
-    close: closeQuestion,
-    freeze: freezeQuestion,
+    answer: answerQuestion,
+    freezeStudent: freezeStudentQuestion,
+    freezeCa: freezeCaQuestion,
+    freeze: freezeQuestionId,
+    updateMeta: updateQuestionMeta,
+    closeStudent: closeStudentQuestion,
+    closeCa: closeCaQuestion,
     emitter: new EventEmitter()
   };
-  dbEvents.questions.on('update', function(id) {
-    selectQuestionId(id).then(function(question) {
-      result.emitter.emit('update', question);
+
+  dbEvents.questions.on('update', function(newQuestion, oldQuestion) {
+
+  });
+
+  dbEvents.questions.on('insert', function(newQuestion) {
+    // emit the full inserted object
+    selectQuestionId(newQuestion.id).then(function(question) {
+      result.emitter.emit('new_question', question);
     });
   });
-  dbEvents.questions.on('insert', function(id) {
-    selectQuestionId(id).then(function(question) {
-      result.emitter.emit('insert', question);
-    });
+
+  dbEvents.questions.on('delete', function(oldQuestion) {
+    // this shouldn't happen, so let's log it
+    throw new Error('Question deleted');
   });
-  dbEvents.questions.on('delete', function(id) {
-    result.emitter.emit('delete', id);
-  });
+
   return result;
 })();
+
+//
+// Question selectors
+//
 
 function selectDefaultQuestionFields() {
   return db.select(
@@ -67,11 +79,7 @@ function selectDefaultQuestionFields() {
             .as('queue_position');
       },
       function() {
-        this.select(db.raw(
-              'q.frozen_time IS NOT NULL AND ' +
-              'q.frozen_end_time > NOW() AND ' +
-              'q.frozen_end_max_time > NOW()'
-          ))
+        this.select(questionFrozen())
           .first()
           .as('is_frozen');
       }
@@ -115,8 +123,42 @@ function selectQuestionsOpen() {
 
 // condition for a question to be open
 function questionOpen() {
-  return db.raw('q.off_time IS NULL');
+  return db.raw('(q.help_time IS NULL AND q.off_time IS NULL)');
 }
+
+// condition for a question to be closed
+function questionClosed() {
+  return db.raw('(q.off_time IS NOT NULL)');
+}
+
+// condition for a question to be answering
+function questionAnswering() {
+  return db.raw('(q.help_time IS NOT NULL AND q.off_time IS NULL)');
+}
+
+// condition for a question to be frozen
+function questionFrozen() {
+  return db.raw(
+        '(q.frozen_time IS NOT NULL AND ' +
+        'q.frozen_end_time > NOW() AND ' +
+        'q.frozen_end_max_time > NOW())'
+    );
+}
+
+// condition for a question to be not frozen
+// (apply demorgan's to questionFrozen)
+function questionNotFrozen() {
+  return db.raw(
+        '(q.frozen_time IS NULL OR ' +
+        ' q.frozen_end_time < NOW() OR ' +
+        ' q.frozen_end_max_time < NOW())'
+    );
+}
+
+
+//
+// Question creators
+//
 
 // add a new question
 function addQuestion(question) {
@@ -179,8 +221,30 @@ function addQuestion(question) {
     });
 }
 
+//
+// Question updates
+//
+
+// answer a question
+function answerQuestion(caUserId) {
+  db('questions')
+    .update({
+      help_time: db.fn.now(),
+      ca_user_id: caUserId
+    })
+    .whereIn('id', function() {
+      this.select('id')
+          .from('questions AS q')
+          .where(questionNotFrozen())
+          .andWhere(questionOpen())
+          .orderBy('on_time', 'asc')
+          .first();
+    })
+    .then();
+}
+
 // update a question's details
-function updateQuestion(userId, question) {
+function updateQuestionMeta(userId, question) {
   var questionUpdateSchema = {
     type: 'object',
     additionalProperties: false,
@@ -214,30 +278,80 @@ function updateQuestion(userId, question) {
 }
 
 // close a question
-function closeQuestion(userId, userRole) {
-  db('questions')
-    .update({
-      off_time: db.fn.now(),
-      off_reason: userRole === 'student' ? 'self_kick' : 'ca_kick'
-    })
-    .where('student_user_id', userId)
-    .andWhere('off_time', null)
-    .return(null);
+
+// close the student's active question
+function closeStudentQuestion(studentId) {
+  return closeQuestion('self_kick', studentId)
+    .where('q.student_user_id', studentId)
+    .andWhere(questionOpen())
+    .then();
 }
 
-// freeze a question
-function freezeQuestion(userId) {
-  db('questions')
+// close the ca's active question
+function closeCaQuestion(caUserId, reason) {
+  return closeQuestion(reason, caUserId)
+    .where('q.ca_user_id', caUserId)
+    .andWhere(questionAnswering())
+    .then();
+}
+
+// close an arbitary question
+function closeQuestionId(userid, reason, questionId) {
+  return closeQuestion(reason, userid)
+    .where('q.id', questionId)
+    .andWhere('q.off_time', null)
+    .then();
+}
+
+// update clause for question close
+function closeQuestion(reason, offBy) {
+  return db('questions AS q')
     .update({
-      frozen_by: userId,
+      off_time: db.fn.now(),
+      off_reason: reason,
+      off_by: offBy
+    });
+}
+
+// freeze a student's question
+function freezeStudentQuestion(studentId) {
+  return freezeQuestion(studentId)
+    .where(questionOpen())
+    .andWhere('q.student_user_id', studentId)
+    .then();
+}
+
+// freeze a ca's current question
+function freezeCaQuestion(caUserId) {
+  return freezeQuestion(caUserId)
+    .where(questionAnswering())
+    .andWhere('q.ca_user_id', caUserId)
+    .then();
+}
+
+// freeze a specific question
+function freezeQuestionId(questionId, freezeByUserId) {
+  return freezeQuestion(freezeByUserId)
+    .where('q.id', questionId)
+    .then();
+}
+
+// update clause for question freeze
+function freezeQuestion(frozenById) {
+  return db('questions AS q')
+    .update({
+      frozen_by: frozenById,
       frozen_time: db.fn.now(),
       frozen_end_max_time: db.raw(
-        'NOW() + INTERVAL \'1 second\' * (SELECT max_freeze FROM queue_meta ORDER BY id DESC LIMIT 1)')
+        'NOW() + INTERVAL \'1 second\' * (SELECT max_freeze FROM queue_meta ORDER BY id DESC LIMIT 1)'),
+      frozen_end_time: db.raw(
+        'NOW() + INTERVAL \'1 second\' * (SELECT max_freeze FROM queue_meta ORDER BY id DESC LIMIT 1)'),
+      initial_help_time: db.raw('help_time'),
+      initial_ca_user_id: db.raw('ca_user_id'),
+      help_time: null,
+      ca_user_id: null
     })
-    .where('student_user_id', userId)
-    .andWhere('off_time', null)
-    .andWhere('frozen_time', null)
-    .return(null);
+    .where('q.frozen_time', null);
 }
 
 
@@ -279,7 +393,7 @@ function setQueueState(state) {
     db('queue_meta')
       .update({ open: state })
       .return(null);
-  }
+  };
 }
 
 function selectMeta(id) {
