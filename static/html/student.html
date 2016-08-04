@@ -23,7 +23,7 @@
           <div class="col l4 m6 s12">
             <div class="card {{ ($db.model['questions'].length == 0) ? 'grey lighten-2' : '' }}">
               <div class="center card-content {{ ($db.model['questions'].length == 0) ? 'grey-text text-lighten-1' : '' }} ">     
-                <span style="font-size:25px;">{{ ($db.model['questions'].length == 0) ? 'Position: NA' : 'Position: ' + $db.model["student_meta"][0]["queue_ps"]}}</span>
+                <span style="font-size:25px;">{{ ($db.model['questions'].length == 0) ? 'Position: NA' : 'Position: ' + $db.model["questions"][0]["queue_ps"]}}</span>
               </div>
             </div>
           </div>

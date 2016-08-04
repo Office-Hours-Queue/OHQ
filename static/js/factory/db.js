@@ -23,7 +23,6 @@ var db = ["$rootScope", function ($rootScope) {
 		"questions":[],
 		"topics":[],
 		"locations":[],
-		"student_meta":[],
 		"ca_meta": [],
 		"queue_meta": []
 	}
@@ -32,7 +31,6 @@ var db = ["$rootScope", function ($rootScope) {
 	d.sio.on("questions",function (payload) { handle_db_update("questions",payload)})
 	d.sio.on("locations",function (payload) { handle_db_update("locations",payload)})
 	d.sio.on("topics",function (payload) { handle_db_update("topics",payload)})
-	d.sio.on("student_meta",function(payload) { handle_db_update("student_meta",payload)});
 	d.sio.on("ca_meta",function(payload) { handle_db_update("ca_meta",payload)});
 	d.sio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload)})
 	d.sio.on("message", function (payload) { Materialize.toast(payload) })
@@ -40,31 +38,26 @@ var db = ["$rootScope", function ($rootScope) {
 		var event_type = event["type"];
 		var payload = event["payload"];
 		switch (event_type) {
-			case "insert":
-				//check for repeats because they crash angular
+			case "data": 
 				for (var i = 0; i < payload.length; i++) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
 					if (db_index != -1) {
-						console.log("repeated insert")
-						return
+						//Insert
+						d.model[db_name] = d.model[db_name].concat(payload);
+						continue
 					}
+					//Update
+					d.model[db_name][db_index] = payload[i];
 				}
-				d.model[db_name] = d.model[db_name].concat(payload);
 				break;
-			case "delete":
+			case "delete": 
 				for (var i = 0; i < payload.length; i++) {
-					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
+					var qid = payload[i]
+					var db_index = get_index_by_id(d.model[db_name],qid)
 					d.model[db_name] = d.model[db_name].splice(db_index)
 				}
 				break;
-			case "update":
-				for (var i = 0; i < payload.length; i++) {
-					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
-					d.model[db_name][db_index] = payload[i]	
-				}
-				break;
 		}
-		console.log(d.model)
 		$rootScope.$apply();
 	};
 	
@@ -126,19 +119,13 @@ var db = ["$rootScope", function ($rootScope) {
 		if (d.model["questions"].length == 0) {
 			return false
 		}
-		if (d.model["student_meta"].length == 1) {
-			return d.model["student_meta"][0].can_freeze
-		}
-		return false
+		return d.model["questions"][0].can_freeze
 	}
 	d.is_frozen = function () {
 		if (d.model["questions"].length == 0) {
 			return false	
 		}
-		if (d.model["student_meta"].length == 0) {
-			return false
-		}
-		return d.model["student_meta"][0].is_frozen
+		return d.model["questions"][0].is_frozen
 	}
 
 	return d 
