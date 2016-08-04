@@ -5,7 +5,7 @@ exports.seed = function(knex, Promise) {
 
     knex.insert([
       { andrew_id: 'edryer',role:'ca'},
-      { andrew_id: 'jdryer',role:'ca'},
+      { andrew_id: 'jdryer',role:'student'},
       { andrew_id: 'aaa', role: 'ca' },
       { andrew_id: 'bbb', role: 'ca' },
       { andrew_id: 'ccc', role: 'ca' },
