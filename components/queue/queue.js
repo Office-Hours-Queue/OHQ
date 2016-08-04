@@ -254,10 +254,8 @@ var meta = (function() {
     setTimeLimit: setTimeLimit,
     emitter: new EventEmitter()
   };
-  dbEvents.queue_meta.on('update', function(id) {
-    selectCurrentMeta().then(function(meta) {
-      result.emitter.emit('update', cleanMeta(meta));
-    });
+  dbEvents.queue_meta.on('update', function(newMeta, oldMeta) {
+    result.emitter.emit('update', cleanMeta(newMeta));
   });
   return result;
 })();

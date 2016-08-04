@@ -23,8 +23,12 @@ module.exports = function(io) {
   });
 
   // ca/student global rooms
-  var cas = io.to('ca');
-  var students = io.to('student');
+  var cas = function() {
+    return io.to('ca');
+  };
+  var students = function() {
+    return io.to('student');
+  };
   var student = function(userid) {
     return io.to('student_' + userid);
   };
@@ -68,7 +72,11 @@ module.exports = function(io) {
 
     // emit the current data on connect
     queue.meta.getCurrent().then(function(meta) {
-      socket.emit('queue_meta', makeMessage('update', meta));
+      socket.emit('queue_meta', makeMessage('update', [{
+        id: 0,
+        open: meta.open,
+        time_limit: meta.time_limit
+      }]));
     });
 
   };
@@ -76,7 +84,11 @@ module.exports = function(io) {
   // server -> client
   (function() {
     queue.meta.emitter.on('update', function(meta) {
-      cas.emit('queue_meta', makeMessage('update', meta));
+      cas().emit('queue_meta', makeMessage('update', [{
+        id: 0,
+        open: meta.open,
+        time_limit: meta.time_limit
+      }]));
     });
   })();
 
@@ -153,7 +165,8 @@ module.exports = function(io) {
 
     // listen for updates on queue_meta
     queue.meta.emitter.on('update', function(meta) {
-      students.emit('queue_meta', makeMessage('update', [{
+      students().emit('queue_meta', makeMessage('update', [{
+        id: 0,
         open: meta.open
       }]));
     });
