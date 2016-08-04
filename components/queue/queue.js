@@ -50,8 +50,10 @@ var questions = (function() {
 function selectDefaultQuestionFields() {
   return db.select(
       'q.id                  AS id',
+      'us.id                 AS student_user_id',
       'us.first_name         AS student_first_name',
       'us.last_name          AS student_last_name',
+      'us.andrew_id          AS student_andrew_id',
       'uf.first_name         AS frozen_by_first_name',
       'uf.last_name          AS frozen_by_last_name',
       'uc.first_name         AS ca_first_name',

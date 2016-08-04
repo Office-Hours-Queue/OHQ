@@ -79,10 +79,37 @@ module.exports = function(io) {
       }]));
     });
 
+    queue.questions.getOpen().then(function(questions) {
+      questions.forEach(function(question) {
+        socket.emit('questions', makeMessage('data', [{
+          id: question.id,
+          first_name: question.student_first_name,
+          andrew_id: question.student_andrew_id,
+          topic: question.topic,
+          location: question.location,
+          help_text: question.help_text
+        }]));
+      });
+    });
+
   };
 
   // server -> client
   (function() {
+
+    // listen for new questions
+    queue.questions.emitter.on('new_question', function(question) {
+      cas().emit('questions', makeMessage('data', [{
+        id: question.id,
+        first_name: question.student_first_name,
+        andrew_id: question.student_andrew_id,
+        topic: question.topic,
+        location: question.location,
+        help_text: question.help_text
+      }]));
+    });
+
+    // listen for queue_meta updates
     queue.meta.emitter.on('update', function(meta) {
       cas().emit('queue_meta', makeMessage('update', [{
         id: 0,
@@ -90,6 +117,7 @@ module.exports = function(io) {
         time_limit: meta.time_limit
       }]));
     });
+
   })();
 
 
@@ -163,6 +191,16 @@ module.exports = function(io) {
   // server -> client
   (function() {
 
+    // listen for new questions
+    queue.questions.emitter.on('new_question', function(question) {
+      student(question.student_user_id).emit('questions', makeMessage('data', [{
+        id: question.id,
+        topic_id: question.topic_id,
+        location_id: question.location_id,
+        help_text: question.help_text
+      }]));
+    });
+
     // listen for updates on queue_meta
     queue.meta.emitter.on('update', function(meta) {
       students().emit('queue_meta', makeMessage('update', [{
@@ -170,8 +208,6 @@ module.exports = function(io) {
         open: meta.open
       }]));
     });
-
-
 
   })();
 
