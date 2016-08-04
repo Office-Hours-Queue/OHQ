@@ -10,7 +10,7 @@ config.GOOGLE_OAUTH2_CONFIG = {
 // Connection to database
 config.KNEX = {
   client: 'postgresql',
-  connection: 'postgres://queue:supersecret@172.17.0.2:5432/queue'
+  connection: 'postgres://queue:supersecret@127.0.0.1:5432/queue'
 };
 
 module.exports = config;

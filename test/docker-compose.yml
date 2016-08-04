@@ -1,12 +1,33 @@
-postgresql:
-    image: postgres
-    container_name: postgresql
-    net: "host"
+grid: 
+    container_name: "sel_hub"
+    image: selenium/hub
+    labels: 
+        - "queue_tests"
     ports: 
-        - "5432:5432"
+        - "4444:4444"
     expose:
-        - "5432"
+        - "4444"
+    volumes: 
+        -  /dev/shm:/dev/shm
     environment:
-        - POSTGRES_PASSWORD=supersecret
-        - POSTGRES_DB=queue
-        - POSTGRES_USER=queue
+        - "TZ=America/New_York"
+chrome-node:
+    image: selenium/node-chrome
+    labels: 
+        - "queue_tests"
+    environment:
+        - "TZ=America/New_York"
+    volumes: 
+        -  /dev/shm:/dev/shm
+    links:
+        - grid:hub
+firefox-node: 
+    image: selenium/node-firefox
+    labels: 
+        - "queue_tests"
+    environment:
+        - "TZ=America/New_York"
+    volumes: 
+        -  /dev/shm:/dev/shm
+    links:
+        - grid:hub
