@@ -24,6 +24,7 @@ var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope
 			"password": pass,
 		};
 		$http.post("/login/localauth",payload).then(function (successData) {
+			$("#non-google-modal").closeModal()
 			Materialize.toast("Success!")
 			check_login()
 		}, function (failData) {
