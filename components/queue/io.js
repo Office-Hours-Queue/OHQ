@@ -72,7 +72,7 @@ module.exports = function(io) {
 
     // emit the current data on connect
     queue.meta.getCurrent().then(function(meta) {
-      socket.emit('queue_meta', makeMessage('update', [{
+      socket.emit('queue_meta', makeMessage('data', [{
         id: 0,
         open: meta.open,
         time_limit: meta.time_limit
@@ -111,7 +111,7 @@ module.exports = function(io) {
 
     // listen for queue_meta updates
     queue.meta.emitter.on('update', function(meta) {
-      cas().emit('queue_meta', makeMessage('update', [{
+      cas().emit('queue_meta', makeMessage('data', [{
         id: 0,
         open: meta.open,
         time_limit: meta.time_limit
@@ -155,7 +155,7 @@ module.exports = function(io) {
 
     // emit the current data on connect
     queue.meta.getCurrent().then(function(meta) {
-      socket.emit('queue_meta', makeMessage('insert', [{
+      socket.emit('queue_meta', makeMessage('data', [{
         id: 0,
         open: meta.open
       }]));
@@ -169,11 +169,11 @@ module.exports = function(io) {
     });
 
     queue.locations.getEnabled().then(function(locations) {
-      socket.emit('locations', makeMessage('insert', locations));
+      socket.emit('locations', makeMessage('data', locations));
     });
 
     queue.topics.getEnabled().then(function(topics) {
-      socket.emit('topics', makeMessage('insert', topics));
+      socket.emit('topics', makeMessage('data', topics));
     });
 
   };
