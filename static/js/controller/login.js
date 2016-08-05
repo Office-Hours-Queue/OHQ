@@ -13,7 +13,6 @@ var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope
 		};
 		$http.post("/login/localauth",payload).then(function (successData) {
 			$("#non-google-modal").closeModal()
-			Materialize.toast("Success!")
 			$rootScope.check_login();
 		}, function (failData) {
 			console.log(failData)
