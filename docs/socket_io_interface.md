@@ -121,19 +121,23 @@ The message event is the same as the student one.
 ```
 
 ```javascript
+//event follows the schema explained above.
+//payload is this format:
+//		[{
+// 			"id": 121,
+// 			"first_name": "Joey",
+// 			"topic":"Recursion",
+// 			"location":"GHC 5000",
+// 			"help_text":"woo need help"
+//		}]
+.on('current_question',event)
+```
+
+```javascript
 //event follows the schema explained above. 
 //payload is this format:
 //		[{
-// 			"n_questions":10,
 // 			"n_cas": 5,
-// 			"answering_question":  false,
-// 			"question": {
-// 				"id": 121,
-// 				"first_name": "Joey",
-// 				"topic":"Recursion",
-// 				"location":"GHC 5000",
-// 				"help_text":"woo need help",
-// 			} 
 // 		}]
 .on('ca_meta',event)
 ```
