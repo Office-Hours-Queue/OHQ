@@ -1,4 +1,6 @@
+var http = require('http');
 var express = require('express');
+var socketio = require('socket.io');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -10,14 +12,10 @@ var auth = require('./auth');
 var db = require('./db');
 
 var app = express();
+var server = http.Server(app);
+var io = socketio(server);
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(session({
+var sessionMiddleware = session({
   secret: 'supersecret',
   resave: false,
   saveUninitialized: false,
@@ -28,15 +26,37 @@ app.use(session({
     knex: db,
     tablename: 'sessions'
   })
-}));
+});
+
+// uncomment after placing your favicon in /public
+//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(sessionMiddleware);
 app.use(auth.passport.initialize());
 app.use(auth.passport.session());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// socket.io middleware checks session auth status
+io.use(function(socket, next) {
+  sessionMiddleware(socket.request, {}, next);
+});
+io.use(function(socket, next) {
+  auth.passport.initialize()(socket.request, {}, next);
+});
+io.use(function(socket, next) {
+  auth.passport.session()(socket.request, {}, next);
+});
 
 // hook up routes
 app.use('/', express.static('./static'));
 app.use('/login', require('./components/login').routes);
 app.use('/user', require('./components/user').routes );
+
+// hook up socket handlers
+require('./components/queue').io(io.of('/queue'));
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 
@@ -53,4 +73,4 @@ app.use(function(err, req, res, next) {
   }
 });
 
-module.exports = app;
+module.exports = { app: app, server: server };

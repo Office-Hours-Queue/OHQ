@@ -131,7 +131,44 @@ function isAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
+function hasRole(role) {
+  return function(req, res, next) {
+    if (req.isAuthenticated() &&
+        req.user.role === role) {
+      return next();
+    }
+    res.redirect('/login');
+  };
+}
+
+function ioIsAuthenticated(socket, next) {
+  if (socket.request.isAuthenticated()) {
+    next();
+  } else {
+    next(new Error('Not authorized'));
+  }
+}
+
+function ioHasRole(role) {
+  return function(socket, next) {
+    if (socket.request.isAuthenticated()) {
+      if (Array.isArray(role) &&
+          role.indexOf(socket.request.user.role) !== -1) {
+        next();
+        return;
+      } else if (socket.request.user.role === role) {
+        next();
+        return;
+      }
+    }
+    next(new Error('Not authorized'));
+  };
+}
+
 module.exports = {
   passport: passport,
-  isAuthenticated: isAuthenticated
+  isAuthenticated: isAuthenticated,
+  hasRole: hasRole,
+  ioIsAuthenticated: ioIsAuthenticated,
+  ioHasRole: ioHasRole
 };
