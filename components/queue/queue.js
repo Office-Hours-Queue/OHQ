@@ -14,6 +14,7 @@ var questions = (function() {
     getOpen: selectQuestionsOpen,
     getUserId: selectQuestionUserId,
     getOpenUserId: selectOpenQuestionUserId,
+    getAnsweringUserId: selectAnsweringQuestionCaUserId,
     add: addQuestion,
     answer: answerQuestion,
     freezeStudent: freezeStudentQuestion,
@@ -103,8 +104,10 @@ function selectDefaultQuestionFields() {
       'us.andrew_id          AS student_andrew_id',
       'uf.first_name         AS frozen_by_first_name',
       'uf.last_name          AS frozen_by_last_name',
+      'uc.id                 AS ca_user_id',
       'uc.first_name         AS ca_first_name',
       'uc.last_name          AS ca_last_name',
+      'ue.id                 AS initial_ca_user_id',
       'ue.first_name         AS initial_ca_first_name',
       'ue.last_name          AS initial_ca_last_name',
       't.id                  AS topic_id',
@@ -165,6 +168,14 @@ function selectOpenQuestionUserId(id) {
   return selectDefaultQuestionFields()
     .where('q.student_user_id', id)
     .andWhere(questionOpen())
+    .first();
+}
+
+// get currently answering question by user id
+function selectAnsweringQuestionCaUserId(caUserId) {
+  return selectDefaultQuestionFields()
+    .where('q.ca_user_id', caUserId)
+    .andWhere(questionAnswering())
     .first();
 }
 

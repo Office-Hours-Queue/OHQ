@@ -12,6 +12,7 @@ module.exports = function(io) {
     var userid = socket.request.user.id;
     if (socket.request.user.role === 'ca') {
       socket.join('ca');
+      socket.join('ca_' + socket.request.user.id);
       oncajoin(socket, userid);
     } else if (socket.request.user.role === 'student') {
       socket.join('student');
@@ -25,6 +26,9 @@ module.exports = function(io) {
   // ca/student global rooms
   var cas = function() {
     return io.to('ca');
+  };
+  var ca = function(userid) {
+    return io.to('ca_' + userid);
   };
   var students = function() {
     return io.to('student');
@@ -81,15 +85,14 @@ module.exports = function(io) {
 
     queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
-        socket.emit('questions', makeMessage('data', [{
-          id: question.id,
-          first_name: question.student_first_name,
-          andrew_id: question.student_andrew_id,
-          topic: question.topic,
-          location: question.location,
-          help_text: question.help_text
-        }]));
+        socket.emit('questions', makeCaQuestion(question));
       });
+    });
+
+    queue.questions.getAnsweringUserId(userid).then(function(question) {
+      if (typeof question !== 'undefined') {
+        socket.emit('current_question', makeCaQuestion(question));
+      }
     });
 
   };
@@ -99,15 +102,30 @@ module.exports = function(io) {
 
     // listen for new questions
     queue.questions.emitter.on('new_question', function(question) {
-      cas().emit('questions', makeMessage('data', [{
-        id: question.id,
-        first_name: question.student_first_name,
-        andrew_id: question.student_andrew_id,
-        topic: question.topic,
-        location: question.location,
-        help_text: question.help_text
-      }]));
+      cas().emit('questions', makeCaQuestion(question));
     });
+
+    // listen for question updates
+    queue.questions.emitter.on('question_frozen', function(question) {
+      if (question.initial_ca_user_id !== null) {
+        ca(question.initial_ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
+      }
+      cas().emit('questions', makeCaQuestion(question));
+    });
+
+    queue.questions.emitter.on('question_unfrozen', function(question) {
+
+    });
+
+    queue.questions.emitter.on('question_answered', function(question) {
+      ca(question.ca_user_id).emit('current_question', makeCaQuestion(question));
+      cas().emit('questions', makeMessage('delete', [question.id]));
+    });
+
+    queue.questions.emitter.on('question_closed', function(question) {
+      ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
+    });
+
 
     // listen for queue_meta updates
     queue.meta.emitter.on('update', function(meta) {
@@ -199,7 +217,7 @@ module.exports = function(io) {
 
     // listen for updates on queue_meta
     queue.meta.emitter.on('update', function(meta) {
-      students().emit('queue_meta', makeMessage('update', [{
+      students().emit('queue_meta', makeMessage('data', [{
         id: 0,
         open: meta.open
       }]));
@@ -215,6 +233,17 @@ module.exports = function(io) {
       type: type,
       payload: payload
     };
+  };
+
+  function makeCaQuestion(question) {
+    return makeMessage('data', [{
+      id: question.id,
+      first_name: question.student_first_name,
+      andrew_id: question.andrew_id,
+      topic: question.topic,
+      location: question.location,
+      help_text: question.help_text
+    }]);
   };
 
   function makeStudentQuestion(question) {
