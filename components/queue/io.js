@@ -165,17 +165,7 @@ module.exports = function(io) {
       if (typeof question === 'undefined') {
         return;
       }
-
-      socket.emit('questions', makeMessage('insert', [{
-        id: question.id,
-        topic_id: question.topic_id,
-        location_id: question.location_id,
-        help_text: question.help_text,
-        queue_ps: parseInt(question.queue_position),
-        is_frozen: question.is_frozen,
-        can_freeze: question.frozen_time === null
-      }]));
-
+      socket.emit('questions', makeStudentQuestion(question));
     });
 
     queue.locations.getEnabled().then(function(locations) {
@@ -191,14 +181,20 @@ module.exports = function(io) {
   // server -> client
   (function() {
 
-    // listen for new questions
-    queue.questions.emitter.on('new_question', function(question) {
-      student(question.student_user_id).emit('questions', makeMessage('data', [{
-        id: question.id,
-        topic_id: question.topic_id,
-        location_id: question.location_id,
-        help_text: question.help_text
-      }]));
+    // listen for question updates
+    queue.questions.emitter.on('new_question', emitStudentQuestion);
+    queue.questions.emitter.on('question_frozen', emitStudentQuestion);
+    queue.questions.emitter.on('question_unfrozen', emitStudentQuestion);
+
+    queue.questions.emitter.on('question_answered', function(question) {
+      // tell everyone their new position on the queue
+      queue.questions.getOpen().then(function(questions) {
+        questions.forEach(emitStudentQuestion);
+      });
+    });
+
+    queue.questions.emitter.on('question_closed', function(question) {
+      student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
     });
 
     // listen for updates on queue_meta
@@ -214,11 +210,27 @@ module.exports = function(io) {
   //
   // utilities
   //
-  var makeMessage = function(type, payload) {
+  function makeMessage(type, payload) {
     return {
       type: type,
       payload: payload
     };
+  };
+
+  function makeStudentQuestion(question) {
+    return makeMessage('data', [{
+      id: question.id,
+      topic_id: question.topic_id,
+      location_id: question.location_id,
+      help_text: question.help_text,
+      queue_ps: question.queue_position,
+      is_frozen: question.is_frozen,
+      can_freeze: question.can_freeze
+    }]);
+  };
+
+  function emitStudentQuestion(question) {
+    student(question.student_user_id).emit('questions', makeStudentQuestion(question));
   };
 
 };

@@ -2,6 +2,7 @@ var db = require('../../db');
 var dbEvents = require('../../db-events');
 var EventEmitter = require('events');
 var validator = require('jsonschema').validate;
+var diff = require('deep-diff').diff;
 
 //
 // Queue questions
@@ -25,6 +26,52 @@ var questions = (function() {
   };
 
   dbEvents.questions.on('update', function(newQuestion, oldQuestion) {
+    // something happened to an existing question. find out what happened,
+    // then emit an appropriate event
+    var id = newQuestion.id;
+    var changes = diff(oldQuestion, newQuestion);
+    for (var i in changes) {
+      var change = changes[i];
+
+      // there shouldn't be any adds/deletes
+      if (['A', 'N', 'D'].indexOf(change.kind) !== -1) {
+        throw new Error("Consistency error - row has added/deleted fields");
+      }
+
+      // the path shouldn't be nested
+      if (change.path.length !== 1) {
+        throw new Error("Consistency error - row is nested");
+      }
+
+      var emitEvent = function(eventName) {
+        selectQuestionId(id).then(function(question) {
+          result.emitter.emit(eventName, question);
+        });
+      };
+
+      // check which field was updated, and emit an event
+      var field = change.path[0];
+      switch (field) {
+        case 'frozen_time':
+          console.log('question_frozen');
+          emitEvent('question_frozen');
+          break;
+        case 'frozen_end_time':
+          // TODO
+          break;
+        case 'frozen_end_max_time':
+          // TODO
+          break;
+        case 'help_time':
+          console.log('question_answered');
+          emitEvent('question_answered');
+          break;
+        case 'off_time':
+          console.log('question_closed');
+          emitEvent('question_closed');
+          break;
+      }
+    }
 
   });
 
@@ -84,6 +131,11 @@ function selectDefaultQuestionFields() {
         this.select(questionFrozen())
           .first()
           .as('is_frozen');
+      },
+      function() {
+        this.select(questionCanFreeze())
+          .first()
+          .as('can_freeze');
       }
     )
     .from('questions AS q')
@@ -155,6 +207,13 @@ function questionNotFrozen() {
         ' q.frozen_end_time < NOW() OR ' +
         ' q.frozen_end_max_time < NOW())'
     );
+}
+
+// condition for whether a question can be frozen
+function questionCanFreeze() {
+  return db.raw(
+        '(q.frozen_time IS NULL AND ' +
+        ' q.off_time IS NULL)');
 }
 
 
