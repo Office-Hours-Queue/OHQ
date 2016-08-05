@@ -1,17 +1,6 @@
 var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db,$http) {
 	$rootScope.$db = $db;
-
-	//Get login user object
-	$http.get('/user', {}).then(function (data) {
-		if (data["data"]["first_name"] != undefined) {
-			$rootScope.user = data["data"];
-			console.log($rootScope.user)
-		} else {
-			window.location = "/";
-		}
-	}, function() {
-		console.log("Failed to GET /user")
-	});
+	$rootScope.check_login();
 
 	$scope.$watch(function () {
 		if ($db.model['ca_meta'].length == 0) { return false }

@@ -3,8 +3,21 @@
  *  attempts to model the actual schema as well as possible
  *  usable for both ca,student views 
  */
-var db = ["$rootScope", function ($rootScope) {
+var db = ["$rootScope","$http", function ($rootScope,$http) {
 	var d = {};
+
+	/* Access to user object */
+	$rootScope.check_login = function () {
+		//Get login user object
+		$http.get('/user', {}).then(function (data) {
+			if (data["data"]["first_name"] != undefined) {
+				$rootScope.user = data["data"];
+				window.location = "/#/" + $rootScope.user["role"]
+			} 
+		}, function() {
+			console.log("Failed to GET /user")
+		});
+	};
 
 	/* Initialize SocketIO */
 	d.sio = io('http://localhost:3000/queue');
