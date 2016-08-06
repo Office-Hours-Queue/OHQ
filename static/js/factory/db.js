@@ -37,7 +37,8 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 		"topics":[],
 		"locations":[],
 		"ca_meta": [],
-		"queue_meta": []
+		"queue_meta": [],
+		"current_question": []
 	}
 
 	/* Setup events to receive */
@@ -46,6 +47,7 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 	d.sio.on("topics",function (payload) { handle_db_update("topics",payload)})
 	d.sio.on("ca_meta",function(payload) { handle_db_update("ca_meta",payload)});
 	d.sio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload)})
+	d.sio.on("current_question",function (payload) { handle_db_update("current_question",payload)})
 	d.sio.on("message", function (payload) { Materialize.toast(payload) })
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];

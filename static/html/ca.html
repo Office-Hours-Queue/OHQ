@@ -92,11 +92,11 @@
           	<h3 class="center"> Answering Question </h3>
 						<br />
           	<div class="center">
-								<h5>You are answering {{ $db.model['ca_meta'][0].question.first_name + '\'s'}} question in room {{ $db.model['ca_meta'][0].question.location}} . </h5>
+								<h5>You are answering {{ $db.model['current_question'][0].first_name + '\'s'}} question in room {{ $db.model['current_question'][0].location}} . </h5>
 								<br />
-								<h5>Topic: {{ $db.model['ca_meta'][0].question.topic }} </h5>
+								<h5>Topic: {{ $db.model['current_question'][0].topic }} </h5>
 								<br />
-								<h5>Description: {{ $db.model['ca_meta'][0].question.help_text }} </h5>
+								<h5>Description: {{ $db.model['current_question'][0].help_text }} </h5>
           	</div>
           </div>
           <div class="modal-footer">
