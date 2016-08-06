@@ -50,6 +50,7 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
+		console.log(event_type,payload)
 		switch (event_type) {
 			case "data": 
 				for (var i = 0; i < payload.length; i++) {
@@ -67,7 +68,9 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 				for (var i = 0; i < payload.length; i++) {
 					var qid = payload[i]
 					var db_index = get_index_by_id(d.model[db_name],qid)
-					d.model[db_name] = d.model[db_name].splice(db_index)
+					console.log("before",d.model)
+					d.model[db_name].splice(db_index)
+					console.log("after",d.model)
 				}
 				break;
 		}
