@@ -77,8 +77,10 @@ var questions = (function() {
   });
 
   dbEvents.questions.on('insert', function(newQuestion) {
+    console.log("HERE")
     // emit the full inserted object
     selectQuestionId(newQuestion.id).then(function(question) {
+      console.log("HERE1")
       result.emitter.emit('new_question', question);
     });
   });
@@ -283,7 +285,7 @@ function addQuestion(question) {
       if (parseInt(activeQuestions.count) !== 0) {
         throw new Error('Student has question already');
       } else {
-        db.insert(insertQuestion)
+        return db.insert(insertQuestion)
           .into('questions')
           .return(null);
       }
@@ -471,8 +473,8 @@ function setQueueState(state) {
 function selectMeta(id) {
   return db.select(
       'open',
-      'max_freeze AS maxFreeze',
-      'time_limit AS timeLimit'
+      'max_freeze AS max_freeze',
+      'time_limit AS time_limit'
     )
     .from('queue_meta')
     .where('id', id)
@@ -482,8 +484,8 @@ function selectMeta(id) {
 function selectCurrentMeta() {
   return db.select(
       'open',
-      'max_freeze AS maxFreeze',
-      'time_limit AS timeLimit'
+      'max_freeze AS max_freeze',
+      'time_limit AS time_limit'
     )
     .from('queue_meta')
     .orderBy('id', 'asc')

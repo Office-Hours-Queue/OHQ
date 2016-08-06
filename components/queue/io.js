@@ -102,6 +102,7 @@ module.exports = function(io) {
 
     // listen for new questions
     queue.questions.emitter.on('new_question', function(question) {
+      console.log("NEW QUE")
       cas().emit('questions', makeCaQuestion(question));
     });
 
@@ -146,7 +147,7 @@ module.exports = function(io) {
   // individual students
   var onstudentjoin = function(socket, userid) {
 
-    socket.on('add_question', function(question) {
+    socket.on('new_question', function(question) {
       question.student_user_id = userid;
       try {
         queue.questions.add(question);
@@ -259,6 +260,7 @@ module.exports = function(io) {
   };
 
   function emitStudentQuestion(question) {
+    console.log("JHERE")
     student(question.student_user_id).emit('questions', makeStudentQuestion(question));
   };
 
