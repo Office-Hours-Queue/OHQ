@@ -240,7 +240,7 @@ module.exports = function(io) {
     return makeMessage('data', [{
       id: question.id,
       first_name: question.student_first_name,
-      andrew_id: question.andrew_id,
+      andrew_id: question.student_andrew_id,
       topic: question.topic,
       location: question.location,
       help_text: question.help_text
