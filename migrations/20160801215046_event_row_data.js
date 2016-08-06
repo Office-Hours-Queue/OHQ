@@ -2,41 +2,41 @@
 
 exports.up = function(knex, Promise) {
   var table_update_fn =
-    'CREATE OR REPLACE FUNCTION' +
-    '  table_update_notify()' +
-    'RETURNS trigger AS' +
-    '  $$' +
-    'BEGIN' +
-    '  -- emit the touched rows on insert/update/delete' +
-    '  IF TG_OP = \'INSERT\' THEN' +
-    '    PERFORM pg_notify(\'table_update\',' +
-    '                  json_build_object(' +
-    '                    \'table\', TG_TABLE_NAME,' +
-    '                    \'action\', lower(TG_OP),' +
-    '                    \'new\', row_to_json(NEW)' +
-    '                  )::text);' +
-    '  ELSIF TG_OP = \'UPDATE\' THEN' +
-    '    PERFORM pg_notify(\'table_update\',' +
-    '                  json_build_object(' +
-    '                    \'table\', TG_TABLE_NAME,' +
-    '                    \'action\', lower(TG_OP),' +
-    '                    \'old\', row_to_json(OLD),' +
-    '                    \'new\', row_to_json(NEW)' +
-    '                  )::text);' +
-    '  ELSIF TG_OP = \'DELETE\' THEN' +
-    '    PERFORM pg_notify(\'table_update\',' +
-    '                  json_build_object(' +
-    '                    \'table\', TG_TABLE_NAME,' +
-    '                    \'action\', lower(TG_OP),' +
-    '                    \'old\', row_to_json(OLD)' +
-    '                  )::text);' +
-    '  END IF;' +
-    '  RETURN NEW;' +
-    'END;' +
+    'CREATE OR REPLACE FUNCTION\n' +
+    '  table_update_notify()\n' +
+    'RETURNS trigger AS\n' +
+    '  $$\n' +
+    'BEGIN\n' +
+    '  -- emit the touched rows on insert/update/delete\n' +
+    '  IF TG_OP = \'INSERT\' THEN\n' +
+    '    PERFORM pg_notify(\'table_update\',\n' +
+    '                  json_build_object(\n' +
+    '                    \'table\', TG_TABLE_NAME,\n' +
+    '                    \'action\', lower(TG_OP),\n' +
+    '                    \'new\', row_to_json(NEW)\n' +
+    '                  )::text);\n' +
+    '  ELSIF TG_OP = \'UPDATE\' THEN\n' +
+    '    PERFORM pg_notify(\'table_update\',\n' +
+    '                  json_build_object(\n' +
+    '                    \'table\', TG_TABLE_NAME,\n' +
+    '                    \'action\', lower(TG_OP),\n' +
+    '                    \'old\', row_to_json(OLD),\n' +
+    '                    \'new\', row_to_json(NEW)\n' +
+    '                  )::text);\n' +
+    '  ELSIF TG_OP = \'DELETE\' THEN\n' +
+    '    PERFORM pg_notify(\'table_update\',\n' +
+    '                  json_build_object(\n' +
+    '                    \'table\', TG_TABLE_NAME,\n' +
+    '                    \'action\', lower(TG_OP),\n' +
+    '                    \'old\', row_to_json(OLD)\n' +
+    '                  )::text);\n' +
+    '  END IF;\n' +
+    '  RETURN NEW;\n' +
+    'END;\n' +
     '$$ LANGUAGE plpgsql;';
 
   return Promise.all([
-    table_update_fn
+    knex.raw(table_update_fn)
   ]);
   
 };
