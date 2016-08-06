@@ -73,6 +73,9 @@ var questions = (function() {
           console.log('question_closed');
           emitEvent('question_closed');
           break;
+        default:
+          emitEvent('question_update');
+          break;
       }
     }
 
