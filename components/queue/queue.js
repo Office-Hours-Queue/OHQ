@@ -15,6 +15,7 @@ var questions = (function() {
     getUserId: selectQuestionUserId,
     getOpenUserId: selectOpenQuestionUserId,
     getAnsweringUserId: selectAnsweringQuestionCaUserId,
+    getNumQuestions: getNumberQuestions,
     add: addQuestion,
     answer: answerQuestion,
     freezeStudent: freezeStudentQuestion,
@@ -51,6 +52,9 @@ var questions = (function() {
         });
       };
 
+      //pretty much all events changed the number of questions 
+      result.emitter.emit("n_question_update");
+
       // check which field was updated, and emit an event
       var field = change.path[0];
       switch (field) {
@@ -85,6 +89,7 @@ var questions = (function() {
     // emit the full inserted object
     selectQuestionId(newQuestion.id).then(function(question) {
       result.emitter.emit('new_question', question);
+      result.emitter.emit('n_question_update');
     });
   });
 
@@ -301,6 +306,10 @@ function addQuestion(question) {
 //
 // Question updates
 //
+
+function getNumberQuestions() {
+  return db('questions').count('*').where(questionNotFrozen()).andWhere(questionOpen());
+}
 
 // answer a question
 function answerQuestion(caUserId) {

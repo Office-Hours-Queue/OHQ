@@ -122,6 +122,10 @@ module.exports = function(io) {
       ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
     });
 
+    //listen for ca_meta updates
+    queue.questions.emitter.on("n_question_update", function () {
+      cas().emit('ca_meta', makeMessage('data',[queue.questions.getNumQuestions()]));
+    });
 
     // listen for queue_meta updates
     queue.meta.emitter.on('update', function(meta) {
