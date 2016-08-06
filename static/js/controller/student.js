@@ -46,7 +46,6 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	$scope.update_question = function () {
 		//Add the question and close the modal
 		$db.update_question({
-			"id": $db.model["questions"][0].id,
 			"location_id": parseFloat($scope.selected.location), 
 			"topic_id": parseFloat($scope.selected.topic), 
 			"help_text": $("#q_desc_update").val()
