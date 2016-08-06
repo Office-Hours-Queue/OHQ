@@ -28,9 +28,9 @@
             </div>
           </div>
           <div class="col l4 m6 s12">
-            <a href="" ng-click="$db.freeze_question()"><div class="card {{ !($db.can_freeze())  || $db.is_frozen() ? 'grey lighten-2' : 'blue' }}">
+            <a href="" ng-click="toggle_freeze()"><div class="card {{ !($db.can_freeze())  && !($db.is_frozen()) ? 'grey lighten-2' : 'blue' }}">
               <div class="center card-content {{ !($db.can_freeze()) || $db.is_frozen()   ? 'grey-text text-lighten-1' : 'white-text' }} ">     
-                <span style="font-size:25px;">{{ $db.is_frozen() ? 'Question Frozen' : 'Freeze'}}</span>
+                <span style="font-size:25px;">{{ $db.is_frozen() ? 'Unfreeze' : 'Freeze'}}</span>
               </div>
             </div></a>
           </div>
