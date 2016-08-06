@@ -18,6 +18,7 @@ var questions = (function() {
     add: addQuestion,
     answer: answerQuestion,
     freezeStudent: freezeStudentQuestion,
+    unfreezeStudent: unfreezeStudentQuestion,
     freezeCa: freezeCaQuestion,
     freeze: freezeQuestionId,
     updateMeta: updateQuestionMeta,
@@ -58,7 +59,8 @@ var questions = (function() {
           emitEvent('question_frozen');
           break;
         case 'frozen_end_time':
-          // TODO
+          console.log("question unfrozen");
+          emitEvent('question_unfrozen');
           break;
         case 'frozen_end_max_time':
           // TODO
@@ -393,6 +395,14 @@ function freezeStudentQuestion(studentId) {
     .then();
 }
 
+// unfreeze a student's question
+function unfreezeStudentQuestion(studentId) {
+  return unfreezeQuestion(studentId)
+    .where(questionOpen())
+    .andWhere('q.student_user_id', studentId)
+    .then();
+}
+
 // freeze a ca's current question
 function freezeCaQuestion(caUserId) {
   return freezeQuestion(caUserId)
@@ -426,6 +436,11 @@ function freezeQuestion(frozenById) {
     .where('q.frozen_time', null);
 }
 
+// update clause for question unfreeze
+function unfreezeQuestion(frozenById) {
+  return db('questions AS q')
+    .update({ frozen_end_time: db.fn.now()});
+}
 
 //
 // Queue meta state

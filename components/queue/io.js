@@ -113,10 +113,6 @@ module.exports = function(io) {
       cas().emit('questions', makeCaQuestion(question));
     });
 
-    queue.questions.emitter.on('question_unfrozen', function(question) {
-
-    });
-
     queue.questions.emitter.on('question_answered', function(question) {
       ca(question.ca_user_id).emit('current_question', makeCaQuestion(question));
       cas().emit('questions', makeMessage('delete', [question.id]));
@@ -169,6 +165,10 @@ module.exports = function(io) {
 
     socket.on('freeze_question', function() {
       queue.questions.freezeStudent(userid);
+    });
+
+    socket.on('unfreeze_question', function() {
+      queue.questions.unfreezeStudent(userid);
     });
 
     // emit the current data on connect
