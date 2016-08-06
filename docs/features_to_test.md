@@ -13,12 +13,6 @@
 	- able to login on main page after register
 	- register twice fails
 
-##Both Student/CA
-
-- works on mobile, firefox, safari, so on...
-- resizes reliably 
-- connection status updates and reconnects if disconnected 
-
 ##Student Page
 
 - Questions 
@@ -53,6 +47,14 @@
 - minute rules updates shows elsewhere
 - open and close goes to student, other CAs
 - answer, kick, finish , freeze events for student
+
+
+## Reliability/Robustness
+
+- works on mobile, firefox, safari, so on...
+- resizes reliably 
+- sessions 
+- connection status updates and reconnects if disconnected 
 
 ##Security
 
