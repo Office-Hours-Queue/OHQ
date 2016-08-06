@@ -54,12 +54,15 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 			case "data": 
 				for (var i = 0; i < payload.length; i++) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
-					if (db_index != -1) {
+					console.log(db_index)
+					if (db_index == -1) {
 						//Insert
+						console.log("inserting!")
 						d.model[db_name] = d.model[db_name].concat(payload);
 						continue
 					}
 					//Update
+					console.log("updating!")
 					d.model[db_name][db_index] = payload[i];
 				}
 				break;
@@ -71,6 +74,7 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 				}
 				break;
 		}
+		console.log(d.model)
 		$rootScope.$apply();
 	};
 	
