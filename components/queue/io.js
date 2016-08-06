@@ -204,6 +204,7 @@ module.exports = function(io) {
     queue.questions.emitter.on('new_question', emitStudentQuestion);
     queue.questions.emitter.on('question_frozen', emitStudentQuestion);
     queue.questions.emitter.on('question_unfrozen', emitStudentQuestion);
+    queue.questions.emitter.on('question_update' ,emitStudentQuestion);
 
     queue.questions.emitter.on('question_answered', function(question) {
       // tell everyone their new position on the queue
