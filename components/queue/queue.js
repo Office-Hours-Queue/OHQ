@@ -82,10 +82,8 @@ var questions = (function() {
   });
 
   dbEvents.questions.on('insert', function(newQuestion) {
-    console.log("HERE")
     // emit the full inserted object
     selectQuestionId(newQuestion.id).then(function(question) {
-      console.log("HERE1")
       result.emitter.emit('new_question', question);
     });
   });
@@ -491,8 +489,8 @@ function setQueueState(state) {
 function selectMeta(id) {
   return db.select(
       'open',
-      'max_freeze AS max_freeze',
-      'time_limit AS time_limit'
+      'max_freeze',
+      'time_limit'
     )
     .from('queue_meta')
     .where('id', id)
@@ -502,8 +500,8 @@ function selectMeta(id) {
 function selectCurrentMeta() {
   return db.select(
       'open',
-      'max_freeze AS max_freeze',
-      'time_limit AS time_limit'
+      'max_freeze',
+      'time_limit'
     )
     .from('queue_meta')
     .orderBy('id', 'asc')

@@ -15,16 +15,13 @@ emitters.queue_meta = new EventEmitter();
 // pg sends us events when certain tables get updated.
 // unpack them and forward them to the right emitter.
 client.on('notification', function(msg) {
-  console.log(msg)
   var payload = JSON.parse(msg.payload);
   var table = payload.table;
   var action = payload.action;
   var emitter = emitters[table];
-  console.log(action)
   switch (action) {
     case 'insert':
       emitter.emit(action, payload.new);
-      console.log("HJIO")
       break;
     case 'update':
       emitter.emit(action, payload.new, payload.old);
