@@ -116,7 +116,7 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 	}
 	d.kick_question = function() {
 		console.log("db kick")
-		d.sio.emit("qick_question",{});
+		d.sio.emit("kick_question",{});
 	}
 	d.finish_question = function() {
 		console.log("db finish")
