@@ -50,7 +50,6 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
-		console.log(event_type,payload)
 		switch (event_type) {
 			case "data": 
 				for (var i = 0; i < payload.length; i++) {
@@ -90,6 +89,10 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 	d.freeze_question = function() {
 		console.log("db freeze")
 		d.sio.emit("freeze_question", {})
+	}
+	d.unfreeze_question = function() {
+		console.log("db un freeze")
+		d.sio.emit("unfreeze_question", {})
 	}
 	d.update_question = function(payload) {
 		console.log(payload)

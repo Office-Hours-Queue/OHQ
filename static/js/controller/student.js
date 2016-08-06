@@ -9,6 +9,16 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 		"location":""
 	};
 
+	$scope.toggle_freeze = function() {
+		if ($db.is_frozen()) {
+			$db.unfreeze_question() 
+		} else {
+			if ($db.can_freeze()) {
+				$db.freeze_question()
+			}
+		}
+	}
+
 	var unbind_topic_watch = $scope.$watch(function () {
 		return $db.model['topics'].length;	
 	},function() {
