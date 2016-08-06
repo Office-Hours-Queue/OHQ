@@ -471,8 +471,8 @@ function setQueueState(state) {
 function selectMeta(id) {
   return db.select(
       'open',
-      'max_freeze AS maxFreeze',
-      'time_limit AS timeLimit'
+      'max_freeze',
+      'time_limit'
     )
     .from('queue_meta')
     .where('id', id)
@@ -482,8 +482,8 @@ function selectMeta(id) {
 function selectCurrentMeta() {
   return db.select(
       'open',
-      'max_freeze AS maxFreeze',
-      'time_limit AS timeLimit'
+      'max_freeze',
+      'time_limit'
     )
     .from('queue_meta')
     .orderBy('id', 'asc')
