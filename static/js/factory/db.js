@@ -52,6 +52,7 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
+		console.log(event_type,payload,db_name)
 		switch (event_type) {
 			case "data": 
 				for (var i = 0; i < payload.length; i++) {

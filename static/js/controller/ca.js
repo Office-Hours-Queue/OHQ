@@ -3,11 +3,9 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 	$rootScope.check_login();
 
 	$scope.$watch(function () {
-		if ($db.model['ca_meta'].length == 0) { return false }
-		return $db.model['ca_meta'][0].answering_question
+		return $db.model['current_question'].length
 	},function () {
-		if ($db.model['ca_meta'].length == 0) { return }
-		if ($db.model['ca_meta'][0].answering_question) {
+		if ($db.model['current_question'].length == 1) {
 			$('#modalanswerquestion').openModal({
 				dismissible: false
 			});

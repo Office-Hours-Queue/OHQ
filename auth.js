@@ -49,7 +49,6 @@ passport.use(
           if (typeof user !== 'undefined') {
             done(null, user);
           } else {
-
       // user doesn't exist already - check the user's role
             return db.select('role')
                      .from('valid_andrew_ids')
@@ -62,7 +61,7 @@ passport.use(
             throw new Error('Invalid AndrewID');
           } else {
 
-      // insert the user
+        // insert the user
             return db.insert(getUserInfo(profile,role["role"]))
                      .into('users')
                      .returning('*');
