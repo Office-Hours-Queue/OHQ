@@ -119,6 +119,10 @@ module.exports = function(io) {
       if (question.initial_ca_user_id !== null) {
         ca(question.initial_ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
       }
+      cas().emit('questions',  makeMessage('delete', [question.id]));
+    });
+
+    queue.questions.emitter.on('question_unfrozen',function(question) {
       cas().emit('questions', makeCaQuestion(question));
     });
 
@@ -177,6 +181,7 @@ module.exports = function(io) {
       }
     });
 
+
     socket.on('delete_question', function() {
       queue.questions.closeStudent(userid);
     });
@@ -222,6 +227,7 @@ module.exports = function(io) {
     queue.questions.emitter.on('question_frozen', emitStudentQuestion);
     queue.questions.emitter.on('question_unfrozen', emitStudentQuestion);
     queue.questions.emitter.on('question_update' ,emitStudentQuestion);
+
 
     queue.questions.emitter.on('question_answered', function(question) {
       // tell everyone their new position on the queue

@@ -67,7 +67,7 @@ var questions = (function() {
           emitEvent('question_unfrozen');
           break;
         case 'frozen_end_max_time':
-          // TODO
+
           break;
         case 'help_time':
           console.log('question_answered');
