@@ -10,7 +10,7 @@ router.get('/googleauth',
   auth.passport.authenticate('google', { scope: ['openid profile email'],
                                          hd: 'andrew.cmu.edu' }));
 
-router.get('/success',auth.passport.authenticate('google'), function(req,res) {
+router.get('/success',auth.passport.authenticate('google', { failureRedirect: '/#/google_deny' }), function(req,res) {
   res.redirect('/#/' + req.user.role);
 });
 

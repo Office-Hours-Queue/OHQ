@@ -37,5 +37,8 @@ app.config(function($routeProvider) {
         templateUrl : "html/register.html",
         controller: "register_ctl"
     });
+    $routeProvider.when("/google_deny", {
+        templateUrl : "html/google_deny.html",
+    });
 });
 
