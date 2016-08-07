@@ -28,6 +28,8 @@ var questions = (function() {
     emitter: new EventEmitter()
   };
 
+  var pendingUnfreezeNotifications = { };
+
   dbEvents.questions.on('update', function(newQuestion, oldQuestion) {
     // something happened to an existing question. find out what happened,
     // then emit an appropriate event
@@ -63,11 +65,14 @@ var questions = (function() {
           emitEvent('question_frozen');
           break;
         case 'frozen_end_time':
-          console.log("question unfrozen");
-          emitEvent('question_unfrozen');
-          break;
-        case 'frozen_end_max_time':
-
+          // clear the pending event, and schedule a new one sometime
+          // in the future
+          clearTimeout(pendingUnfreezeNotifications[id]);
+          pendingUnfreezeNotifications[id] = setTimeout(function() {
+            console.log('question_unfrozen');
+            emitEvent('question_unfrozen');
+            delete pendingUnfreezeNotifications[id];
+          }, Math.max(0, Date.parse(change.rhs) - Date.now()));
           break;
         case 'help_time':
           console.log('question_answered');
