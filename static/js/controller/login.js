@@ -1,5 +1,7 @@
 var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope,$db,$http) {
 	$rootScope.$db = $db;
+	$scope.name = "login";
+
 
 	$rootScope.check_login();
 

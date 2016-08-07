@@ -3,7 +3,7 @@
  *  attempts to model the actual schema as well as possible
  *  usable for both ca,student views 
  */
-var db = ["$rootScope","$http", function ($rootScope,$http) {
+var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	var d = {};
 
 	/* Access to user object */
@@ -15,7 +15,9 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 				window.location = "/#/" + $rootScope.user["role"]
 			} 
 		}, function() {
-			console.log("Failed to GET /user")
+			if ($route.current.scope.name != "login") {
+				window.location = "/#/"; 
+			}
 		});
 	};
 

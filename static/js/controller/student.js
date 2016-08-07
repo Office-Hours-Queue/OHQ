@@ -1,5 +1,7 @@
 var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	$rootScope.$db = $db;
+	$scope.name = "student";
+
 
 	$rootScope.check_login();
 

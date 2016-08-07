@@ -1,6 +1,7 @@
 var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db,$http) {
 	$rootScope.$db = $db;
 	$rootScope.check_login();
+	$scope.name = "ca";
 
 	$scope.$watch(function () {
 		return $db.model['current_question'].length
