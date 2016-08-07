@@ -131,9 +131,9 @@ module.exports = function(io) {
       cas().emit('questions', makeCaQuestion(question));
     });
 
-
     queue.questions.emitter.on('question_closed', function(question) {
       ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
+      cas().emit('questions',  makeMessage('delete', [question.id]));
     });
 
     //listen for ca_meta updates

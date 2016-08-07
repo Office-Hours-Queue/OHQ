@@ -79,7 +79,6 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 				}
 				break;
 		}
-		console.log(d.model)
 		$rootScope.$apply();
 	};
 	
