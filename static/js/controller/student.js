@@ -2,12 +2,21 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	$rootScope.$db = $db;
 
 	$rootScope.check_login();
-	
 
 	$scope.selected = {
 		"topic": "",
 		"location":""
 	};
+
+	$scope.toggle_freeze = function() {
+		if ($db.is_frozen()) {
+			$db.unfreeze_question() 
+		} else {
+			if ($db.can_freeze()) {
+				$db.freeze_question()
+			}
+		}
+	}
 
 	var unbind_topic_watch = $scope.$watch(function () {
 		return $db.model['topics'].length;	
@@ -36,8 +45,8 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 
 		//Add the question and close the modal
 		$db.add_question({
-			"location_id": $scope.selected.location, 
-			"topic_id": $scope.selected.topic, 
+			"location_id": parseFloat($scope.selected.location), 
+			"topic_id": parseFloat($scope.selected.topic), 
 			"help_text": $("#q_desc").val()
 		})
 		$('#modalnewquestion').closeModal();
@@ -46,9 +55,8 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	$scope.update_question = function () {
 		//Add the question and close the modal
 		$db.update_question({
-			"id": $db.model["questions"][0].id,
-			"location_id": $scope.selected.location, 
-			"topic_id": $scope.selected.topic, 
+			"location_id": parseFloat($scope.selected.location), 
+			"topic_id": parseFloat($scope.selected.topic), 
 			"help_text": $("#q_desc_update").val()
 		});
 		$('#modaleditquestion').closeModal();

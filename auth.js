@@ -49,11 +49,10 @@ passport.use(
           if (typeof user !== 'undefined') {
             done(null, user);
           } else {
-
       // user doesn't exist already - check the user's role
             return db.select('role')
                      .from('valid_andrew_ids')
-                     .where('andrew_id', getUserInfo(profile).andrew_id)
+                     .where('andrew_id', getUserInfo(profile,"student").andrew_id)
                      .first();
           }
         })
@@ -62,8 +61,8 @@ passport.use(
             throw new Error('Invalid AndrewID');
           } else {
 
-      // insert the user
-            return db.insert(getUserInfo(profile))
+        // insert the user
+            return db.insert(getUserInfo(profile,role["role"]))
                      .into('users')
                      .returning('*');
           }
@@ -78,7 +77,7 @@ passport.use(
   )
 );
 
-function getUserInfo(googleProfile) {
+function getUserInfo(googleProfile,role) {
   var result = {};
   
   for (var i = 0; i < googleProfile.emails.length; i++) {
@@ -90,7 +89,7 @@ function getUserInfo(googleProfile) {
   result.andrew_id = result.email.split('@andrew.cmu.edu')[0];
   result.last_name = googleProfile.name.familyName;
   result.first_name = googleProfile.name.givenName;
-  result.role = 'ca';
+  result.role = role;
   result.google_id = googleProfile.id;
 
   return result;

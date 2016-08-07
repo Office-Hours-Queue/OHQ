@@ -15,9 +15,11 @@ var questions = (function() {
     getUserId: selectQuestionUserId,
     getOpenUserId: selectOpenQuestionUserId,
     getAnsweringUserId: selectAnsweringQuestionCaUserId,
+    getNumQuestions: getNumberQuestions,
     add: addQuestion,
     answer: answerQuestion,
     freezeStudent: freezeStudentQuestion,
+    unfreezeStudent: unfreezeStudentQuestion,
     freezeCa: freezeCaQuestion,
     freeze: freezeQuestionId,
     updateMeta: updateQuestionMeta,
@@ -50,6 +52,9 @@ var questions = (function() {
         });
       };
 
+      //number of questions updates 
+      getNumberQuestions()
+
       // check which field was updated, and emit an event
       var field = change.path[0];
       switch (field) {
@@ -58,10 +63,11 @@ var questions = (function() {
           emitEvent('question_frozen');
           break;
         case 'frozen_end_time':
-          // TODO
+          console.log("question unfrozen");
+          emitEvent('question_unfrozen');
           break;
         case 'frozen_end_max_time':
-          // TODO
+
           break;
         case 'help_time':
           console.log('question_answered');
@@ -70,6 +76,15 @@ var questions = (function() {
         case 'off_time':
           console.log('question_closed');
           emitEvent('question_closed');
+          break;
+        case "topic_id":
+          emitEvent('question_update');
+          break;
+        case "location_id":
+          emitEvent('question_update');
+          break;
+        case "help_text":
+          emitEvent('question_update');
           break;
       }
     }
@@ -80,6 +95,7 @@ var questions = (function() {
     // emit the full inserted object
     selectQuestionId(newQuestion.id).then(function(question) {
       result.emitter.emit('new_question', question);
+      getNumberQuestions()
     });
   });
 
@@ -232,6 +248,7 @@ function questionCanFreeze() {
 // Question creators
 //
 
+
 // add a new question
 function addQuestion(question) {
   // do some validation
@@ -283,7 +300,7 @@ function addQuestion(question) {
       if (parseInt(activeQuestions.count) !== 0) {
         throw new Error('Student has question already');
       } else {
-        db.insert(insertQuestion)
+        return db.insert(insertQuestion)
           .into('questions')
           .return(null);
       }
@@ -296,6 +313,15 @@ function addQuestion(question) {
 //
 // Question updates
 //
+
+// n_question update
+function getNumberQuestions() {
+    db.count('q.id').from('questions AS q')
+    .where(questionNotFrozen()).andWhere(questionOpen())
+    .first().then(function(res) {
+      questions.emitter.emit("n_question_update",res.count);
+    }); 
+}
 
 // answer a question
 function answerQuestion(caUserId) {
@@ -393,6 +419,14 @@ function freezeStudentQuestion(studentId) {
     .then();
 }
 
+// unfreeze a student's question
+function unfreezeStudentQuestion(studentId) {
+  return unfreezeQuestion(studentId)
+    .where(questionOpen())
+    .andWhere('q.student_user_id', studentId)
+    .then();
+}
+
 // freeze a ca's current question
 function freezeCaQuestion(caUserId) {
   return freezeQuestion(caUserId)
@@ -426,6 +460,11 @@ function freezeQuestion(frozenById) {
     .where('q.frozen_time', null);
 }
 
+// update clause for question unfreeze
+function unfreezeQuestion(frozenById) {
+  return db('questions AS q')
+    .update({ frozen_end_time: db.fn.now()});
+}
 
 //
 // Queue meta state

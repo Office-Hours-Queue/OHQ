@@ -23,6 +23,11 @@ module.exports = function(io) {
     }
   });
 
+  //update n_cas on disconnect
+  io.on('disconnect', function() {
+    emit_n_cas();
+  });
+
   // ca/student global rooms
   var cas = function() {
     return io.to('ca');
@@ -83,6 +88,10 @@ module.exports = function(io) {
       }]));
     });
 
+    //emit inital ca_meta
+    emit_n_cas();
+    queue.questions.getNumQuestions();
+
     queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
         socket.emit('questions', makeCaQuestion(question));
@@ -110,11 +119,11 @@ module.exports = function(io) {
       if (question.initial_ca_user_id !== null) {
         ca(question.initial_ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
       }
-      cas().emit('questions', makeCaQuestion(question));
+      cas().emit('questions',  makeMessage('delete', [question.id]));
     });
 
-    queue.questions.emitter.on('question_unfrozen', function(question) {
-
+    queue.questions.emitter.on('question_unfrozen',function(question) {
+      cas().emit('questions', makeCaQuestion(question));
     });
 
     queue.questions.emitter.on('question_answered', function(question) {
@@ -122,10 +131,19 @@ module.exports = function(io) {
       cas().emit('questions', makeMessage('delete', [question.id]));
     });
 
-    queue.questions.emitter.on('question_closed', function(question) {
-      ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
+    queue.questions.emitter.on('question_update' ,function (question) {
+      cas().emit('questions', makeCaQuestion(question));
     });
 
+    queue.questions.emitter.on('question_closed', function(question) {
+      ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
+      cas().emit('questions',  makeMessage('delete', [question.id]));
+    });
+
+    //listen for ca_meta updates
+    queue.questions.emitter.on("n_question_update", function (n) {
+      cas().emit('ca_meta', makeMessage('data',[{"id" : 0, "n_questions": n}]));
+    });
 
     // listen for queue_meta updates
     queue.meta.emitter.on('update', function(meta) {
@@ -146,7 +164,7 @@ module.exports = function(io) {
   // individual students
   var onstudentjoin = function(socket, userid) {
 
-    socket.on('add_question', function(question) {
+    socket.on('new_question', function(question) {
       question.student_user_id = userid;
       try {
         queue.questions.add(question);
@@ -163,12 +181,17 @@ module.exports = function(io) {
       }
     });
 
+
     socket.on('delete_question', function() {
       queue.questions.closeStudent(userid);
     });
 
     socket.on('freeze_question', function() {
       queue.questions.freezeStudent(userid);
+    });
+
+    socket.on('unfreeze_question', function() {
+      queue.questions.unfreezeStudent(userid);
     });
 
     // emit the current data on connect
@@ -203,6 +226,8 @@ module.exports = function(io) {
     queue.questions.emitter.on('new_question', emitStudentQuestion);
     queue.questions.emitter.on('question_frozen', emitStudentQuestion);
     queue.questions.emitter.on('question_unfrozen', emitStudentQuestion);
+    queue.questions.emitter.on('question_update' ,emitStudentQuestion);
+
 
     queue.questions.emitter.on('question_answered', function(question) {
       // tell everyone their new position on the queue
@@ -239,7 +264,7 @@ module.exports = function(io) {
     return makeMessage('data', [{
       id: question.id,
       first_name: question.student_first_name,
-      andrew_id: question.andrew_id,
+      andrew_id: question.student_andrew_id,
       topic: question.topic,
       location: question.location,
       help_text: question.help_text
@@ -261,5 +286,10 @@ module.exports = function(io) {
   function emitStudentQuestion(question) {
     student(question.student_user_id).emit('questions', makeStudentQuestion(question));
   };
+
+  function emit_n_cas() {
+     var n_cas = Object.keys(cas().sockets).length
+     cas().emit('ca_meta', makeMessage('data',[{"id":0, "n_cas": n_cas}]))
+  }
 
 };
