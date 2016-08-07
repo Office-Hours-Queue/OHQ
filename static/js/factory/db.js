@@ -57,13 +57,14 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
+		console.log(event_type,db_name)
 		switch (event_type) {
 			case "data": 
 				for (var i = 0; i < payload.length; i++) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
 					if (db_index == -1) {
 						//Insert
-						d.model[db_name] = d.model[db_name].concat(payload);
+						d.model[db_name].push(payload[i])
 						continue
 					}
 					//Update
@@ -74,7 +75,7 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 				for (var i = 0; i < payload.length; i++) {
 					var qid = payload[i]
 					var db_index = get_index_by_id(d.model[db_name],qid)
-					d.model[db_name].splice(db_index)
+					d.model[db_name].splice(db_index,1);
 				}
 				break;
 		}

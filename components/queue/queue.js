@@ -77,7 +77,13 @@ var questions = (function() {
           console.log('question_closed');
           emitEvent('question_closed');
           break;
-        default:
+        case "topic_id":
+          emitEvent('question_update');
+          break;
+        case "location_id":
+          emitEvent('question_update');
+          break;
+        case "help_text":
           emitEvent('question_update');
           break;
       }
@@ -310,7 +316,7 @@ function addQuestion(question) {
 
 // n_question update
 function getNumberQuestions() {
-    db.count('*').from('questions AS q')
+    db.count('q.id').from('questions AS q')
     .where(questionNotFrozen()).andWhere(questionOpen())
     .first().then(function(res) {
       questions.emitter.emit("n_question_update",res.count);
