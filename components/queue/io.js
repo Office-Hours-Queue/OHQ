@@ -23,6 +23,11 @@ module.exports = function(io) {
     }
   });
 
+  //update n_cas on disconnect
+  io.on('disconnect', function() {
+    emit_n_cas();
+  });
+
   // ca/student global rooms
   var cas = function() {
     return io.to('ca');
@@ -83,6 +88,8 @@ module.exports = function(io) {
       }]));
     });
 
+    //emit inital ca_meta
+    emit_n_cas();
     queue.questions.getNumQuestions();
 
     queue.questions.getOpen().then(function(questions) {
@@ -268,5 +275,10 @@ module.exports = function(io) {
   function emitStudentQuestion(question) {
     student(question.student_user_id).emit('questions', makeStudentQuestion(question));
   };
+
+  function emit_n_cas() {
+     var n_cas = Object.keys(cas().sockets).length
+     cas().emit('ca_meta', makeMessage('data',[{"id":0, "n_cas": n_cas}]))
+  }
 
 };

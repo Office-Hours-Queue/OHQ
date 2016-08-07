@@ -308,7 +308,6 @@ function addQuestion(question) {
 // Question updates
 //
 
-
 // n_question update
 function getNumberQuestions() {
     db.count('*').from('questions AS q')
@@ -317,7 +316,6 @@ function getNumberQuestions() {
       questions.emitter.emit("n_question_update",res.count);
     }); 
 }
-
 
 // answer a question
 function answerQuestion(caUserId) {
