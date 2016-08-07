@@ -11,28 +11,42 @@
       <div class="container">
         <br />
 
-        <!-- Cards Display -->
-        <div class="center row">
-          <div class="col l4 m6 s12" id="questionCol">
-            <a href="#modalnewquestion" modal><div class="card  {{ ($db.model['questions'].length != 0) ? 'grey lighten-2' : 'green' }}">
-              <div class="center card-content {{ ($db.model['questions'].length != 0) ? 'grey-text text-lighten-1' : 'white-text' }}">
-                <p style="font-size:25px;">Ask a Question</p>
-              </div>
-            </div></a>
-          </div>
-          <div class="col l4 m6 s12">
-            <div class="card {{ ($db.model['questions'].length == 0) ? 'grey lighten-2' : '' }}">
-              <div class="center card-content {{ ($db.model['questions'].length == 0) ? 'grey-text text-lighten-1' : '' }} ">     
-                <span style="font-size:25px;">{{ ($db.model['questions'].length == 0) ? 'Position: NA' : 'Position: ' + $db.model["questions"][0]["queue_ps"]}}</span>
-              </div>
+        <div ng-show="$db.model['queue_meta'][0].open == false">
+          <div class="center row">
+            <div class="col l12 m12 s12" id="questionCol">
+            <a><div class="card">
+                <div class="center card-content black-text">
+                  <p style="font-size:25px;">The queue is closed.</p>
+                </div>
+            </div>
             </div>
           </div>
-          <div class="col l4 m6 s12">
-            <a href="" ng-click="toggle_freeze()"><div class="card {{ !($db.can_freeze())  && !($db.is_frozen()) ? 'grey lighten-2' : 'blue' }}">
-              <div class="center card-content {{ !($db.can_freeze()) || $db.is_frozen()   ? 'grey-text text-lighten-1' : 'white-text' }} ">     
-                <span style="font-size:25px;">{{ $db.is_frozen() ? 'Unfreeze' : 'Freeze'}}</span>
+        </div>
+
+        <div ng-show="$db.model['queue_meta'][0].open">
+          <!-- Cards Display -->
+          <div class="center row">
+            <div class="col l4 m6 s12" id="questionCol">
+              <a href="#modalnewquestion" modal><div class="card  {{ ($db.model['questions'].length != 0) ? 'grey lighten-2' : 'green' }}">
+                <div class="center card-content {{ ($db.model['questions'].length != 0) ? 'grey-text text-lighten-1' : 'white-text' }}">
+                  <p style="font-size:25px;">Ask a Question</p>
+                </div>
+              </div></a>
+            </div>
+            <div class="col l4 m6 s12">
+              <div class="card {{ ($db.model['questions'].length == 0) ? 'grey lighten-2' : '' }}">
+                <div class="center card-content {{ ($db.model['questions'].length == 0) ? 'grey-text text-lighten-1' : '' }} ">     
+                  <span style="font-size:25px;">{{ ($db.model['questions'].length == 0) ? 'Position: NA' : 'Position: ' + $db.model["questions"][0]["queue_ps"]}}</span>
+                </div>
               </div>
-            </div></a>
+            </div>
+            <div class="col l4 m6 s12">
+              <a href="" ng-click="toggle_freeze()"><div class="card {{ !($db.can_freeze())  && !($db.is_frozen()) ? 'grey lighten-2' : 'blue' }}">
+                <div class="center card-content {{ !($db.can_freeze()) || $db.is_frozen()   ? 'grey-text text-lighten-1' : 'white-text' }} ">     
+                  <span style="font-size:25px;">{{ $db.is_frozen() ? 'Unfreeze' : 'Freeze'}}</span>
+                </div>
+              </div></a>
+            </div>
           </div>
         </div>
 
