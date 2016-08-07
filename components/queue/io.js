@@ -83,6 +83,8 @@ module.exports = function(io) {
       }]));
     });
 
+    queue.questions.getNumQuestions();
+
     queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
         socket.emit('questions', makeCaQuestion(question));
@@ -123,8 +125,8 @@ module.exports = function(io) {
     });
 
     //listen for ca_meta updates
-    queue.questions.emitter.on("n_question_update", function () {
-      cas().emit('ca_meta', makeMessage('data',[queue.questions.getNumQuestions()]));
+    queue.questions.emitter.on("n_question_update", function (n) {
+      cas().emit('ca_meta', makeMessage('data',[{"id" : 0, "n_questions": n}]));
     });
 
     // listen for queue_meta updates

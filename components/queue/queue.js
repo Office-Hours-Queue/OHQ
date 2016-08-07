@@ -52,8 +52,8 @@ var questions = (function() {
         });
       };
 
-      //pretty much all events changed the number of questions 
-      result.emitter.emit("n_question_update");
+      //number of questions updates 
+      getNumberQuestions()
 
       // check which field was updated, and emit an event
       var field = change.path[0];
@@ -89,7 +89,7 @@ var questions = (function() {
     // emit the full inserted object
     selectQuestionId(newQuestion.id).then(function(question) {
       result.emitter.emit('new_question', question);
-      result.emitter.emit('n_question_update');
+      getNumberQuestions()
     });
   });
 
@@ -242,6 +242,7 @@ function questionCanFreeze() {
 // Question creators
 //
 
+
 // add a new question
 function addQuestion(question) {
   // do some validation
@@ -307,9 +308,16 @@ function addQuestion(question) {
 // Question updates
 //
 
+
+// n_question update
 function getNumberQuestions() {
-  return db('questions').count('*').where(questionNotFrozen()).andWhere(questionOpen());
+    db.count('*').from('questions AS q')
+    .where(questionNotFrozen()).andWhere(questionOpen())
+    .first().then(function(res) {
+      questions.emitter.emit("n_question_update",res.count);
+    }); 
 }
+
 
 // answer a question
 function answerQuestion(caUserId) {
