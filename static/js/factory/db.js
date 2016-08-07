@@ -42,6 +42,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			d.sio.on("ca_meta",function(payload) { handle_db_update("ca_meta",payload)});
 			d.sio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload)})
 			d.sio.on("current_question",function (payload) { handle_db_update("current_question",payload)})
+			d.sio.on("users",function (payload) { handle_db_update("users",payload)})
 			d.sio.on("message", function (payload) { Materialize.toast(payload) })
 		}
 	});
@@ -54,12 +55,13 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		"locations":[],
 		"ca_meta": [],
 		"queue_meta": [],
-		"current_question": []
+		"current_question": [],
+		"users": [],
 	}
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
-		console.log(event_type,db_name)
+		console.log(event_type,payload,db_name)
 		switch (event_type) {
 			case "data": 
 				for (var i = 0; i < payload.length; i++) {
@@ -130,6 +132,15 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		console.log("Answer!")
 		d.sio.emit("answer_question",{})
 	}
+	d.go_online = function () {
+		console.log("go online")
+		d.sio.emit("go_online")
+	}
+	d.go_offline = function () {
+		console.log("go offline")
+		d.sio.emit("go_offline")
+	}
+
 
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {

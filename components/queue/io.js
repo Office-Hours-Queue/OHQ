@@ -23,11 +23,6 @@ module.exports = function(io) {
     }
   });
 
-  //update n_cas on disconnect
-  io.on('disconnect', function() {
-    emit_n_cas();
-  });
-
   // ca/student global rooms
   var cas = function() {
     return io.to('ca');
@@ -70,6 +65,13 @@ module.exports = function(io) {
       queue.meta.close();
     });
 
+    socket.on('go_online', function () {
+      queue.users.caOnline(userid);
+    })
+    socket.on("go_offline", function () {
+      queue.users.caOffline(userid);
+    });
+
     socket.on('open_queue', function() {
       queue.meta.open();
     });
@@ -88,8 +90,11 @@ module.exports = function(io) {
     });
 
     //emit inital ca_meta
-    emit_n_cas();
     queue.questions.getNumQuestions();
+    queue.users.getNumberOnline();
+
+    //emit initial is_online  
+    queue.users.getIsOnline(userid)
 
     queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
@@ -142,6 +147,14 @@ module.exports = function(io) {
     //listen for ca_meta updates
     queue.questions.emitter.on("n_question_update", function (n) {
       cas().emit('ca_meta', makeMessage('data',[{"id" : 0, "n_questions": n}]));
+    });
+    queue.users.emitter.on("n_cas", function (n) {
+      cas().emit('ca_meta', makeMessage('data',[{"id": 0, "n_cas":n }]));
+    });
+
+    //listen for user updates
+    queue.users.emitter.on("users", function (payload) {
+      ca(payload.id).emit('users',makeMessage("data",[payload]))
     });
 
     // listen for queue_meta updates
@@ -293,10 +306,5 @@ module.exports = function(io) {
   function emitStudentQuestion(question) {
     student(question.student_user_id).emit('questions', makeStudentQuestion(question));
   };
-
-  function emit_n_cas() {
-     var n_cas = Object.keys(cas().sockets).length
-     cas().emit('ca_meta', makeMessage('data',[{"id":0, "n_cas": n_cas}]))
-  }
 
 };

@@ -625,6 +625,57 @@ function selectEnabledTopics() {
 }
 
 //
+// ca_meta 
+//
+
+var users = (function() {
+  var user_methods = {
+    getNumberOnline: getNumberOnline,
+    getIsOnline: getIsOnline,
+    caOnline: caOnline,
+    caOffline: caOffline, 
+    emitter: new EventEmitter()
+  };
+
+  dbEvents.users.on('update', function(new_user, old_user) {
+    //update n_cas
+    getNumberOnline()
+    
+    //update ca online
+    getIsOnline(new_user.id);
+  });
+
+  return user_methods;
+})();
+
+function getIsOnline(userid) {
+  db.select('is_online').from('users').where('id',userid).first().then(function (res) {
+    var payload = {
+      "id": userid,
+      "is_online": res.is_online
+    }
+    users.emitter.emit('users',payload) ;
+  })
+}
+
+function getNumberOnline() {
+   db.count('id').from('users').where("is_online",true).first().then(function (res) {
+        users.emitter.emit('n_cas', res.count);
+     });
+ }
+
+function caOnline(userid) {
+  console.log("SET ONLINE")
+ return  db("users").update({ "is_online": true }).where("id",userid).then();
+}
+
+function caOffline(userid) {
+  console.log("SET OFFLINE")
+  return db("users").update({ "is_online": false } ).where("id",userid).then();
+}
+
+
+//
 // utility functions 
 //
 function was_changed(field_string, changes) {
@@ -651,3 +702,4 @@ module.exports.questions = questions;
 module.exports.meta = meta;
 module.exports.locations = locations;
 module.exports.topics = topics;
+module.exports.users = users;

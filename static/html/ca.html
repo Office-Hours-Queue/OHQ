@@ -11,22 +11,19 @@
    	<br />
 
 		<div class="center row">
-		    <div class="col offset-l2 l4 s6" style="margin-bottom:10px;">
-		        
-		    	<div ng-show="$db.model['queue_meta'][0].open">
-		        <a ng-click="$db.close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
-		        </div>
+		    <div class="col l4 " style="margin-bottom:10px;">
+		        <a ng-show="$db.model['queue_meta'][0].open" ng-click="$db.close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
 
-		        <div ng-show="!($db.model['queue_meta'][0].open)">
-		        <a ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
-		        </div>
+		        <a ng-show="!($db.model['queue_meta'][0].open)" ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
+		    </div>
+		   	<div class="col  l4 " style="margin-bottom:10px;">
+		        <a ng-show="$db.model['users'][0].is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn orange">Go Offline</a>
 
+		        <a ng-show="!($db.model['users'][0].is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn green">Go Online</a>
 		    </div>
-		    <div class="col l4 s6" style="margin-bottom:10px;">
-		        
-		            <a id="answer-btn" ng-click="$db.answer_question()" class="btn {{ $db.model['questions'].length > 0  ? '' : 'disabled' }}">Answer Question</a>
-		        
-		    </div>
+		    <div class="col  l4 " style="margin-bottom:10px;">
+				<a id="answer-btn" ng-click="$db.answer_question()" class="btn {{ $db.model['questions'].length > 0  ? '' : 'disabled' }}">Answer Question</a>
+			</div>
 		</div>
 
 		<div class="center row">

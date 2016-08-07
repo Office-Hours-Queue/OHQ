@@ -29,7 +29,7 @@ exports.up = function(knex, Promise) {
           '$$ LANGUAGE plpgsql;';
 
   var triggers =
-          '-- listen to the questions and queue_meta tables\n' +
+          '-- listen to the questions,users and queue_meta tables\n' +
           'DROP TRIGGER IF EXISTS\n' +
           '  questions_notify\n' +
           'ON\n' +
@@ -50,7 +50,18 @@ exports.up = function(knex, Promise) {
           'AFTER UPDATE OR INSERT OR DELETE ON\n' +
           '  queue_meta\n' +
           'FOR EACH ROW EXECUTE PROCEDURE\n' +
-          '  table_update_notify();';
+          '  table_update_notify();\n' + 
+          '\n' +
+          'DROP TRIGGER IF EXISTS\n' +
+          '  users_notify\n' +
+          'ON\n' +
+          '  users;\n' +
+          'CREATE TRIGGER\n' +
+          '  users_notify\n' +
+          'AFTER UPDATE OR INSERT OR DELETE ON\n' +
+          '  users\n' +
+          'FOR EACH ROW EXECUTE PROCEDURE\n' +
+          '  table_update_notify();';;
 
   return Promise.all([
     knex.raw(table_update_notify_fn),
@@ -61,6 +72,7 @@ exports.up = function(knex, Promise) {
 
 exports.down = function(knex, Promise) {
   return Promise.all([
+    knex.raw('DROP TRIGGER users_notify ON users;'),
     knex.raw('DROP TRIGGER questions_notify ON questions;'),
     knex.raw('DROP TRIGGER queue_meta_notify ON queue_meta;'),
     knex.raw('DROP FUNCTION table_update_notify();')

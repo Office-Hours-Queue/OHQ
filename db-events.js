@@ -11,6 +11,7 @@ client.connect();
 var emitters = {};
 emitters.questions = new EventEmitter();
 emitters.queue_meta = new EventEmitter();
+emitters.users = new EventEmitter();
 
 // pg sends us events when certain tables get updated.
 // unpack them and forward them to the right emitter.
