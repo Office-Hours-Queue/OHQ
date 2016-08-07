@@ -42,7 +42,6 @@ module.exports = function(io) {
     return io.to('student_' + userid);
   };
 
-
   //
   // CA handling
   //
@@ -224,20 +223,28 @@ module.exports = function(io) {
 
     // listen for question updates
     queue.questions.emitter.on('new_question', emitStudentQuestion);
-    queue.questions.emitter.on('question_frozen', emitStudentQuestion);
+    queue.questions.emitter.on('question_frozen', function(question) {
+      emitStudentQuestion(question)
+      student(question.student_user_id).emit('message',"Your question was frozen.")
+    });
     queue.questions.emitter.on('question_unfrozen', emitStudentQuestion);
     queue.questions.emitter.on('question_update' ,emitStudentQuestion);
-
+    queue.questions.emitter.on("question_kicked", function (question) {
+      student(question.student_user_id).emit('message',"Your question was kicked from the queue.")
+    });
 
     queue.questions.emitter.on('question_answered', function(question) {
       // tell everyone their new position on the queue
       queue.questions.getOpen().then(function(questions) {
         questions.forEach(emitStudentQuestion);
       });
+      //notify student that ca is coming
+      student(question.student_user_id).emit('message',"A Course Assistant is on the way!")
     });
 
-    queue.questions.emitter.on('question_closed', function(question) {
+    queue.questions.emitter.on('question_closed', function(question,msg) {
       student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
+      student(question.student_user_id).emit('message',msg)
     });
 
     // listen for updates on queue_meta

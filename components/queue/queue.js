@@ -46,9 +46,9 @@ var questions = (function() {
         throw new Error("Consistency error - row is nested");
       }
 
-      var emitEvent = function(eventName) {
+      var emitEvent = function(eventName,extra_arg) {
         selectQuestionId(id).then(function(question) {
-          result.emitter.emit(eventName, question);
+          result.emitter.emit(eventName, question,extra_arg);
         });
       };
 
@@ -70,12 +70,19 @@ var questions = (function() {
 
           break;
         case 'help_time':
-          console.log('question_answered');
+          if (was_changed("frozen_time",changes)) { break; }
           emitEvent('question_answered');
           break;
+        case "off_reason": 
+          if (change.rhs == "ca_kick") {
+            console.log("kicked")
+            emitEvent('question_closed',"Your question was kicked from the queue.");
+          }
+          break;
         case 'off_time':
+          if (was_kicked(changes)) { break; }
           console.log('question_closed');
-          emitEvent('question_closed');
+          emitEvent('question_closed',"Your question was marked as closed.");
           break;
         case "topic_id":
           emitEvent('question_update');
@@ -585,6 +592,28 @@ function selectEnabledTopics() {
   return selectAllTopics().where('enabled', true);
 }
 
+//
+// utility functions 
+//
+function was_changed(field_string, changes) {
+  for (var i = 0; i < changes.length; i++) {
+    if (field_string == changes[i].path) {
+      return true
+    }
+  }
+  return false
+}
+
+function was_kicked(changes) {
+  for (var i = 0; i < changes.length; i++) {
+    if (changes[i].path == "off_reason") {
+      if (changes[i].rhs == "ca_kick") {
+        return true
+      }
+    }
+  }
+  return false
+}
 
 module.exports.questions = questions;
 module.exports.meta = meta;
