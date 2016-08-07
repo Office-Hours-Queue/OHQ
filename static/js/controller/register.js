@@ -14,15 +14,15 @@ var register_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootSc
 			}
 		}
 		if (!(/.+@.+\..+/.test($scope.register_info["email"]))) {
-			Materialize.toast("Invalid email.")
+			Materialize.toast("Invalid email.",3000)
 			return
 		}
 		if ($scope.register_info["password"].length < 8) {
-			Materialize.toast("Password must have at least 8 characters!")
+			Materialize.toast("Password must have at least 8 characters!",3000)
 			return
 		}
 		if ($scope.register_info["password"] != $scope.register_info["conf_password"]) {
-			Materialize.toast("Passwords did not match!")
+			Materialize.toast("Passwords did not match!",3000)
 			return
 		}
 		var payload = $scope.register_info
