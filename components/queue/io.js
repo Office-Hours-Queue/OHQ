@@ -127,6 +127,11 @@ module.exports = function(io) {
       cas().emit('questions', makeMessage('delete', [question.id]));
     });
 
+    queue.questions.emitter.on('question_update' ,function (question) {
+      cas().emit('questions', makeCaQuestion(question));
+    });
+
+
     queue.questions.emitter.on('question_closed', function(question) {
       ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
     });
