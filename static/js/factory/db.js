@@ -19,19 +19,33 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 		});
 	};
 
-	/* Initialize SocketIO */
-	d.sio = io('http://localhost:3000/queue');
-	d.io_connected = false
-	d.sio.on("connect", function() {
-		d.io_connected = true;
-		$rootScope.$apply();
+	/* Connect to socketio when the user exists */
+	$rootScope.$watch(function () {
+		return $rootScope.user;
+	}, function (new_val,old_val) {
+		if (old_val == undefined && new_val != undefined)  {
+			/* Initialize SocketIO */
+			d.sio = io('http://localhost:3000/queue');
+			d.sio.on("connect", function() {
+				d.io_connected = true;
+				$rootScope.$apply();
+			});
+			d.sio.on("disconnect", function () {
+				d.io_connected = false;
+				$rootScope.$apply();
+			})
+			d.sio.on("questions",function (payload) { handle_db_update("questions",payload)})
+			d.sio.on("locations",function (payload) { handle_db_update("locations",payload)})
+			d.sio.on("topics",function (payload) { handle_db_update("topics",payload)})
+			d.sio.on("ca_meta",function(payload) { handle_db_update("ca_meta",payload)});
+			d.sio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload)})
+			d.sio.on("current_question",function (payload) { handle_db_update("current_question",payload)})
+			d.sio.on("message", function (payload) { Materialize.toast(payload) })
+		}
 	});
-	d.sio.on("disconnect", function () {
-		d.io_connected = false;
-		$rootScope.$apply();
-	})
 
 	/* Initialize Model of the database */
+	d.io_connected = false
 	d.model = {
 		"questions":[],
 		"topics":[],
@@ -40,15 +54,6 @@ var db = ["$rootScope","$http", function ($rootScope,$http) {
 		"queue_meta": [],
 		"current_question": []
 	}
-
-	/* Setup events to receive */
-	d.sio.on("questions",function (payload) { handle_db_update("questions",payload)})
-	d.sio.on("locations",function (payload) { handle_db_update("locations",payload)})
-	d.sio.on("topics",function (payload) { handle_db_update("topics",payload)})
-	d.sio.on("ca_meta",function(payload) { handle_db_update("ca_meta",payload)});
-	d.sio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload)})
-	d.sio.on("current_question",function (payload) { handle_db_update("current_question",payload)})
-	d.sio.on("message", function (payload) { Materialize.toast(payload) })
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
