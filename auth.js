@@ -12,6 +12,7 @@ var cleanUser = require('./components/user/user').cleanUser;
 
 
 passport.serializeUser(function(user, done) {
+  console.log(user);
   done(null, user.id);
 });
 
@@ -35,43 +36,60 @@ passport.deserializeUser(function(id, done) {
     });
 });
 
-
 passport.use(
   new GoogleStrategy(
     config.GOOGLE_OAUTH2_CONFIG,
     function(accessToken, refreshToken, profile, done) {
+
       // see if user already exists
       db.select()
         .from('users')
         .where('google_id', profile.id)
         .first()
         .then(function(user) {
+
+          // the user exists already - pass it back up
           if (typeof user !== 'undefined') {
-            done(null, user);
-          } else {
-      // user doesn't exist already - check the user's role
+            return Promise.resolve(user);
+          }
+
+          // user doesn't exist already
+          else {
+
+            // first, check user's role
             return db.select('role')
                      .from('valid_andrew_ids')
-                     .where('andrew_id', getUserInfo(profile,"student").andrew_id)
-                     .first();
-          }
-        })
-        .then(function(role) {
-          if (typeof role === 'undefined') {
-            throw new Error('Invalid AndrewID');
-          } else {
+                     .where('andrew_id', getUserInfo(profile, 'student').andrew_id)
+                     .first()
+                     .then(function(validUser) {
 
-        // insert the user
-            return db.insert(getUserInfo(profile,role["role"]))
-                     .into('users')
-                     .returning('*');
+                       // user isn't in our roster
+                       if (typeof validUser === 'undefined') {
+                         throw { name: 'UserCreationException',
+                                 message: 'Your Andrew ID is not marked as in 15-112' };
+                       }
+
+                       // user is ok - insert and pass it back up
+                       else {
+                         return db.insert(getUserInfo(profile, validUser.role))
+                                  .into('users')
+                                  .returning('*');
+                       }
+                     })
+                     .then(function(insertedUser) {
+                        return Promise.resolve(insertedUser[0]);
+                     });
           }
         })
-        .then(function(newUser) {
-          done(null, newUser[0]);
+        .then(function(dbUser) {
+          done(null, dbUser);
         })
         .catch(function(err) {
-          done(err);
+          if (err.name === 'UserCreationException') {
+            done();
+          } else {
+            done(err);
+          }
         });
     }
   )
