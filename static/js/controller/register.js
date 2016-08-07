@@ -15,8 +15,8 @@ var register_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootSc
 			Materialize.toast("Invalid email.")
 			return
 		}
-		if ($scope.register_info["password"].length <= 8) {
-			Materialize.toast("Password must have more than 8 characters!")
+		if ($scope.register_info["password"].length < 8) {
+			Materialize.toast("Password must have at least 8 characters!")
 			return
 		}
 		if ($scope.register_info["password"] != $scope.register_info["conf_password"]) {
