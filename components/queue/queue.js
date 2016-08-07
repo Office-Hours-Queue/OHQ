@@ -28,6 +28,36 @@ var questions = (function() {
     emitter: new EventEmitter()
   };
 
+  // these are the pending unfreeze notifications to be sent
+  var pendingUnfreezeNotifications = { };
+
+  // helper function that gets a procedure which will emit the
+  // unfreeze event, and clean up timers
+  var notifyUnfrozen = function(id) {
+    return function() {
+      console.log('question_unfrozen');
+      selectQuestionId(id).then(function(question) {
+        result.emitter.emit('question_unfrozen', question);
+      });
+      delete pendingUnfreezeNotifications[id];
+    };
+  };
+
+  // populate the pending unfreeze notifications when the app starts.
+  // need to make sure that all clients who have a question that'll be
+  // unfrozen in the future are scheduled to be notified.
+  selectQuestionsOpen()
+    .where('frozen_end_time', '>=', db.fn.now())
+    .then(function(questions) {
+      questions.forEach(function(question) {
+        pendingUnfreezeNotifications[question.id] =
+          setTimeout(
+            notifyUnfrozen(question.id),
+            Math.max(0, question.frozen_end_time - Date.now())
+          );
+      });
+    });
+
   dbEvents.questions.on('update', function(newQuestion, oldQuestion) {
     // something happened to an existing question. find out what happened,
     // then emit an appropriate event
@@ -63,11 +93,13 @@ var questions = (function() {
           emitEvent('question_frozen');
           break;
         case 'frozen_end_time':
-          console.log("question unfrozen");
-          emitEvent('question_unfrozen');
-          break;
-        case 'frozen_end_max_time':
-
+          // clear the pending event, and schedule a new one sometime
+          // in the future, when the question is to be unfrozen
+          clearTimeout(pendingUnfreezeNotifications[id]);
+          pendingUnfreezeNotifications[id] = setTimeout(
+            notifyUnfrozen(id),
+            Math.max(0, Date.parse(change.rhs) - Date.now())
+          );
           break;
         case 'help_time':
           if (was_changed("frozen_time",changes)) { break; }
