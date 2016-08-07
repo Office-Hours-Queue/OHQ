@@ -290,24 +290,34 @@ function addQuestion(question) {
     on_time: db.fn.now()
   };
 
-  // insert the question
-  db.count('*')
-    .from('questions AS q')
-    .where('q.student_user_id', insertQuestion.student_user_id)
-    .where(questionOpen())
-    .first()
-    .then(function(activeQuestions) {
-      if (parseInt(activeQuestions.count) !== 0) {
-        throw new Error('Student has question already');
+  // insert the question if the queue is open
+  db.select('open')
+    .from('queue_meta')
+    .first().then(function (meta) {
+      if (meta.open) {
+        db.count('*')
+          .from('questions AS q')
+          .where('q.student_user_id', insertQuestion.student_user_id)
+          .where(questionOpen())
+          .first()
+          .then(function(activeQuestions) {
+            if (parseInt(activeQuestions.count) !== 0) {
+              throw new Error('Student has question already');
+            } else {
+              return db.insert(insertQuestion)
+                .into('questions')
+                .return(null);
+            }
+          })
+          .catch(function(error) {
+            console.log(error);
+          });
       } else {
-        return db.insert(insertQuestion)
-          .into('questions')
-          .return(null);
+            throw new Error('Queue closed');
       }
-    })
-    .catch(function(error) {
-      console.log(error);
-    });
+  });
+
+  
 }
 
 //
