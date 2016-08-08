@@ -29,6 +29,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			/* Initialize SocketIO */
 			d.sio = io('/queue');
 			d.sio.on("connect", function() {
+        setEmptyModel();
 				d.io_connected = true;
 				$rootScope.$apply();
 			});
@@ -47,17 +48,22 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		}
 	});
 
-	/* Initialize Model of the database */
 	d.io_connected = false
-	d.model = {
-		"questions":[],
-		"topics":[],
-		"locations":[],
-		"ca_meta": [],
-		"queue_meta": [],
-		"current_question": [],
-		"users": [],
-	}
+
+	/* Initialize Model of the database */
+  var setEmptyModel = function() {
+    d.model = {
+      "questions":[],
+      "topics":[],
+      "locations":[],
+      "ca_meta": [],
+      "queue_meta": [],
+      "current_question": [],
+      "users": [],
+    };
+  };
+  setEmptyModel();
+
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
