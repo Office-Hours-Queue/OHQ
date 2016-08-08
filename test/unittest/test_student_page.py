@@ -20,16 +20,6 @@ class TestStudentPage(QueueTester):
     - edit question ->  shows up on page
     """
     def test_student_page(self):
-        try:
-            get_id = "SELECT id FROM users WHERE andrew_id='%s' ;" % CMU_ANDREW
-            self.cur.execute(get_id)
-            self.conn.commit()
-            r = self.cur.fetchone()
-            query = "DELETE FROM questions WHERE student_user_id='%i' ;" % r[0]
-            self.cur.execute(query)
-            self.conn.commit()
-        except:
-            print("failed delete q")
         self.remove_user_from_users(CMU_ANDREW)
         self.remove_user_from_valid_ids(CMU_ANDREW)
         self.add_user_role(CMU_ANDREW,"student")
@@ -92,14 +82,18 @@ class TestStudentPage(QueueTester):
             #freeze the question
             toggle_freeze = self.driver.find_element_by_id("toggle_freeze")
             toggle_freeze.click()
+            time.sleep(1)
             self.check_text("Your question was frozen.")()
             freeze_text = self.driver.find_element_by_id("freeze_text").text
+            print("EDDIE",freeze_text)
             assert(freeze_text == "Unfreeze")
 
             #unfreeze
             toggle_freeze = self.driver.find_element_by_id("toggle_freeze")
             toggle_freeze.click()
+            time.sleep(1)
             freeze_text = self.driver.find_element_by_id("freeze_text").text
+            print("EDDIE",freeze_text)
             assert(freeze_text == "Freeze")
 
             #attempt to freeze again and fail
@@ -107,6 +101,7 @@ class TestStudentPage(QueueTester):
             toggle_freeze.click()
             time.sleep(1)
             freeze_text = self.driver.find_element_by_id("freeze_text").text
+            print("EDDIE",freeze_text)
             assert(freeze_text == "Freeze")
        
             #delete the question

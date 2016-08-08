@@ -7,7 +7,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import psycopg2
 
 CMU_ANDREW = "edryer"
-CMU_PASS = ""
+CMU_PASS = "extradrivearoundcaveMec1721530@cua"
 BASE_URL = "http://localhost"
 WEB_URL = BASE_URL + ":3000"
 REG_CODE = "private"
@@ -25,8 +25,22 @@ class QueueTester(unittest.TestCase):
         self.conn = psycopg2.connect("dbname='queue' user='queue' host='%s' password='supersecret'" % ("127.0.0.1"))
         self.cur = self.conn.cursor()
 
+    #helper function to clear questions for given user
+    def remove_questions_from_user(self,andrewid):
+        try:
+            get_id = "SELECT id FROM users WHERE andrew_id='%s' ;" % andrewid 
+            self.cur.execute(get_id)
+            self.conn.commit()
+            r = self.cur.fetchone()
+            query = "DELETE FROM questions WHERE student_user_id='%i' ;" % r[0]
+            self.cur.execute(query)
+            self.conn.commit()
+        except:
+            print("failed delete questions")
+
     #helper function to remove user from users table 
     def remove_user_from_users(self,andrewid):
+        self.remove_questions_from_user(andrewid)
         try:
             #the user may not exist, don't want tests to crash for this reason
             query = "DELETE FROM users WHERE andrew_id='%s' ;" % andrewid
