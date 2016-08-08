@@ -182,6 +182,7 @@ function selectDefaultQuestionFields() {
         this.count('aq.id')
             .from('questions AS aq')
             .where('aq.off_time', null)
+            .andWhere('aq.help_time', null)
             .andWhere(db.raw('aq.on_time < q.on_time'))
             .as('queue_position');
       },
