@@ -27,7 +27,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	}, function (new_val,old_val) {
 		if (old_val == undefined && new_val != undefined)  {
 			/* Initialize SocketIO */
-			d.sio = io('http://localhost:3000/queue');
+			d.sio = io('/queue');
 			d.sio.on("connect", function() {
 				d.io_connected = true;
 				$rootScope.$apply();
