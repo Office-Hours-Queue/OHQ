@@ -27,7 +27,7 @@
           <!-- Cards Display -->
           <div class="center row">
             <div class="col l4 m6 s12" id="questionCol">
-              <a href="#modalnewquestion" modal><div class="card  {{ ($db.model['questions'].length != 0) ? 'grey lighten-2' : 'green' }}">
+              <a id="new_q" href="#modalnewquestion" modal><div class="card  {{ ($db.model['questions'].length != 0) ? 'grey lighten-2' : 'green' }}">
                 <div class="center card-content {{ ($db.model['questions'].length != 0) ? 'grey-text text-lighten-1' : 'white-text' }}">
                   <p id="ask" style="font-size:25px;">Ask a Question</p>
                 </div>
@@ -36,14 +36,14 @@
             <div class="col l4 m6 s12">
               <div class="card {{ ($db.model['questions'].length == 0) ? 'grey lighten-2' : '' }}">
                 <div class="center card-content {{ ($db.model['questions'].length == 0) ? 'grey-text text-lighten-1' : '' }} ">     
-                  <span style="font-size:25px;">{{ ($db.model['questions'].length == 0) ? 'Position: NA' : 'Position: ' + $db.model["questions"][0]["queue_ps"]}}</span>
+                  <span id="pos_card" style="font-size:25px;">{{ ($db.model['questions'].length == 0) ? 'Position: NA' : 'Position: ' + $db.model["questions"][0]["queue_ps"]}}</span>
                 </div>
               </div>
             </div>
             <div class="col l4 m6 s12">
-              <a href="" ng-click="toggle_freeze()"><div class="card {{ !($db.can_freeze())  && !($db.is_frozen()) ? 'grey lighten-2' : 'blue' }}">
+              <a id="toggle_freeze" href="" ng-click="toggle_freeze()"><div class="card {{ !($db.can_freeze())  && !($db.is_frozen()) ? 'grey lighten-2' : 'blue' }}">
                 <div class="center card-content {{ !($db.can_freeze()) || $db.is_frozen()   ? 'grey-text text-lighten-1' : 'white-text' }} ">     
-                  <span style="font-size:25px;">{{ $db.is_frozen() ? 'Unfreeze' : 'Freeze'}}</span>
+                  <span id="freeze_text" style="font-size:25px;">{{ $db.is_frozen() ? 'Unfreeze' : 'Freeze'}}</span>
                 </div>
               </div></a>
             </div>
@@ -64,12 +64,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="q in $db.model['questions']">
+                  <tr name="q_row" ng-repeat="q in $db.model['questions']">
                     <td>{{ $db.get_topic_by_id(q.topic_id) }}</td>
                     <td>{{ $db.get_location_by_id(q.location_id) }}</td>
-                    <td>{{ q.help_text }}</td>
-                    <td><a href="#modaleditquestion" modal><i class="material-icons">edit</i></a></td>
-                    <td><a href="#modaldelete" modal><i class="material-icons">delete</i></a></td>
+                    <td id="help_text_table">{{ q.help_text }}</td>
+                    <td><a id="pencil_edit" href="#modaleditquestion" modal><i class="material-icons">edit</i></a></td>
+                    <td><a id="trash_delete" href="#modaldelete" modal><i class="material-icons">delete</i></a></td>
                   </tr>
                 </tbody>
             </table>
@@ -78,7 +78,7 @@
         <!-- New Question Modal -->
         <div class="modal modal-fixed-footer" id="modalnewquestion">
             <div class="modal-content">
-                <h4 class="center">{{ ($db.model["questions"].length == 0) ? 'New Question' : 'You already have a question.' }}</h4>
+                <h4 id="have_q" class="center">{{ ($db.model["questions"].length == 0) ? 'New Question' : 'You already have a question.' }}</h4>
                 <div ng-show="($db.model['questions'].length == 0)" class="container">
                   <h5>Topic</h5>
                   <div input-field>
@@ -97,7 +97,7 @@
                 </div>
             </div>
             <div ng-click="ask_question()" class="modal-footer">
-                <a id="prefbtn"  class="waves-effect btn-flat">{{ ($db.model["questions"].length == 0) ? 'Ask' : 'Okay' }}</a>
+                <a id="prefbtn" name="submit_new_q" class="waves-effect btn-flat">{{ ($db.model["questions"].length == 0) ? 'Ask' : 'Okay' }}</a>
             </div>
         </div>
 
@@ -108,20 +108,20 @@
                   <h5>Topic</h5>
                   <div input-field>
                     <select ng-model="selected.topic" class=""  material-select watch>
-                    <option value="{{ t.id }}" ng-repeat="t in $db.model['topics']">{{t.topic}}</option>
+                    <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model['topics']">{{t.topic}}</option>
                     </select>
                   </div>
                   <h5>Location</h5>
                   <div input-field>
                     <select ng-model="selected.location" class=""  material-select watch>
-                    <option value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
+                    <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
                     </select>
                   </div>
                   <h5>Description</h5>
                   <textarea id="q_desc_update" class="materialize-textarea">{{ $db.model['questions'][0].help_text }}</textarea>
                 </div>
             <div ng-click="update_question()" class="modal-footer">
-                <a id="prefbtn"  class="waves-effect btn-flat">Submit Edit</a>
+                <a id="prefbtn" name="submit_edit_q" class="waves-effect btn-flat">Submit Edit</a>
             </div>
         </div>
 
@@ -154,7 +154,7 @@
                 <h4 class="center">Are you sure you want to delete your question?</h4>
             </div>
             <div class="modal-footer">
-                <div ng-click="$db.delete_question()"><a id="prefbtn"  class="modal-action modal-close waves-effect btn-flat">Delete</a></div>
+                <div  ng-click="$db.delete_question()"><a id="prefbtn"  name="do_delete" class="modal-action modal-close waves-effect btn-flat">Delete</a></div>
                 <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Cancel</a>
             </div>
         </div>
