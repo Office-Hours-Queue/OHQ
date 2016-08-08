@@ -79,7 +79,9 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 				for (var i = 0; i < payload.length; i++) {
 					var qid = payload[i]
 					var db_index = get_index_by_id(d.model[db_name],qid)
-					d.model[db_name].splice(db_index,1);
+					if (db_index > -1) {
+					  d.model[db_name].splice(db_index,1);
+					}
 				}
 				break;
 		}
