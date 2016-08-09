@@ -1,5 +1,5 @@
 var router = require('express').Router();
-var bcrypt = require('bcryptjs');
+var bcrypt = require('bcrypt');
 var validate = require('express-jsonschema').validate;
 var isAuthenticated = require('../../auth').isAuthenticated;
 var db = require('../../db');
