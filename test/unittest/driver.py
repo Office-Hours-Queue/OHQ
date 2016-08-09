@@ -37,7 +37,7 @@ class User(object):
 			config.close()
 	load_config()
 
-	def __init__(self,role):
+	def __init__(self,role,create_user=True):
 		"""
 		Initialize a user by setting up selenium, 
 		psycopg2 and registering them.
@@ -67,40 +67,46 @@ class User(object):
 		self.conn = psycopg2.connect(conn_str)
 		self.cur = self.conn.cursor()
 
-		#Initialize basic information 
-		aid = str(uuid.uuid4())
-		self.info = {
-			"andrew_id": aid ,
-			"email":  aid + "@cmu.edu",
-			"first_name":  aid + "fname",
-			"last_name":  aid + "lname",
-			"password":  "woowoowoowoo",
-			"conf_password":  "woowoowoowoo",
-			"role":  role,
-			"reg_code":  User.Config["queue_reg_code"],
-		}
-		
-		#Insert self into valid_andrew_ids
-		role = self.info["role"]
-		add_query = "INSERT INTO valid_andrew_ids (andrew_id,role) VALUES ('%s','%s') ; " % (aid,role)
-		self.cur.execute(add_query)
-		self.conn.commit()
+		if (create_user):
+			#Initialize basic information 
+			aid = str(uuid.uuid4())
+			self.info = {
+				"andrew_id": aid ,
+				"email":  aid + "@cmu.edu",
+				"first_name":  aid + "fname",
+				"last_name":  aid + "lname",
+				"password":  "woowoowoowoo",
+				"conf_password":  "woowoowoowoo",
+				"role":  role,
+				"registration_code":  User.Config["queue_reg_code"],
+			}
+			
+			#Insert self into valid_andrew_ids
+			role = self.info["role"]
+			add_query = "INSERT INTO valid_andrew_ids (andrew_id,role) VALUES ('%s','%s') ; " % (aid,role)
+			self.cur.execute(add_query)
+			self.conn.commit()
 
 	def tearDown(self):
 		"""Exit selenium and psycopg2."""
-		#remove questions from user
-		get_id = "SELECT id FROM users WHERE andrew_id='%s' ;" % self.info["andrew_id"]
-		self.cur.execute(get_id)
-		self.conn.commit()
-		r = self.cur.fetchone()
-		query = "DELETE FROM questions WHERE student_user_id='%i' ;" % r[0]
-		self.cur.execute(query)
-		self.conn.commit()
 
-		#delete user
-		query = "DELETE FROM users WHERE andrew_id='%s' ;" % self.info["andrew_id"]
-		self.cur.execute(query)
-		self.conn.commit()
+		#remove questions from user (they may not have registered!)
+		try:
+			get_id = "SELECT id FROM users WHERE andrew_id='%s' ;" % self.info["andrew_id"]
+			self.cur.execute(get_id)
+			self.conn.commit()
+			r = self.cur.fetchone()
+			query = "DELETE FROM questions WHERE student_user_id='%i' ;" % r[0]
+			self.cur.execute(query)
+			self.conn.commit()
+
+		#delete user (they may not have registered!)
+		try:
+			query = "DELETE FROM users WHERE andrew_id='%s' ;" % self.info["andrew_id"]
+			self.cur.execute(query)
+			self.conn.commit()
+		except:
+			print("Failed to delete user")
 
 		#remove from valid_andrew_ids
 		del_query = "DELETE FROM valid_andrew_ids WHERE andrew_id='%s' ; " % self.info["andrew_id"]
@@ -397,3 +403,51 @@ class CA(User):
 				vals.append(field.text)
 			result.append(vals)
 		return result
+
+class CMULoginCA(User):
+	"""Represents a User with role 'ca' who logged in through CMU."""
+	def __init__(self,should_insert=True):
+		super().__init__("ca",create_user=False)
+		self.info = {
+			"andrew_id": User.Config["cmu_login_andrew"],
+			"password": User.Config["cmu_login_pass"],
+			"role": "ca"
+		}
+
+		if (should_insert):
+			try: #may already exist 
+				#Insert self into valid_andrew_ids
+				role = self.info["role"]
+				add_query = "INSERT INTO valid_andrew_ids (andrew_id,role) VALUES ('%s','%s') ; " % (aid,role)
+				self.cur.execute(add_query)
+				self.conn.commit()
+			except:
+				print("Failed to insert cmu login id into valid_andrew_ids")
+
+	def login(self,check_fn=None):
+		"""Log the user in through CMU""" 
+        self.driver.get(User.Config["queue_url"])
+        lets_begin = self.driver.find_element_by_id('lets_begin')
+        lets_begin.click()
+        time.sleep(1)
+        user_field = self.driver.find_element_by_id("j_username")
+        pass_field = self.driver.find_element_by_id("j_password")
+        user_field.send_keys(CMU_ANDREW)
+        pass_field.send_keys(CMU_PASS)
+        submit = self.driver.find_element_by_name("_eventId_proceed")
+        submit.click()
+        time.sleep(3)
+
+        #give permission,page doesn't always show up
+        try:
+            approve = self.driver.find_element_by_id("submit_approve_access")
+            approve.click()
+        except:
+            pass
+
+        if (check_fn != None): check_fn(self)
+
+
+
+
+
