@@ -72,7 +72,7 @@
           </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="q in $db.model['questions']">
+            <tr name="q_row" ng-repeat="q in $db.model['questions']">
             	<td>{{ q.first_name }}</td>
             	<td>{{ q.andrew_id }}</td>
               <td>{{ q.topic }}</td>
@@ -98,11 +98,11 @@
           </div>
           <div class="modal-footer">
           		<div class="left">
-          			<a ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
+          			<a id="kick_q" ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
           		</div>
           		<div class="right">
-	          		<a ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
-	          		<a ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
+	          		<a id="finish_q" ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
+	          		<a id="freeze_q" ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
           		</div>
           </div>
       </div>

@@ -1,0 +1,23 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+	"required": ["cmu_login_andrew","cmu_login_pass", "queue_reg_code",
+				 "queue_url","db_host", "db_name", "db_user","db_pass",
+				 "selenium_hub_url","browser"],
+	"properties": {
+		"cmu_login_andrew": {"type": "string", "minLength": 1},
+		"cmu_login_pass": {"type": "string", "minLength": 1},
+		"queue_reg_code": {"type": "string", "minLength": 1},
+		"queue_url": { "type": "string","format": "uri"},
+		"db_host": { "type": "string","format": "uri"},
+		"db_name": {"type": "string", "minLength": 1},
+		"db_user": {"type": "string", "minLength": 1},
+		"db_pass": {"type": "string", "minLength": 1},
+		"selenium_hub_url": { "type": "string","format": "uri"},
+		"browser": {
+		 "type": "string",
+ 		 "enum": ["chrome", "firefox", "safari","ie"]
+		}
+	}
+}
+
