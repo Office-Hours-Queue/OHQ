@@ -38,6 +38,21 @@ class QueueTester(unittest.TestCase):
         except:
             print("failed delete questions")
 
+    def set_all_offline(self):
+        query = "UPDATE users SET is_online='False'"
+        self.cur.execute(query)
+        self.conn.commit()
+
+    def update_min_rule(self,n):
+        query = "UPDATE queue_meta SET time_limit='%i'" % n 
+        self.cur.execute(query)
+        self.conn.commit()
+
+    def set_queue_off(self):
+        query = "UPDATE queue_meta SET open='False'"
+        self.cur.execute(query)
+        self.conn.commit()
+        
     #helper function to remove user from users table 
     def remove_user_from_users(self,andrewid):
         self.remove_questions_from_user(andrewid)
