@@ -162,6 +162,7 @@ class TestCMULogin(unittest.TestCase):
             header = user.driver.find_element_by_partial_link_text('Login Failed')
             assert('Login Failed' in  header.text)
         ca.login(check_fn=check_fail)
+        ca.tearDown()
 
 class TestInteractions(unittest.TestCase):
     """Test interactions between CA + Student, CA + CA, and Student + Student."""
