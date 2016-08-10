@@ -1,5 +1,14 @@
 .DS_Store
 
+*/selenium-server-standalone-2.53.1.jar
+*/chromedriver
+
+test/unittest/chromedriver
+test/unittest/selenium-server-standalone-2.53.1.jar
+__pycache__/
+*.py[cod]
+*$py.class
+
 ## Node
 # Logs
 logs

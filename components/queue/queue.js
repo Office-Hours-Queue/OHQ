@@ -139,8 +139,8 @@ var questions = (function() {
   });
 
   dbEvents.questions.on('delete', function(oldQuestion) {
-    // this shouldn't happen, so let's log it
-    throw new Error('Question deleted');
+    //happens on testing
+    console.log("Question deleted")
   });
 
   return result;

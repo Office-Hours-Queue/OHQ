@@ -26,6 +26,7 @@ var register_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootSc
 			return
 		}
 		var payload = $scope.register_info
+		console.log(payload)
 		$http.post("/user/createlocal",payload).then(
 			function(successData) {
 				Materialize.toast("Success! Click &nbsp <a href='/#/'>here</a> &nbsp to return to the login page.")

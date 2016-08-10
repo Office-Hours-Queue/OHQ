@@ -12,7 +12,7 @@ module.exports = {
       password: 'supersecret'
     },
     pool: {
-      min:1,
+      min: 1,
       max: 1
     },
     migrations: {
@@ -20,6 +20,23 @@ module.exports = {
     }
   },
 
-  // We'll add similar configs for production as needed
+  demo: {
+    client: 'postgresql',
+    connection: {
+      host:     '127.0.0.1',
+      port:     '5432',
+      database: 'queue',
+      user:     'queue',
+      password: 'supersecret'
+    },
+    pool: {
+      min: 1,
+      max: 50
+    },
+    migrations: {
+      tableName: 'knex_migrations'
+    }
+  },
+
 
 };

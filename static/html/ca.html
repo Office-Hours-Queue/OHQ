@@ -12,14 +12,14 @@
 
 		<div class="center row">
 		    <div class="col l4 " style="margin-bottom:10px;">
-		        <a ng-show="$db.model['queue_meta'][0].open" ng-click="$db.close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
+		        <a id="close_queue_btn" ng-show="$db.model['queue_meta'][0].open" ng-click="$db.close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
 
-		        <a ng-show="!($db.model['queue_meta'][0].open)" ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
+		        <a id="open_queue_btn" ng-show="!($db.model['queue_meta'][0].open)" ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
 		    </div>
 		   	<div class="col  l4 " style="margin-bottom:10px;">
-		        <a ng-show="$db.model['users'][0].is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn orange">Go Offline</a>
+		        <a id="go_offline_btn" ng-show="$db.model['users'][0].is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn orange">Go Offline</a>
 
-		        <a ng-show="!($db.model['users'][0].is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn green">Go Online</a>
+		        <a id="go_online_btn" ng-show="!($db.model['users'][0].is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn green">Go Online</a>
 		    </div>
 		    <div class="col  l4 " style="margin-bottom:10px;">
 				<a id="answer-btn" ng-click="$db.answer_question()" class="btn {{ $db.model['questions'].length > 0  ? '' : 'disabled' }}">Answer Question</a>
@@ -46,12 +46,12 @@
 		    <div class="col m4 s6">
 		        <div class="card orange">
 		            <div class="center card-content white-text">
-		                  <span class="card-title" style="font-size:20px;">MinRule</span>
-		                  <p style="font-size:50px;">{{ $db.model['queue_meta'][0].time_limit }}</p>
-		                  <a class="activator white-text right" style="margin-top:-10px;"><i class="material-icons right" style="font-size:20px; margin-bottom:5px; margin-right:-10px;">more_vert</i></a>
+		                  <span id="min_rule" class="card-title" style="font-size:20px;">MinRule</span>
+		                  <p id="min_rule_text" style="font-size:50px;">{{ $db.model['queue_meta'][0].time_limit }}</p>
+		                  <a id="min_rule_change" class="activator white-text right" style="margin-top:-10px;"><i class="material-icons right" style="font-size:20px; margin-bottom:5px; margin-right:-10px;">more_vert</i></a>
 		            </div>
 		            <div class="card-reveal">
-		                <span class="card-title grey-text text-darken-4" style="font-size:20px; margin-left:-30px;">Edit<a id="minbtn"><i ng-click="update_minute_rule()" class="grey-text material-icons right" style="font-size:20px;">close</i></a></span>
+		                <span class="card-title grey-text text-darken-4" style="font-size:20px; margin-left:-30px;">Edit<a id="minbtn"><i id="update_rule_btn" ng-click="update_minute_rule()" class="grey-text material-icons right" style="font-size:20px;">close</i></a></span>
 		                <input type="text" id="minuteRule" name="minuteRule" value="{{ $db.model['queue_meta'][0].time_limit }}" class="validate" style="margin-top:15px;">
 		            </div>
 		        </div>
@@ -72,7 +72,7 @@
           </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="q in $db.model['questions']">
+            <tr name="q_row" ng-repeat="q in $db.model['questions']">
             	<td>{{ q.first_name }}</td>
             	<td>{{ q.andrew_id }}</td>
               <td>{{ q.topic }}</td>
@@ -98,11 +98,11 @@
           </div>
           <div class="modal-footer">
           		<div class="left">
-          			<a ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
+          			<a id="kick_q" ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
           		</div>
           		<div class="right">
-	          		<a ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
-	          		<a ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
+	          		<a id="finish_q" ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
+	          		<a id="freeze_q" ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
           		</div>
           </div>
       </div>

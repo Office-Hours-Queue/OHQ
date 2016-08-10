@@ -117,7 +117,7 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
       }
     })
     .then(function(existingUser) {
-      if (typeof existingUser !== 'undefined') {
+      if (typeof(existingUser) !== 'undefined') {
         throw { name: 'UserCreationException', message: 'Andrew ID already registered.' };
       } else {
 
