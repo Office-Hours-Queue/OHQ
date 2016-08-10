@@ -5,14 +5,13 @@
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var LocalStrategy = require('passport-local').Strategy;
-var bcrypt = require('bcryptjs');
+var bcrypt = require('bcrypt');
 var db = require('./db');
 var config = require('./config');
 var cleanUser = require('./components/user/user').cleanUser;
 
 
 passport.serializeUser(function(user, done) {
-  console.log(user);
   done(null, user.id);
 });
 

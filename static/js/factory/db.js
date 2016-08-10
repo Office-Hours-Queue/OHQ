@@ -27,8 +27,9 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	}, function (new_val,old_val) {
 		if (old_val == undefined && new_val != undefined)  {
 			/* Initialize SocketIO */
-			d.sio = io('http://localhost:3000/queue');
+			d.sio = io('/queue');
 			d.sio.on("connect", function() {
+        setEmptyModel();
 				d.io_connected = true;
 				$rootScope.$apply();
 			});
@@ -47,17 +48,22 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		}
 	});
 
-	/* Initialize Model of the database */
 	d.io_connected = false
-	d.model = {
-		"questions":[],
-		"topics":[],
-		"locations":[],
-		"ca_meta": [],
-		"queue_meta": [],
-		"current_question": [],
-		"users": [],
-	}
+
+	/* Initialize Model of the database */
+  var setEmptyModel = function() {
+    d.model = {
+      "questions":[],
+      "topics":[],
+      "locations":[],
+      "ca_meta": [],
+      "queue_meta": [],
+      "current_question": [],
+      "users": [],
+    };
+  };
+  setEmptyModel();
+
 	var handle_db_update = function(db_name,event) {
 		var event_type = event["type"];
 		var payload = event["payload"];
@@ -79,7 +85,9 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 				for (var i = 0; i < payload.length; i++) {
 					var qid = payload[i]
 					var db_index = get_index_by_id(d.model[db_name],qid)
-					d.model[db_name].splice(db_index,1);
+					if (db_index > -1) {
+					  d.model[db_name].splice(db_index,1);
+					}
 				}
 				break;
 		}
