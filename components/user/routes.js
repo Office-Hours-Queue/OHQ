@@ -4,6 +4,7 @@ var validate = require('express-jsonschema').validate;
 var isAuthenticated = require('../../auth').isAuthenticated;
 var db = require('../../db');
 var cleanUser = require('./user').cleanUser;
+var Promise = require('bluebird');
 
 router.get('/', isAuthenticated, function(req, res, next) {
   res.send(cleanUser(req.user));
@@ -131,20 +132,27 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
         throw { name: 'UserCreationException', message: 'Your Andrew ID is not marked as in 15-112.' };
       } else {
 
+  // async hash password, then join with role
+        var hashPromise = Promise.promisify(bcrypt.hash)(body.password, 10);
+        var rolePromise = Promise.resolve(role.role);
+
+        return Promise.join(rolePromise, hashPromise);
+      }
+    })
+    .spread(function(role, hash) {
+
   // insert and return the new user
-        role = role.role;
         return db.insert({
             andrew_id: body.andrew_id,
             email: body.email,
             first_name: body.first_name,
             last_name: body.last_name,
-            pw_bcrypt: bcrypt.hashSync(body.password, 10),
+            pw_bcrypt: hash,
             role: role,
             is_temp_pw: false
           })
           .into('users')
           .returning('*');
-      }
     })
     .then(function(newUser) {
       res.send(cleanUser(newUser[0]));
