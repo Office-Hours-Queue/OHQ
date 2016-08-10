@@ -12,7 +12,6 @@ var cleanUser = require('./components/user/user').cleanUser;
 
 
 passport.serializeUser(function(user, done) {
-  console.log(user);
   done(null, user.id);
 });
 
