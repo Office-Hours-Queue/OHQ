@@ -160,8 +160,9 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
     .catch(function(err) {
       if (err.name === 'UserCreationException') {
         res.status(400).send(err);
+      } else {
+        next(err);
       }
-      next(err);
     });
 });
 
