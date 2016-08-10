@@ -4,6 +4,7 @@
   "description": "Realtime queueing for office hours",
   "private": true,
   "scripts": {
+    "prestart": "NODE_ENV=development ./bin/prestart_checks",
     "start": "NODE_ENV=development ./node_modules/.bin/supervisor ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

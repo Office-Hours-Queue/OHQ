@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+/**
+ * Perform pre-start checks
+ */
+
+// make sure that db and node app times are consistent
+function consistentDbTime() {
+  var config = require('../config');
+  var Client = require('pg').Client;
+  var client = new Client(config.KNEX.connection);
+  client.connect();
+  client.query('SELECT NOW()', function(err, result) {
+    if (err) {
+      throw 'Could not get time';
+    }
+    var nodeNow = new Date();
+    var dbNow = result.rows[0].now;
+    if (Math.abs(nodeNow - dbNow) > 100) {
+      throw 'DB/Node times differ by more than 100 ms. Check your system time configuration.';
+    }
+    client.end();
+  });
+}
+
+consistentDbTime();
