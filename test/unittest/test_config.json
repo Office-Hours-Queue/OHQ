@@ -3,7 +3,7 @@
 	"cmu_login_pass":"",
 	"queue_reg_code":"private",
 	"queue_url":"http://localhost:3000",
-	"db_host": "http://localhost",
+	"db_host": "localhost",
 	"db_name": "queue",
 	"db_user": "queue",
 	"db_pass": "supersecret",
