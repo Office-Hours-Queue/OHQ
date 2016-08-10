@@ -40,7 +40,8 @@ router.post('/edit', isAuthenticated, validate({body: UserEditSchema}), function
         throw { name: 'UserEditException', message: 'Use Google login' };
       } else {
         if (body.hasOwnProperty('password')) {
-          body.pw_bcrypt = bcrypt.hashSync(body.password);
+          // TODO: use async
+          body.pw_bcrypt = bcrypt.hashSync(body.password, 12);
           delete body.password;
         }
         return db('users')
@@ -133,7 +134,7 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
       } else {
 
   // async hash password, then join with role
-        var hashPromise = Promise.promisify(bcrypt.hash)(body.password, 10);
+        var hashPromise = Promise.promisify(bcrypt.hash)(body.password, 12);
         var rolePromise = Promise.resolve(role.role);
 
         return Promise.join(rolePromise, hashPromise);
