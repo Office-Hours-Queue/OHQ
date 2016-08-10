@@ -1,9 +1,10 @@
 var router = require('express').Router();
-var bcrypt = require('bcryptjs');
+var bcrypt = require('bcrypt');
 var validate = require('express-jsonschema').validate;
 var isAuthenticated = require('../../auth').isAuthenticated;
 var db = require('../../db');
 var cleanUser = require('./user').cleanUser;
+var Promise = require('bluebird');
 
 router.get('/', isAuthenticated, function(req, res, next) {
   res.send(cleanUser(req.user));
@@ -39,7 +40,8 @@ router.post('/edit', isAuthenticated, validate({body: UserEditSchema}), function
         throw { name: 'UserEditException', message: 'Use Google login' };
       } else {
         if (body.hasOwnProperty('password')) {
-          body.pw_bcrypt = bcrypt.hashSync(body.password);
+          // TODO: use async
+          body.pw_bcrypt = bcrypt.hashSync(body.password, 12);
           delete body.password;
         }
         return db('users')
@@ -131,20 +133,27 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
         throw { name: 'UserCreationException', message: 'Your Andrew ID is not marked as in 15-112.' };
       } else {
 
+  // async hash password, then join with role
+        var hashPromise = Promise.promisify(bcrypt.hash)(body.password, 12);
+        var rolePromise = Promise.resolve(role.role);
+
+        return Promise.join(rolePromise, hashPromise);
+      }
+    })
+    .spread(function(role, hash) {
+
   // insert and return the new user
-        role = role.role;
         return db.insert({
             andrew_id: body.andrew_id,
             email: body.email,
             first_name: body.first_name,
             last_name: body.last_name,
-            pw_bcrypt: bcrypt.hashSync(body.password, 10),
+            pw_bcrypt: hash,
             role: role,
             is_temp_pw: false
           })
           .into('users')
           .returning('*');
-      }
     })
     .then(function(newUser) {
       res.send(cleanUser(newUser[0]));
@@ -152,8 +161,9 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
     .catch(function(err) {
       if (err.name === 'UserCreationException') {
         res.status(400).send(err);
+      } else {
+        next(err);
       }
-      next(err);
     });
 });
 
