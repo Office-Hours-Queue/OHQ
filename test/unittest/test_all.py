@@ -23,186 +23,188 @@ class TestCMULogin(unittest.TestCase):
         ca.login(check_fn=check_fail)
         ca.tearDown()
 
-# class TestRegister(unittest.TestCase):
-#     """Test registration."""
+class TestRegister(unittest.TestCase):
+    """Test registration."""
 
-#     def test_register_student_then_login(self):
-#         student = Student()
-#         student.register()
-#         student.login()
-#         student.logout()
-#         student.tearDown()
+    def test_register_student_then_login(self):
+        student = Student()
+        student.register()
+        student.login()
+        student.logout()
+        student.tearDown()
       
-#     def test_register_ca_then_login(self):
-#         ca = CA()
-#         ca.register()
-#         ca.login()
-#         ca.logout()
-#         ca.tearDown()
+    def test_register_ca_then_login(self):
+        ca = CA()
+        ca.register()
+        ca.login()
+        ca.logout()
+        ca.tearDown()
 
-#     def test_register_andrew_id_used(self):
-#         student = Student()
-#         student.register()
-#         student.register()
-#         student.check_toast("Andrew ID already registered.")
-#         student.tearDown()
+    def test_register_andrew_id_used(self):
+        student = Student()
+        student.register()
+        student.register()
+        student.check_toast("Andrew ID already registered.")
+        student.tearDown()
 
-#     def test_register_not_in_course(self):
-#         student = Student()
-#         student.info["andrew_id"] = "notincourse"
-#         student.register()
-#         student.check_toast("Your Andrew ID is not marked as in 15-112.")
-#         student.tearDown()
+    def test_register_not_in_course(self):
+        student = Student()
+        student.info["andrew_id"] = "notincourse"
+        student.register()
+        student.check_toast("Your Andrew ID is not marked as in 15-112.")
+        student.tearDown()
 
-#     def test_register_passwords_dont_match(self):
-#         student = Student()
-#         student.info["conf_password"] = "badpass"
-#         student.register()
-#         student.check_toast("Passwords did not match!")
-#         student.tearDown()
+    def test_register_passwords_dont_match(self):
+        student = Student()
+        student.info["conf_password"] = "badpass"
+        student.register()
+        student.check_toast("Passwords did not match!")
+        student.tearDown()
 
-#     def test_register_invalid_email(self):
-#         student = Student()
-#         student.info["email"] = "bademail"
-#         student.register()
-#         student.check_toast("Invalid email.")
-#         student.tearDown()
+    def test_register_invalid_email(self):
+        student = Student()
+        student.info["email"] = "bademail"
+        student.register()
+        student.check_toast("Invalid email.")
+        student.tearDown()
 
-#     def test_register_incorrect_reg_code(self):
-#         student = Student()
-#         student.info["registration_code"] += "woo" 
-#         student.register()
-#         student.check_toast("Invalid registration code.")
-#         student.tearDown()
+    def test_register_incorrect_reg_code(self):
+        student = Student()
+        student.info["registration_code"] += "woo" 
+        student.register()
+        student.check_toast("Invalid registration code.")
+        student.tearDown()
 
-# class TestStudent(unittest.TestCase):
-#     """Test the student page."""
+class TestStudent(unittest.TestCase):
+    """Test the student page."""
 
-#     def test_student(self):
-#         student = Student()
-#         student.register()
-#         student.login()
-#         student.ask_question()
-#         student.edit_question()
-#         student.freeze_question()
-#         student.unfreeze_question()
-#         pos = student.get_pos()
-#         assert("NA" not in pos)
-#         student.delete_question()
-#         student.logout()
-#         student.tearDown()
+    def test_student(self):
+        student = Student()
+        student.register()
+        student.login()
+        student.ask_question()
+        student.edit_question()
+        student.freeze_question()
+        student.unfreeze_question()
+        pos = student.get_pos()
+        assert("NA" not in pos)
+        student.delete_question()
+        student.logout()
+        student.tearDown()
 
-# class TestCA(unittest.TestCase):
-#     """Test the CA Page"""
+class TestCA(unittest.TestCase):
+    """Test the CA Page"""
 
-#     def setUp(self):
-#         student = Student()
-#         student.register()
-#         student.login()
-#         self.student = student
-#         ca = CA()
-#         ca.register()
-#         ca.login()
-#         self.ca = ca
+    def setUp(self):
+        student = Student()
+        student.register()
+        student.login()
+        self.student = student
+        ca = CA()
+        ca.register()
+        ca.login()
+        self.ca = ca
 
-#     def tearDown(self):
-#         self.ca.logout()
-#         self.ca.tearDown()
-#         self.student.logout()
-#         self.student.tearDown()
+    def tearDown(self):
+        self.ca.logout()
+        self.ca.tearDown()
+        self.student.logout()
+        self.student.tearDown()
 
-#     def test_minute_rule(self):
-#         #test minute rule
-#         self.ca.update_minute_rule(10)
-#         min_rule = self.ca.get_minute_rule()
-#         assert(min_rule == "10")
-#         self.ca.update_minute_rule(5)
+    def test_minute_rule(self):
+        #test minute rule
+        self.ca.update_minute_rule(10)
+        min_rule = self.ca.get_minute_rule()
+        assert(min_rule == "10")
+        self.ca.update_minute_rule(5)
 
-#     def test_online_open_buttons(self):
-#         #if the buttons don't change these fails
-#         self.ca.go_online()
-#         self.ca.go_offline()
-#         self.ca.go_online()
-#         one_worked = False
-#         try:    
-#             self.ca.close_queue()
-#             self.ca.open_queue()
+    def test_online_open_buttons(self):
+        #if the buttons don't change these fails
+        self.ca.go_online()
+        self.ca.go_offline()
+        self.ca.go_online()
+        one_worked = False
+        try:    
+            self.ca.close_queue()
+            self.ca.open_queue()
 
-#             one_worked = True
-#         except:
-#             try:
-#                 self.ca.open_queue()
-#                 self.ca.close_queue()
-#                 one_worked = True
-#             except:
-#                 pass
-#         assert(one_worked)
+            one_worked = True
+        except:
+            try:
+                self.ca.open_queue()
+                self.ca.close_queue()
+                one_worked = True
+            except:
+                pass
+        assert(one_worked)
 
-#     def test_n_cas(self):
-#         n_cas = self.ca.get_num_cas()
-#         assert(n_cas != "")
-#         assert(n_cas.isdigit())
-#         n = int(n_cas)        
-#         ca2 = CA()
-#         ca2.register()
-#         ca2.login()
-#         ca2.go_online()
-#         n_cas = self.ca.get_num_cas()
-#         assert(n_cas != "")
-#         assert(n_cas.isdigit())
-#         n_after = int(n_cas)
-#         assert(n_after == n + 1)
-#         ca2.logout()
-#         ca2.tearDown()
+    def test_n_cas(self):
+        n_cas = self.ca.get_num_cas()
+        assert(n_cas != "")
+        assert(n_cas.isdigit())
+        n = int(n_cas)        
+        ca2 = CA()
+        ca2.register()
+        ca2.login()
+        ca2.go_online()
+        n_cas = self.ca.get_num_cas()
+        assert(n_cas != "")
+        assert(n_cas.isdigit())
+        n_after = int(n_cas)
+        assert(n_after == n + 1)
+        ca2.logout()
+        ca2.tearDown()
 
-#     def test_n_questions(self):
-#         n_questions = self.ca.get_n_questions() 
-#         assert(n_questions != "")
-#         assert(n_questions.isdigit())
-#         n = int(n_questions)
-#         self.student.ask_question()
-#         n_questions = self.ca.get_n_questions() 
-#         assert(n_questions != "")
-#         assert(n_questions.isdigit())
-#         n1 = int(n_questions)
-#         self.student.delete_question()
-#         n_questions = self.ca.get_n_questions() 
-#         assert(n_questions != "")
-#         assert(n_questions.isdigit())
-#         n2 = int(n_questions)
-#         assert(n == n2)
-#         assert(n + 1 == n1)
+    def test_n_questions(self):
+        n_questions = self.ca.get_n_questions() 
+        assert(n_questions != "")
+        assert(n_questions.isdigit())
+        n = int(n_questions)
+        self.student.ask_question()
+        n_questions = self.ca.get_n_questions() 
+        assert(n_questions != "")
+        assert(n_questions.isdigit())
+        n1 = int(n_questions)
+        self.student.delete_question()
+        n_questions = self.ca.get_n_questions() 
+        assert(n_questions != "")
+        assert(n_questions.isdigit())
+        n2 = int(n_questions)
+        assert(n == n2)
+        assert(n + 1 == n1)
 
-#     def test_answer_question(self):
-#         return #currently broken
-#         self.student.ask_question()
-#         self.ca.answer_question()
-#         self.student.check_toast("A Course Assistant is on the way!")
-#         self.ca.finish_question()
-#         self.student.check_toast("Your question was marked as closed.")
-#         self.student.logout()
-#         self.student.login()
-#         time.sleep(1)
-#         self.student.ask_question()
-#         self.ca.answer_question()
-#         self.ca.kick_question()
-#         self.student.check_toast("Your question was kicked from the queue.")
-#         self.student.logout()
-#         self.student.login()
-#         time.sleep(1)
-#         self.student.ask_question()
-#         self.ca.answer_question()
-#         self.ca.freeze_question()
-#         self.student.check_toast("Your question was frozen.")
-#         self.student.logout()
-#         self.student.login()
-#         time.sleep(1)
-#         self.student.delete_question()
+    def test_answer_question(self):
+        return #currently broken
+        self.student.ask_question()
+        self.ca.answer_question()
+        self.student.check_toast("A Course Assistant is on the way!")
+        student.driver.execute_script("$('.toast').remove()")
+        self.ca.finish_question()
+        self.student.check_toast("Your question was marked as closed.")
+        self.student.logout()
+        self.student.login()
+        time.sleep(1)
+        self.student.ask_question()
+        self.ca.answer_question()
+        student.driver.execute_script("$('.toast').remove()")
+        self.ca.kick_question()
+        self.student.check_toast("Your question was kicked from the queue.")
+        self.student.logout()
+        self.student.login()
+        time.sleep(1)
+        self.student.ask_question()
+        self.ca.answer_question()
+        student.driver.execute_script("$('.toast').remove()")
+        self.ca.freeze_question()
+        self.student.check_toast("Your question was frozen.")
+        self.student.logout()
+        self.student.login()
+        time.sleep(1)
+        self.student.delete_question()
 
 
 if __name__ == '__main__':
     unittest.main()
-
 
 
 
