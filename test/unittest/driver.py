@@ -422,14 +422,18 @@ class CMULoginCA(User):
         }
 
         if (should_insert):
-            try: #may already exist 
-                #Insert self into valid_andrew_ids
-                role = self.info["role"]
-                add_query = "INSERT INTO valid_andrew_ids (andrew_id,role) VALUES ('%s','%s') ; " % (aid,role)
-                self.cur.execute(add_query)
+            aid = User.Config["cmu_login_andrew"]
+            try:
+                remove_query = "DELETE FROM valid_andrew_ids WHERE andrew_id='%s' ;" % aid
+                self.cur.execute(remove_query)
                 self.conn.commit()
             except:
-                print("Failed to insert cmu login id into valid_andrew_ids")
+                pass
+            #Insert self into valid_andrew_ids
+            role = self.info["role"]
+            add_query = "INSERT INTO valid_andrew_ids (andrew_id,role) VALUES ('%s','%s') ; " % (aid,role)
+            self.cur.execute(add_query)
+            self.conn.commit()
 
     def login(self,check_fn=None):
         """Log the user in through CMU""" 
