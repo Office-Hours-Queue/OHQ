@@ -109,12 +109,14 @@ var questions = (function() {
           if (change.rhs == "ca_kick") {
             console.log("kicked")
             emitEvent('question_closed',"Your question was kicked from the queue.");
+            emit_new_position(result);
           }
           break;
         case 'off_time':
           if (was_kicked(changes)) { break; }
           console.log('question_closed');
           emitEvent('question_closed',"Your question was marked as closed.");
+          emit_new_position(result);
           break;
         case "topic_id":
           emitEvent('question_update');
@@ -363,6 +365,16 @@ function addQuestion(question) {
 //
 // Question updates
 //
+
+// emits new positions 
+function emit_new_position(result) {
+  selectQuestionsOpen().then(function (questions) {
+    questions.forEach(function (question) {
+      result.emitter.emit('position_update', question.student_user_id);
+    });
+  });
+}
+
 
 // n_question update
 function getNumberQuestions() {

@@ -214,12 +214,7 @@ module.exports = function(io) {
       }]));
     });
 
-    queue.questions.getOpenUserId(userid).then(function(question) {
-      if (typeof question === 'undefined') {
-        return;
-      }
-      socket.emit('questions', makeStudentQuestion(question));
-    });
+    emitInitialStudentQuestion(userid)
 
     queue.locations.getEnabled().then(function(locations) {
       socket.emit('locations', makeMessage('data', locations));
@@ -260,6 +255,10 @@ module.exports = function(io) {
       student(question.student_user_id).emit('message',msg)
     });
 
+    queue.questions.emitter.on("position_update", function (id) {
+      emitInitialStudentQuestion(id);
+    });
+
     // listen for updates on queue_meta
     queue.meta.emitter.on('update', function(meta) {
       students().emit('queue_meta', makeMessage('data', [{
@@ -273,6 +272,16 @@ module.exports = function(io) {
   //
   // utilities
   //
+
+  function emitInitialStudentQuestion(userid) {
+     queue.questions.getOpenUserId(userid).then(function(question) {
+      if (typeof question === 'undefined') {
+        return;
+      }
+      student(userid).emit('questions', makeStudentQuestion(question));
+    });
+  }
+
   function makeMessage(type, payload) {
     return {
       type: type,
