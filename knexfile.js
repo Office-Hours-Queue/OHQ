@@ -20,23 +20,4 @@ module.exports = {
     }
   },
 
-  demo: {
-    client: 'postgresql',
-    connection: {
-      host:     '127.0.0.1',
-      port:     '5432',
-      database: 'queue',
-      user:     'queue',
-      password: 'supersecret'
-    },
-    pool: {
-      min: 1,
-      max: 50
-    },
-    migrations: {
-      tableName: 'knex_migrations'
-    }
-  },
-
-
 };
