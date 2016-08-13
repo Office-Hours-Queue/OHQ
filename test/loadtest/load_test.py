@@ -35,7 +35,7 @@ def login_as_student_and_wait(andrew_id,password):
 	print("Socketio connected")
 
 	#keep connection open
-	sio.wait()
+	sio.wait(10)
 	print("Socketio waiting")
 
 	#logout 
@@ -50,7 +50,7 @@ conn = psycopg2.connect("dbname='queue' user='queue' host='127.0.0.1' password='
 cur = conn.cursor()
 
 #Add accounts to valid_andrew_ids 
-number_students = 1000  #number of students to simulate
+number_students = 100 #number of students to simulate
 info = []
 for x in range(number_students):
 	andrew_id = str(uuid.uuid4())
