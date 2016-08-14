@@ -106,6 +106,9 @@ module.exports = function(io) {
 
     // listen for question updates
     queue.questions.emitter.on('question_frozen', function(question) {
+      if (question.initial_ca_user_id !== null) {
+        ca(question.initial_ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
+      }
       cas().emit('questions',  makeCaQuestion(question));
     });
 
