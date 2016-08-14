@@ -8,6 +8,8 @@ module.exports = function(io) {
 
   // on client connection, join appropriate room, and
   // handle subsequent client -> server communications
+  // students join room student_USERID
+  // cas join room cas_USERID
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
     if (socket.request.user.role === 'ca') {
@@ -23,7 +25,8 @@ module.exports = function(io) {
     }
   });
 
-  // ca/student global rooms
+  // these helper utilities get a handle to the corresponding
+  // socket.io room
   var cas = function() {
     return io.to('ca');
   };
@@ -39,12 +42,17 @@ module.exports = function(io) {
 
   //
   // CA handling
+  // client -> server
   //
 
-  // individual cas
+  // when a ca joins, we need to listen for messages they send, and
+  // send down the current data
   var oncajoin = function(socket, userid) {
 
-    // listen for events
+    //
+    // listen for CA events
+    //
+
     socket.on('freeze_question', function() {
       queue.questions.freezeCa(userid);
     });
@@ -73,7 +81,10 @@ module.exports = function(io) {
       queue.meta.setTimeLimit(minutes);
     });
 
-    // emit the current data on connect
+    //
+    // emit current ca data
+    //
+
     queue.meta.getCurrent().then(function(meta) {
       socket.emit('queue_meta', makeMessage('data', [{
         id: 0,
@@ -96,41 +107,34 @@ module.exports = function(io) {
 
   };
 
+  //
+  // CA handling
   // server -> client
+  //
+
   (function() {
 
-    // listen for new questions
-    queue.questions.emitter.on('new_question', function(question) {
-      cas().emit('questions', makeCaQuestion(question));
-    });
+    queue.questions.emitter.on('new_question', emitCaQuestion);
+    queue.questions.emitter.on('question_frozen', emitCaQuestion);
+    queue.questions.emitter.on('question_unfrozen', emitCaQuestion);
+    queue.questions.emitter.on('question_answered', emitCaQuestion);
+    queue.questions.emitter.on('question_update', emitCaQuestion);
 
-    // listen for question updates
     queue.questions.emitter.on('question_frozen', function(question) {
       if (question.initial_ca_user_id !== null) {
         ca(question.initial_ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
       }
-      cas().emit('questions',  makeCaQuestion(question));
-    });
-
-    queue.questions.emitter.on('question_unfrozen',function(question) {
-      cas().emit('questions', makeCaQuestion(question));
     });
 
     queue.questions.emitter.on('question_answered', function(question) {
       ca(question.ca_user_id).emit('current_question', makeCaQuestion(question));
-      cas().emit('questions', makeCaQuestion(question));
-    });
-
-    queue.questions.emitter.on('question_update', function(question) {
-      cas().emit('questions', makeCaQuestion(question));
     });
 
     queue.questions.emitter.on('question_closed', function(question) {
       ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
-      cas().emit('questions',  makeMessage('delete', [question.id]));
+      cas().emit('questions', makeMessage('delete', [question.id]));
     });
 
-    // listen for queue_meta updates
     queue.meta.emitter.on('update', function(meta) {
       cas().emit('queue_meta', makeMessage('data', [{
         id: 0,
@@ -144,10 +148,16 @@ module.exports = function(io) {
 
   //
   // Student handling
+  // client -> server
   //
 
-  // individual students
+  // when a student joins, listen for messages they send, and
+  // send down the current data
   var onstudentjoin = function(socket, userid) {
+  
+    //
+    // listen for student events
+    //
 
     socket.on('new_question', function(question) {
       question.student_user_id = userid;
@@ -178,7 +188,10 @@ module.exports = function(io) {
       queue.questions.unfreezeStudent(userid);
     });
 
+    //
     // emit the current data on connect
+    //
+
     queue.meta.getCurrent().then(function(meta) {
       socket.emit('queue_meta', makeMessage('data', [{
         id: 0,
@@ -202,10 +215,13 @@ module.exports = function(io) {
 
   };
 
+  //
+  // Student handling
   // server -> client
+  //
+
   (function() {
 
-    // listen for question updates
     queue.questions.emitter.on('new_question', emitStudentQuestion);
     queue.questions.emitter.on('question_frozen', emitStudentQuestion);
     queue.questions.emitter.on('question_unfrozen', emitStudentQuestion);
@@ -240,7 +256,7 @@ module.exports = function(io) {
 
   function getQuestionState(question) {
     if (question.off_time !== null) {
-      return 'closed';
+      return 'closed: ' + question.off_reason;
     } else if (question.is_frozen) {
       return 'frozen';
     } else if (question.help_time !== null) {
@@ -269,6 +285,10 @@ module.exports = function(io) {
     }]);
   };
 
+  function emitCaQuestion(question) {
+    cas().emit('questions', makeCaQuestion(question));  
+  };
+
   function makeStudentQuestion(question) {
     return makeMessage('data', [{
       id: question.id,
@@ -278,7 +298,7 @@ module.exports = function(io) {
       queue_ps: question.queue_position,
       is_frozen: question.is_frozen,
       can_freeze: question.can_freeze,
-      state: getQuestionState(question)
+      state: getQuestionState(question),
     }]);
   };
 
