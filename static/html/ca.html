@@ -39,7 +39,7 @@
 		        <div class="card cyan darken-1">
 		            <div class="center card-content white-text">
 		                  <span class="card-title" style="font-size:20px;">Questions</span>
-		                  <p id="numQuestions" style="font-size:50px;">{{ $db.model["ca_meta"][0].n_questions }}</p>
+		                  <p id="numQuestions" style="font-size:50px;">{{ $db.model["questions"].length }}</p>
 		            </div>
 		        </div>
 		    </div>
@@ -69,6 +69,7 @@
               <th>Topic</th>
               <th>Location</th>
               <th>Question Description</th>
+              <th>State</th>
           </tr>
           </thead>
           <tbody>
@@ -78,6 +79,7 @@
               <td>{{ q.topic }}</td>
               <td>{{ q.location }}</td>
               <td>{{ q.help_text }}</td>
+              <td>{{ q.state }}</td>
             </tr>
           </tbody>
       </table>
