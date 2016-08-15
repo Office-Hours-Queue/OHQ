@@ -1,6 +1,7 @@
 postgresql:
     image: postgres
     container_name: 112_queue_postgres
+    restart: always
     labels: 
         - "112_queue"
     expose:
@@ -13,12 +14,15 @@ postgresql:
 nodeapp:
     build: app 
     container_name: 112_queue_nodeapp
+    restart: always
     links:
         - postgresql
     labels:
         - "112_queue"
     expose:
         - "3000"
+    ports: 
+        - "3000:3000"
 
 
 
