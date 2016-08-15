@@ -5,7 +5,7 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      host:     '127.0.0.1',
+      host:     '112_queue_postgres',
       port:     '5432',
       database: 'queue',
       user:     'queue',
