@@ -13,7 +13,7 @@ var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope
 			"username": username,
 			"password": pass,
 		};
-		$http.post("/login/localauth",payload).then(function (successData) {
+		$http.post("/api/login/localauth",payload).then(function (successData) {
 			$("#non-google-modal").closeModal()
 			$rootScope.check_login();
 		}, function (failData) {
