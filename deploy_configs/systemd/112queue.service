@@ -6,7 +6,7 @@ Requires=docker.service
 [Service]
 TimeoutStartSec=0
 ExecStart=/usr/bin/docker-compose up --force-recreate
-ExecStopPost=/usr/bin/docker stop 112_queue_postgres && /usr/bin/docker stop 112_queue_nginx && /usr/bin/docker stop 112_queue_nodeapp
+ExecStopPost=/usr/bin/docker stop 112_queue_postgres && /usr/bin/docker stop 112_queue_nodeapp
 WorkingDirectory=/root/15-112-Queue
 Restart=always
 
