@@ -1,9 +1,10 @@
 import psycopg2
-from socketIO_client import SocketIO, LoggingNamespace
+from socketIO_client import SocketIO,BaseNamespace
 import requests
 import time
 import uuid
 from threading import Thread
+
 
 def login_as_student_and_wait(andrew_id,password):
 	#start session
@@ -18,7 +19,7 @@ def login_as_student_and_wait(andrew_id,password):
 		"last_name" : "haa", 
 		"registration_code" : "private"
 	}
-	print(s.post(url + "/user/createlocal", json=reg_payload).json())
+	print("Register: ", s.post(url + "/user/createlocal", json=reg_payload))
 
 	#login
 	user_info = {
@@ -27,22 +28,32 @@ def login_as_student_and_wait(andrew_id,password):
 	}
 	login_route = url + "/login/localauth"
 	logout_route = url + "/login/endauth"
-	print(s.post(login_route, json=user_info))
+	print("Login:", s.post(login_route, json=user_info))
 
 	#start socketio
 	session_cookies = s.cookies.get_dict() 
-	sio = SocketIO(url,3000,cookies=session_cookies)
+	sio = SocketIO(url,3000,cookies=session_cookies, params={
+		'forceNew': True,
+	})
+	queue_namespace =  sio.define(BaseNamespace, '/queue')
 	print("Socketio connected")
 
+	#ask question
+	queue_namespace.emit("new_question", {
+		"help_text": "woo new question from stress test",
+		"location_id": 54321,
+		"topic_id": 5432
+	})
+
 	#keep connection open
-	sio.wait(10)
 	print("Socketio waiting")
+	sio.wait(3)
 
 	#logout 
-	s.post(logout_route)
+	print("logout:",s.get(logout_route))
 
 #Server location
-base_url = "http://127.0.0.1"
+base_url = "http://localhost"
 url = base_url + ":3000"
 
 #Connect to db
@@ -50,7 +61,7 @@ conn = psycopg2.connect("dbname='queue' user='queue' host='127.0.0.1' password='
 cur = conn.cursor()
 
 #Add accounts to valid_andrew_ids 
-number_students = 100 #number of students to simulate
+number_students = 500 #number of students to simulate
 info = []
 for x in range(number_students):
 	andrew_id = str(uuid.uuid4())
@@ -58,10 +69,26 @@ for x in range(number_students):
 	cur.execute("INSERT INTO valid_andrew_ids (andrew_id,role) VALUES ('%s','student')" % andrew_id)
 	info.append((andrew_id,password))
 conn.commit()
-conn.close()
 print("valid_andrew_ids added")
 
+#Add a topic
+try:
+	cur.execute("INSERT INTO topics (id,topic,enabled) VALUES ('5432','wootopic1','true') ;")
+	conn.commit()
+	print("Added topic")
+except:
+	conn.rollback()
+
+#Add a location 
+try:
+	cur.execute("INSERT INTO locations (id,location,enabled) VALUES ('54321','wooloc1', 'true') ;")
+	conn.commit()
+	print("Added location")
+except:
+	conn.rollback()
+
 #start "students"
+conn.close()
 for (andrew_id,password) in info:
 	Thread(target=lambda : login_as_student_and_wait(andrew_id,password)).start()
 print("threads started")
