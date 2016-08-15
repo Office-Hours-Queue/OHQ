@@ -144,7 +144,7 @@ function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.redirect('/api/login');
+  res.redirect('/');
 }
 
 function hasRole(role) {
@@ -153,7 +153,7 @@ function hasRole(role) {
         req.user.role === role) {
       return next();
     }
-    res.redirect('/api/login');
+    res.redirect('/');
   };
 }
 
