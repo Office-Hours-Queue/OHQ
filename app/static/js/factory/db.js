@@ -9,7 +9,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	/* Access to user object */
 	$rootScope.check_login = function () {
 		//Get login user object
-		$http.get('/user', {}).then(function (data) {
+		$http.get('/api/user', {}).then(function (data) {
 			if (data["data"]["first_name"] != undefined) {
 				$rootScope.user = data["data"];
 				window.location = "/#/" + $rootScope.user["role"]

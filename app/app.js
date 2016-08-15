@@ -52,8 +52,8 @@ io.use(function(socket, next) {
 
 // hook up routes
 app.use('/', express.static('./static'));
-app.use('/login', require('./components/login').routes);
-app.use('/user', require('./components/user').routes );
+app.use('/api/login', require('./components/login').routes);
+app.use('/api/user', require('./components/user').routes );
 
 // hook up socket handlers
 require('./components/queue').io(io.of('/queue'));
