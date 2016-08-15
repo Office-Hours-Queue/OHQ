@@ -1,13 +1,24 @@
 postgresql:
     image: postgres
-    container_name: postgresql
+    container_name: 112_queue_postgres
     labels: 
-        - "queue_tests"
-    ports: 
-        - "5432:5432"
+        - "112_queue"
     expose:
         - "5432"
     environment:
         - POSTGRES_PASSWORD=supersecret
         - POSTGRES_DB=queue
         - POSTGRES_USER=queue
+
+nodeapp:
+    build: app 
+    container_name: 112_queue_nodeapp
+    links:
+        - postgresql
+    labels:
+        - "112_queue"
+    expose:
+        - "3000"
+
+
+
