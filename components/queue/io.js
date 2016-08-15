@@ -8,6 +8,8 @@ module.exports = function(io) {
 
   // on client connection, join appropriate room, and
   // handle subsequent client -> server communications
+  // students join room student_USERID
+  // cas join room cas_USERID
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
     if (socket.request.user.role === 'ca') {
@@ -23,7 +25,8 @@ module.exports = function(io) {
     }
   });
 
-  // ca/student global rooms
+  // these helper utilities get a handle to the corresponding
+  // socket.io room
   var cas = function() {
     return io.to('ca');
   };
@@ -39,12 +42,17 @@ module.exports = function(io) {
 
   //
   // CA handling
+  // client -> server
   //
 
-  // individual cas
+  // when a ca joins, we need to listen for messages they send, and
+  // send down the current data
   var oncajoin = function(socket, userid) {
 
-    // listen for events
+    //
+    // listen for CA events
+    //
+
     socket.on('freeze_question', function() {
       queue.questions.freezeCa(userid);
     });
@@ -65,13 +73,6 @@ module.exports = function(io) {
       queue.meta.close();
     });
 
-    socket.on('go_online', function () {
-      queue.users.caOnline(userid);
-    })
-    socket.on("go_offline", function () {
-      queue.users.caOffline(userid);
-    });
-
     socket.on('open_queue', function() {
       queue.meta.open();
     });
@@ -80,7 +81,10 @@ module.exports = function(io) {
       queue.meta.setTimeLimit(minutes);
     });
 
-    // emit the current data on connect
+    //
+    // emit current ca data
+    //
+
     queue.meta.getCurrent().then(function(meta) {
       socket.emit('queue_meta', makeMessage('data', [{
         id: 0,
@@ -88,13 +92,6 @@ module.exports = function(io) {
         time_limit: meta.time_limit
       }]));
     });
-
-    //emit inital ca_meta
-    queue.questions.getNumQuestions();
-    queue.users.getNumberOnline();
-
-    //emit initial is_online  
-    queue.users.getIsOnline(userid)
 
     queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
@@ -110,54 +107,34 @@ module.exports = function(io) {
 
   };
 
+  //
+  // CA handling
   // server -> client
+  //
+
   (function() {
 
-    // listen for new questions
-    queue.questions.emitter.on('new_question', function(question) {
-      cas().emit('questions', makeCaQuestion(question));
-    });
+    queue.questions.emitter.on('new_question', emitCaQuestion);
+    queue.questions.emitter.on('question_frozen', emitCaQuestion);
+    queue.questions.emitter.on('question_unfrozen', emitCaQuestion);
+    queue.questions.emitter.on('question_answered', emitCaQuestion);
+    queue.questions.emitter.on('question_update', emitCaQuestion);
 
-    // listen for question updates
     queue.questions.emitter.on('question_frozen', function(question) {
       if (question.initial_ca_user_id !== null) {
         ca(question.initial_ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
       }
-      cas().emit('questions',  makeMessage('delete', [question.id]));
-    });
-
-    queue.questions.emitter.on('question_unfrozen',function(question) {
-      cas().emit('questions', makeCaQuestion(question));
     });
 
     queue.questions.emitter.on('question_answered', function(question) {
       ca(question.ca_user_id).emit('current_question', makeCaQuestion(question));
-      cas().emit('questions', makeMessage('delete', [question.id]));
-    });
-
-    queue.questions.emitter.on('question_update' ,function (question) {
-      cas().emit('questions', makeCaQuestion(question));
     });
 
     queue.questions.emitter.on('question_closed', function(question) {
       ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
-      cas().emit('questions',  makeMessage('delete', [question.id]));
+      cas().emit('questions', makeMessage('delete', [question.id]));
     });
 
-    //listen for ca_meta updates
-    queue.questions.emitter.on("n_question_update", function (n) {
-      cas().emit('ca_meta', makeMessage('data',[{"id" : 0, "n_questions": n}]));
-    });
-    queue.users.emitter.on("n_cas", function (n) {
-      cas().emit('ca_meta', makeMessage('data',[{"id": 0, "n_cas":n }]));
-    });
-
-    //listen for user updates
-    queue.users.emitter.on("users", function (payload) {
-      ca(payload.id).emit('users',makeMessage("data",[payload]))
-    });
-
-    // listen for queue_meta updates
     queue.meta.emitter.on('update', function(meta) {
       cas().emit('queue_meta', makeMessage('data', [{
         id: 0,
@@ -171,10 +148,16 @@ module.exports = function(io) {
 
   //
   // Student handling
+  // client -> server
   //
 
-  // individual students
+  // when a student joins, listen for messages they send, and
+  // send down the current data
   var onstudentjoin = function(socket, userid) {
+  
+    //
+    // listen for student events
+    //
 
     socket.on('new_question', function(question) {
       question.student_user_id = userid;
@@ -193,7 +176,6 @@ module.exports = function(io) {
       }
     });
 
-
     socket.on('delete_question', function() {
       queue.questions.closeStudent(userid);
     });
@@ -206,15 +188,16 @@ module.exports = function(io) {
       queue.questions.unfreezeStudent(userid);
     });
 
+    //
     // emit the current data on connect
+    //
+
     queue.meta.getCurrent().then(function(meta) {
       socket.emit('queue_meta', makeMessage('data', [{
         id: 0,
         open: meta.open
       }]));
     });
-
-    emitInitialStudentQuestion(userid)
 
     queue.locations.getEnabled().then(function(locations) {
       socket.emit('locations', makeMessage('data', locations));
@@ -224,22 +207,25 @@ module.exports = function(io) {
       socket.emit('topics', makeMessage('data', topics));
     });
 
+    queue.questions.getOpenUserId(userid).then(function(question) {
+      if (typeof question !== 'undefined') {
+        student(userid).emit('questions', makeStudentQuestion(question));
+      }
+    });
+
   };
 
+  //
+  // Student handling
   // server -> client
+  //
+
   (function() {
 
-    // listen for question updates
     queue.questions.emitter.on('new_question', emitStudentQuestion);
-    queue.questions.emitter.on('question_frozen', function(question) {
-      emitStudentQuestion(question)
-      student(question.student_user_id).emit('message',"Your question was frozen.")
-    });
+    queue.questions.emitter.on('question_frozen', emitStudentQuestion);
     queue.questions.emitter.on('question_unfrozen', emitStudentQuestion);
-    queue.questions.emitter.on('question_update' ,emitStudentQuestion);
-    queue.questions.emitter.on("question_kicked", function (question) {
-      student(question.student_user_id).emit('message',"Your question was kicked from the queue.")
-    });
+    queue.questions.emitter.on('question_update', emitStudentQuestion);
 
     queue.questions.emitter.on('question_answered', function(question) {
       // tell everyone their new position on the queue
@@ -247,16 +233,11 @@ module.exports = function(io) {
         questions.forEach(emitStudentQuestion);
       });
       //notify student that ca is coming
-      student(question.student_user_id).emit('message',"A Course Assistant is on the way!")
+      emitStudentQuestion(question);
     });
 
-    queue.questions.emitter.on('question_closed', function(question,msg) {
+    queue.questions.emitter.on('question_closed', function(question) {
       student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
-      student(question.student_user_id).emit('message',msg)
-    });
-
-    queue.questions.emitter.on("position_update", function (id) {
-      emitInitialStudentQuestion(id);
     });
 
     // listen for updates on queue_meta
@@ -273,13 +254,16 @@ module.exports = function(io) {
   // utilities
   //
 
-  function emitInitialStudentQuestion(userid) {
-     queue.questions.getOpenUserId(userid).then(function(question) {
-      if (typeof question === 'undefined') {
-        return;
-      }
-      student(userid).emit('questions', makeStudentQuestion(question));
-    });
+  function getQuestionState(question) {
+    if (question.off_time !== null) {
+      return 'closed: ' + question.off_reason;
+    } else if (question.is_frozen) {
+      return 'frozen';
+    } else if (question.help_time !== null) {
+      return 'answering';
+    } else {
+      return 'on_queue';
+    }
   }
 
   function makeMessage(type, payload) {
@@ -296,8 +280,13 @@ module.exports = function(io) {
       andrew_id: question.student_andrew_id,
       topic: question.topic,
       location: question.location,
-      help_text: question.help_text
+      help_text: question.help_text,
+      state: getQuestionState(question)
     }]);
+  };
+
+  function emitCaQuestion(question) {
+    cas().emit('questions', makeCaQuestion(question));  
   };
 
   function makeStudentQuestion(question) {
@@ -308,7 +297,8 @@ module.exports = function(io) {
       help_text: question.help_text,
       queue_ps: question.queue_position,
       is_frozen: question.is_frozen,
-      can_freeze: question.can_freeze
+      can_freeze: question.can_freeze,
+      state: getQuestionState(question),
     }]);
   };
 

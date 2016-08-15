@@ -15,7 +15,6 @@ var questions = (function() {
     getUserId: selectQuestionUserId,
     getOpenUserId: selectOpenQuestionUserId,
     getAnsweringUserId: selectAnsweringQuestionCaUserId,
-    getNumQuestions: getNumberQuestions,
     add: addQuestion,
     answer: answerQuestion,
     freezeStudent: freezeStudentQuestion,
@@ -76,14 +75,11 @@ var questions = (function() {
         throw new Error("Consistency error - row is nested");
       }
 
-      var emitEvent = function(eventName,extra_arg) {
+      var emitEvent = function(eventName) {
         selectQuestionId(id).then(function(question) {
-          result.emitter.emit(eventName, question,extra_arg);
+          result.emitter.emit(eventName, question);
         });
       };
-
-      //number of questions updates 
-      getNumberQuestions()
 
       // check which field was updated, and emit an event
       var field = change.path[0];
@@ -105,25 +101,12 @@ var questions = (function() {
           if (was_changed("frozen_time",changes)) { break; }
           emitEvent('question_answered');
           break;
-        case "off_reason": 
-          if (change.rhs == "ca_kick") {
-            console.log("kicked")
-            emitEvent('question_closed',"Your question was kicked from the queue.");
-            emit_new_position(result);
-          }
-          break;
         case 'off_time':
-          if (was_kicked(changes)) { break; }
           console.log('question_closed');
-          emitEvent('question_closed',"Your question was marked as closed.");
-          emit_new_position(result);
+          emitEvent('question_closed');
           break;
         case "topic_id":
-          emitEvent('question_update');
-          break;
         case "location_id":
-          emitEvent('question_update');
-          break;
         case "help_text":
           emitEvent('question_update');
           break;
@@ -136,7 +119,6 @@ var questions = (function() {
     // emit the full inserted object
     selectQuestionId(newQuestion.id).then(function(question) {
       result.emitter.emit('new_question', question);
-      getNumberQuestions()
     });
   });
 
@@ -246,7 +228,7 @@ function selectQuestionsOpen() {
 
 // condition for a question to be open
 function questionOpen() {
-  return db.raw('(q.help_time IS NULL AND q.off_time IS NULL)');
+  return db.raw('(q.off_time IS NULL)');
 }
 
 // condition for a question to be closed
@@ -365,25 +347,6 @@ function addQuestion(question) {
 //
 // Question updates
 //
-
-// emits new positions 
-function emit_new_position(result) {
-  selectQuestionsOpen().then(function (questions) {
-    questions.forEach(function (question) {
-      result.emitter.emit('position_update', question.student_user_id);
-    });
-  });
-}
-
-
-// n_question update
-function getNumberQuestions() {
-    db.count('q.id').from('questions AS q')
-    .where(questionNotFrozen()).andWhere(questionOpen())
-    .first().then(function(res) {
-      questions.emitter.emit("n_question_update",res.count);
-    }); 
-}
 
 // answer a question
 function answerQuestion(caUserId) {

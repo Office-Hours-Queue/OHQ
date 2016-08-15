@@ -59,6 +59,7 @@
                     <th>Topic</th>
                     <th>Location</th>
                     <th>Question Description</th>
+                    <th>State</th>
                     <th>Edit</th>
                     <th>Delete</th>
                 </tr>
@@ -68,6 +69,7 @@
                     <td>{{ $db.get_topic_by_id(q.topic_id) }}</td>
                     <td>{{ $db.get_location_by_id(q.location_id) }}</td>
                     <td id="help_text_table">{{ q.help_text }}</td>
+                    <td>{{ q.state }}</td>
                     <td><a id="pencil_edit" href="#modaleditquestion" modal><i class="material-icons">edit</i></a></td>
                     <td><a id="trash_delete" href="#modaldelete" modal><i class="material-icons">delete</i></a></td>
                   </tr>

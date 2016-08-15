@@ -31,6 +31,7 @@ The client has a single function that handles all of these events (for both ca a
 // 		"topic_id":123,
 // 		"location_id":125,
 // 		"help_text":"woo need help",
+//    "state": ['on_queue', 'frozen', 'answering']
 // 	}] 
 .on("questions", event)
 ```
@@ -106,6 +107,7 @@ The message event is the same as the student one.
 // 			"topic":"Recursion",
 // 			"location":"GHC 5000",
 // 			"help_text":"woo need help",
+//      "state": ["on_queue", "frozen", "answering"]
 // 		}]
 .on('questions',event)
 ```
