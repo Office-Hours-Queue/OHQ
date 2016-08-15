@@ -23,9 +23,11 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^0.8.7",
+    "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "connect-session-knex": "^1.0.23",
     "cookie-parser": "^1.4.3",
+    "debug": "^2.2.0",
     "deep-diff": "^0.3.4",
     "express": "^4.14.0",
     "express-jsonschema": "^1.1.0",
