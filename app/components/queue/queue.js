@@ -3,6 +3,7 @@ var dbEvents = require('../../db-events');
 var EventEmitter = require('events');
 var validator = require('jsonschema').validate;
 var diff = require('deep-diff').diff;
+var debug = require('debug')('app:queue');
 
 //
 // Queue questions
@@ -34,7 +35,7 @@ var questions = (function() {
   // unfreeze event, and clean up timers
   var notifyUnfrozen = function(id) {
     return function() {
-      console.log('question_unfrozen');
+      debug('question_unfrozen');
       selectQuestionId(id).then(function(question) {
         result.emitter.emit('question_unfrozen', question);
       });
@@ -85,7 +86,7 @@ var questions = (function() {
       var field = change.path[0];
       switch (field) {
         case 'frozen_time':
-          console.log('question_frozen');
+          debug('question_frozen');
           emitEvent('question_frozen');
           break;
         case 'frozen_end_time':
@@ -102,7 +103,7 @@ var questions = (function() {
           emitEvent('question_answered');
           break;
         case 'off_time':
-          console.log('question_closed');
+          debug('question_closed');
           emitEvent('question_closed');
           break;
         case "topic_id":
@@ -124,7 +125,7 @@ var questions = (function() {
 
   dbEvents.questions.on('delete', function(oldQuestion) {
     //happens on testing
-    console.log("Question deleted")
+    debug("Question deleted")
   });
 
   return result;
@@ -334,7 +335,7 @@ function addQuestion(question) {
             }
           })
           .catch(function(error) {
-            console.log(error);
+            debug(error);
           });
       } else {
             throw new Error('Queue closed');
@@ -641,12 +642,12 @@ function getNumberOnline() {
  }
 
 function caOnline(userid) {
-  console.log("SET ONLINE")
+  debug("SET ONLINE")
  return  db("users").update({ "is_online": true }).where("id",userid).then();
 }
 
 function caOffline(userid) {
-  console.log("SET OFFLINE")
+  debug("SET OFFLINE")
   return db("users").update({ "is_online": false } ).where("id",userid).then();
 }
 

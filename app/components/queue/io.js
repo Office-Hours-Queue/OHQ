@@ -1,5 +1,7 @@
 var queue = require('./queue');
 var auth = require('../../auth');
+var debug = require('debug')('app:io');
+
 
 module.exports = function(io) {
 
