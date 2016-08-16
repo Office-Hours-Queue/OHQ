@@ -7,7 +7,7 @@ var cleanUser = require('./user').cleanUser;
 var Promise = require('bluebird');
 
 router.get('/', isAuthenticated, function(req, res, next) {
-  res.send(cleanUser(req.user));
+  res.send(req.user);
 });
 
 var UserEditSchema = {
