@@ -45,7 +45,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
 			d.qsio.on("current_question",function (payload) { handle_db_update("current_question",payload); });
 			d.qsio.on("message", function (payload) { Materialize.toast(payload); });
-      d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload; });
+      d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
       d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
     }
 	});

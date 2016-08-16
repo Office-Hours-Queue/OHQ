@@ -47,7 +47,7 @@ module.exports = function(io) {
     });
     
     users.users.getUser(userid).then(function(user) {
-      socket.emit('ca_status', makeMessage('data', user.is_online));
+      socket.emit('ca_status', makeMessage('data', [{ id: 0, is_online: user.is_online }]));
     });
 
   };
@@ -59,7 +59,7 @@ module.exports = function(io) {
   (function() {
     
     users.users.emitter.on('ca_status', function(newStatus) {
-      ca(newStatus.id).emit('ca_status', makeMessage('data', newStatus.is_online));
+      ca(newStatus.id).emit('ca_status', makeMessage('data', [{ id: 0, is_online: newStatus.is_online }]));
     });
 
     users.users.emitter.on('ca_count', function(count) {
