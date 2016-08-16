@@ -4,6 +4,7 @@ var EventEmitter = require('events');
 var validator = require('jsonschema').validate;
 var diff = require('deep-diff').diff;
 var debug = require('debug')('app:queue');
+var gsheets = require('./gsheets');
 
 //
 // Queue questions
@@ -119,6 +120,7 @@ var questions = (function() {
   dbEvents.questions.on('insert', function(newQuestion) {
     // emit the full inserted object
     selectQuestionId(newQuestion.id).then(function(question) {
+      gsheets.googleSavePosition(question.student_andrew_id);
       result.emitter.emit('new_question', question);
     });
   });
