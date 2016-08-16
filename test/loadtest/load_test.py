@@ -2,8 +2,8 @@ import psycopg2
 from socketIO_client import SocketIO,BaseNamespace
 import requests
 import time
-import uuid
 from threading import Thread
+import pickle
 
 
 def login_as_student_and_wait(andrew_id,password):
@@ -41,8 +41,8 @@ def login_as_student_and_wait(andrew_id,password):
 	#ask question
 	queue_namespace.emit("new_question", {
 		"help_text": "woo new question from stress test",
-		"location_id": 54321,
-		"topic_id": 5432
+		"location_id": 1,
+		"topic_id": 3, 
 	})
 
 	#keep connection open
@@ -56,41 +56,14 @@ def login_as_student_and_wait(andrew_id,password):
 base_url = "http://localhost"
 url = base_url + ":3000"
 
-#Connect to db
-conn = psycopg2.connect("dbname='queue' user='queue' host='127.0.0.1' password='supersecret'")
-cur = conn.cursor()
-
 #Add accounts to valid_andrew_ids 
-number_students = 500 #number of students to simulate
-info = []
-for x in range(number_students):
-	andrew_id = str(uuid.uuid4())
-	password = "passwords"
-	cur.execute("INSERT INTO valid_andrew_ids (andrew_id,role) VALUES ('%s','student')" % andrew_id)
-	info.append((andrew_id,password))
-conn.commit()
-print("valid_andrew_ids added")
-
-#Add a topic
-try:
-	cur.execute("INSERT INTO topics (id,topic,enabled) VALUES ('5432','wootopic1','true') ;")
-	conn.commit()
-	print("Added topic")
-except:
-	conn.rollback()
-
-#Add a location 
-try:
-	cur.execute("INSERT INTO locations (id,location,enabled) VALUES ('54321','wooloc1', 'true') ;")
-	conn.commit()
-	print("Added location")
-except:
-	conn.rollback()
+p = open( "andrew_ids.p", "rb" )
+info = pickle.load(p)
+p.close()
 
 #start "students"
-conn.close()
-for (andrew_id,password) in info:
-	Thread(target=lambda : login_as_student_and_wait(andrew_id,password)).start()
+for andrew_id in info:
+	Thread(target=lambda : login_as_student_and_wait(andrew_id,"passwords")).start()
 print("threads started")
 
 
