@@ -1,4 +1,8 @@
-/* Based off of https://developers.google.com/sheets/quickstart/nodejs */
+/** 
+ * Note, the sheet must be shared with 112queue@gmail.com. 
+ * If you want to change the sheet, edit sheet_id.
+ * Based off of https://developers.google.com/sheets/quickstart/nodejs
+ */
 var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
@@ -12,6 +16,7 @@ var TOKEN_DIR = path.join(__dirname, '../../credentials/');
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 var CREDENTIALS = undefined;
 var sheets = google.sheets('v4');
+var sheet_id = "15_vlyPc1LJ8J2i6a_zEK1D3cbjnIyxN9XcY14RcpclQ";
 
 // Load client secrets from a local file.
 var cred_path = path.join(__dirname, '../../credentials/client_secret.json');
@@ -56,7 +61,7 @@ function googleSavePosition(andrew_id) {
 function add_question(auth,payload) {
    sheets.spreadsheets.values.append({
      auth: auth,
-     spreadsheetId:"15_vlyPc1LJ8J2i6a_zEK1D3cbjnIyxN9XcY14RcpclQ",
+     spreadsheetId: sheet_id,
      range: "Sheet1!A1:E1",
      valueInputOption: "RAW",
      insertDataOption: "INSERT_ROWS",
