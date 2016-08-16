@@ -14,6 +14,9 @@ npm start
 
 Navigate to `localhost:3000`. Don't use `127.0.0.1:3000`. It will break parts of the queue (a cookie domain issue). 
 
-
+#Testing Procedures
+- Run stress test
+- Run unit tests on all browser types
+- Test on mobile using chrome dev tools
 
 
