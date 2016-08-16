@@ -287,7 +287,8 @@ module.exports = function(io) {
       topic: question.topic,
       location: question.location,
       help_text: question.help_text,
-      state: getQuestionState(question)
+      state: getQuestionState(question),
+      queue_ps: parseInt(question.queue_position)
     }]);
   };
 
@@ -301,7 +302,7 @@ module.exports = function(io) {
       topic_id: question.topic_id,
       location_id: question.location_id,
       help_text: question.help_text,
-      queue_ps: question.queue_position,
+      queue_ps: parseInt(question.queue_position),
       is_frozen: question.is_frozen,
       can_freeze: question.can_freeze,
       state: getQuestionState(question),
