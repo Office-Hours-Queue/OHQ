@@ -18,9 +18,9 @@
 		        <a id="open_queue_btn" ng-show="!($db.model['queue_meta'][0].open)" ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
 		    </div>
 		   	<div class="col  l4 " style="margin-bottom:10px;">
-		        <a id="go_offline_btn" ng-show="$db.model['users'][0].is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn orange">Go Offline</a>
+		        <a id="go_offline_btn" ng-show="user.is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn orange">Go Offline</a>
 
-		        <a id="go_online_btn" ng-show="!($db.model['users'][0].is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn green">Go Online</a>
+		        <a id="go_online_btn" ng-show="!(user.is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn green">Go Online</a>
 		    </div>
 		    <div class="col  l4 " style="margin-bottom:10px;">
 				<a id="answer-btn" ng-click="$db.answer_question()" class="btn {{ $db.model['questions'].length > 0  ? '' : 'disabled' }}">Answer Question</a>
@@ -32,7 +32,7 @@
 		        <div class="card light-blue darken-3">
 		            <div class="center card-content white-text">
 		                  <span class="card-title" style="font-size:20px;">CAs</span>
-		                  <p id="numCAs" style="font-size:50px;">{{ $db.model["ca_meta"][0].n_cas }}</p>
+		                  <p id="numCAs" style="font-size:50px;">{{ $db.model["ca_count"][0].count }}</p>
 		            </div>
 		        </div>
 		    </div>

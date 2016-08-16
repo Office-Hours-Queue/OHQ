@@ -28,25 +28,26 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	}, function (new_val,old_val) {
 		if (old_val == undefined && new_val != undefined)  {
 			/* Initialize SocketIO */
-			d.sio = io('/queue');
-			d.sio.on("connect", function() {
+			d.qsio = io('/queue');
+      d.usio = io('/user');
+			d.qsio.on("connect", function() {
         setEmptyModel();
 				d.io_connected = true;
 				$rootScope.$apply();
 			});
-			d.sio.on("disconnect", function () {
+			d.qsio.on("disconnect", function () {
 				d.io_connected = false;
 				$rootScope.$apply();
 			})
-			d.sio.on("questions",function (payload) { handle_db_update("questions",payload)})
-			d.sio.on("locations",function (payload) { handle_db_update("locations",payload)})
-			d.sio.on("topics",function (payload) { handle_db_update("topics",payload)})
-			d.sio.on("ca_meta",function(payload) { handle_db_update("ca_meta",payload)});
-			d.sio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload)})
-			d.sio.on("current_question",function (payload) { handle_db_update("current_question",payload)})
-			d.sio.on("users",function (payload) { handle_db_update("users",payload)})
-			d.sio.on("message", function (payload) { Materialize.toast(payload) })
-		}
+			d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
+			d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
+			d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
+			d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
+			d.qsio.on("current_question",function (payload) { handle_db_update("current_question",payload); });
+			d.qsio.on("message", function (payload) { Materialize.toast(payload); });
+      d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload; });
+      d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
+    }
 	});
 
 	d.io_connected = false
@@ -57,10 +58,9 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       "questions":[],
       "topics":[],
       "locations":[],
-      "ca_meta": [],
       "queue_meta": [],
       "current_question": [],
-      "users": [],
+      "ca_count": []
     };
   };
   setEmptyModel();
@@ -98,60 +98,60 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	/* Events to send */
 	d.add_question = function(payload) {
 		console.log(payload)
-		d.sio.emit("new_question",payload)
+		d.qsio.emit("new_question",payload)
 	}
 	d.delete_question = function() { 
 		console.log("delete")
-		d.sio.emit("delete_question", {})
+		d.qsio.emit("delete_question", {})
 	}
 	d.freeze_question = function() {
 		console.log("db freeze")
-		d.sio.emit("freeze_question", {})
+		d.qsio.emit("freeze_question", {})
 	}
 	d.unfreeze_question = function() {
 		console.log("db un freeze")
-		d.sio.emit("unfreeze_question", {})
+		d.qsio.emit("unfreeze_question", {})
 	}
 	d.update_question = function(payload) {
 		console.log(payload)
-		d.sio.emit("update_question",payload)
+		d.qsio.emit("update_question",payload)
 	}
 	d.close_queue = function() {
 		console.log("close_queue")
-		d.sio.emit('close_queue')
+		d.qsio.emit('close_queue')
 	}
 	d.open_queue = function() {
 		console.log("open_queue")
-		d.sio.emit("open_queue")
+		d.qsio.emit("open_queue")
 	}
 	d.update_minute_rule = function(new_rule) {
 		console.log("update min")
 		//Assumes server side validation, send "message" event if invalid
-		d.sio.emit("update_minute_rule",new_rule);
+		d.qsio.emit("update_minute_rule",new_rule);
 	}
 	d.kick_question = function() {
 		console.log("db kick")
-		d.sio.emit("kick_question",{});
+		d.qsio.emit("kick_question",{});
 	}
 	d.finish_question = function() {
 		console.log("db finish")
-		d.sio.emit("finish_question",{});
+		d.qsio.emit("finish_question",{});
 	}
 	d.answer_question = function () {
 		console.log("Answer!")
-		d.sio.emit("answer_question",{})
+		d.qsio.emit("answer_question",{})
 	}
 	d.go_online = function () {
 		console.log("go online")
-		d.sio.emit("go_online")
+		d.usio.emit("go_online")
 	}
 	d.go_offline = function () {
 		console.log("go offline")
-		d.sio.emit("go_offline")
+		d.usio.emit("go_offline")
 	}
 	d.add_andrew_id = function(id) {
 		console.log("add_andrew_id!")
-		d.sio.emit("add_valid_andrew_id",id);
+		d.qsio.emit("add_valid_andrew_id",id);
 	}
 
 	/* Helpers */
