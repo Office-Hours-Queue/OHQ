@@ -1,4 +1,6 @@
-#Socket IO Interface
+#Socket IO Queue Interface
+
+This API applies to the `/queue` socket.io namespace. The `/queue` namespace is accessible by any authenticated user, and the API varies depending on the role of the user (ca or student).
 
 ##Some Notes Before Reading 
 
@@ -7,7 +9,7 @@ This is the expected event that the client receives.
 
 ```javascript
 {
-	"type": "insert" //can be insert, update, delete
+	"type": "data" //can be data (upsert) or delete
 	"payload": //list of objects 
 }
 ```
@@ -135,15 +137,6 @@ The message event is the same as the student one.
 .on('current_question',event)
 ```
 
-```javascript
-//event follows the schema explained above. 
-//payload is this format:
-//		[{
-// 			"n_cas": 5,
-// 		}]
-.on('ca_meta',event)
-```
-
 ##CA Methods (Sent to the Server)
 
 ```javascript
@@ -154,7 +147,7 @@ The message event is the same as the student one.
 ```
 
 ```javascript
-//pull question off queue, and send off ca_meta event with info
+//pull question off queue
 .emit('answer_question')
 ```
 
