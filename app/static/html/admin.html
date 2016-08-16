@@ -1,0 +1,49 @@
+<div data-extend-template="/html/base.html">
+
+	<!-- Nav Bar -->
+	<ul data-block-append="menu_links">
+		<li><a href="/api/login/endauth">Log Out</a></li>
+    	<li><a href="/#/admin">Administration</a></li>
+	</ul>
+
+	<!-- Content --> 
+	<div data-block-append="content">
+	<div class="container">
+   	<br />
+
+   	<div class="row">
+
+
+	<ul class="collapsible" data-collapsible="accordion">
+		<li>
+			<div class="collapsible-header">Valid Andrew IDs</div>
+			<div class="collapsible-body">
+			<p>
+				Marking an Andrew ID as valid allows the student to register for the course. 
+				<br/>
+				<br/>
+          		<label for="new_andrew_id">New Andrew ID</label>
+				<input id="new_andrew_id" type="text">
+				<button ng-click="add_andrew_id()" class="btn blue">Submit</button>
+
+			</p>
+			</div>
+		</li>
+		<li>
+			<div class="collapsible-header">History</div>
+			<div class="collapsible-body"><p></p></div>
+		</li>
+	</ul>
+
+   	</div>
+
+	</div>
+	</div>
+
+
+</div>
+
+
+
+
+

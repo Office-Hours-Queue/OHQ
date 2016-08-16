@@ -12,6 +12,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		$http.get('/api/user', {}).then(function (data) {
 			if (data["data"]["first_name"] != undefined) {
 				$rootScope.user = data["data"];
+				if ($rootScope.user["role"] == "ca" && $rootScope.current_page == "admin") { return; }
 				window.location = "/#/" + $rootScope.user["role"]
 			} 
 		}, function() {
@@ -148,7 +149,10 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		console.log("go offline")
 		d.sio.emit("go_offline")
 	}
-
+	d.add_andrew_id = function(id) {
+		console.log("add_andrew_id!")
+		d.sio.emit("add_valid_andrew_id",id);
+	}
 
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {

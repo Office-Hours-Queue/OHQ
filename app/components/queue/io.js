@@ -79,6 +79,10 @@ module.exports = function(io) {
       queue.meta.open();
     });
 
+    socket.on("add_valid_andrew_id", function (id) {
+      queue.validIDs.addValidStudentID(id);
+    });
+
     socket.on('update_minute_rule', function(minutes) {
       queue.meta.setTimeLimit(minutes);
     });
