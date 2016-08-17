@@ -16,7 +16,7 @@ nodeapp:
     container_name: 112_queue_nodeapp
     restart: always
     links:
-        - postgresql
+        - postgresql:112_queue_postgres
     labels:
         - "112_queue"
     expose:
