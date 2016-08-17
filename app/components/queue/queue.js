@@ -558,27 +558,6 @@ function selectCurrentMeta() {
 }
 
 //
-// valid_andrew_ids
-//
-
-
-var validIDs = (function() {
-  return {
-    addValidStudentID: addValidStudentID,
-    emitter: new EventEmitter()
-  };
-})();
-
-function addValidStudentID(id) {
-  db.insert({
-    "andrew_id": id,
-    "role": "student"
-  })
-    .into('valid_andrew_ids')
-    .return(null);
-}
-
-//
 // locations
 //
 var locations = (function() {
@@ -650,6 +629,5 @@ function was_kicked(changes) {
 
 module.exports.questions = questions;
 module.exports.meta = meta;
-module.exports.validIDs = validIDs;
 module.exports.locations = locations;
 module.exports.topics = topics;

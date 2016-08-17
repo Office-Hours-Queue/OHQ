@@ -3,6 +3,6 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 	$rootScope.check_login();
 	$rootScope.current_page = "admin";
 	$scope.add_andrew_id = function () {
-		$db.add_andrew_id($("#new_andrew_id").val());
+    $http.post("/api/validusers/add/student", [{ andrew_id: $("#new_andrew_id").val() }]);
 	}
 }];
