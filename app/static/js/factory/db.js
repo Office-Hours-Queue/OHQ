@@ -149,10 +149,6 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		console.log("go offline")
 		d.usio.emit("go_offline")
 	}
-	d.add_andrew_id = function(id) {
-		console.log("add_andrew_id!")
-		d.qsio.emit("add_valid_andrew_id",id);
-	}
 
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {
