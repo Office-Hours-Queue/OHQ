@@ -20,7 +20,7 @@ module.exports = {
     }
   },
 
-  deploy : {
+  production: {
     client: 'postgresql',
     connection: {
       host:     '112_queue_postgres',
