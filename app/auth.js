@@ -29,6 +29,9 @@ passport.deserializeUser(function(id, done) {
       } else {
         done(null, cleanUser(user));
       }
+      // returning null here prevents bluebird from complaining
+      // about an unreturned promise
+      return null;
     })
     .catch(function(err) {
       done(err);
