@@ -41,9 +41,9 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 
 	$scope.ask_question = function () {
 		//Check if question exists
-		if (($db.model["questions"].length) != 0) {
+		if (($db.has_active_question())) {
 			$('#modalnewquestion').closeModal();
-			return 
+			return
 		}
 
 		//Add the question and close the modal

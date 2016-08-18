@@ -78,7 +78,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
 					if (db_index == -1) {
 						//Insert
-						d.model[db_name].push(payload[i])
+						d.model[db_name].unshift(payload[i])
 						continue
 					}
 					//Update
@@ -188,6 +188,33 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			return d.model["questions"].filter(on_queue_or_frozen);
 		}
 	}
+	d.has_active_question = function () {
+		for (var i = 0; i < d.model["questions"].length; i++) {
+			if (d.model["questions"][i].state == "on_queue" || d.model["questions"][i].state == "frozen") {
+				return true; 
+			}
+		}
+		return false
+	}
+	d.get_pretty_state = function(state) {
+		switch (state) {
+			case "answering":
+				return "CA answering"
+			case "frozen":
+				return "Frozen"
+			case "on_queue": 
+				return "On the Queue"
+			case "closed: self_kick":
+				return "Self closed"
+			case "closed: ca_kick":
+				return "CA kicked"
+			case "closed: normal":
+				return "Answered"
+			default:
+				return ""
+		}
+	}
+
 
 	return d 
 }];

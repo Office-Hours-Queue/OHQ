@@ -238,9 +238,12 @@ module.exports = function(io) {
       emitStudentQuestion(question);
     });
 
-    queue.questions.emitter.on('question_closed', function(question) {
-      student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
-    });
+    // queue.questions.emitter.on('question_closed', function(question) {
+    //   student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
+    // });
+
+    queue.questions.emitter.on('question_closed',emitStudentQuestion);
+
 
     // listen for updates on queue_meta
     queue.meta.emitter.on('update', function(meta) {

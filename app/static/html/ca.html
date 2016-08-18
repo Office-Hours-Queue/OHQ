@@ -70,7 +70,7 @@
               <th>Topic</th>
               <th>Location</th>
               <th>Question Description</th>
-              <th>State (<a href="" ng-click="toggle_history()">Toggle History</a>)</th>
+              <th>Status (<a href="" ng-click="toggle_history()">Toggle History</a>)</th>
           </tr>
           </thead>
           <tbody>
@@ -80,7 +80,7 @@
               <td>{{ q.topic }}</td>
               <td>{{ q.location }}</td>
               <td>{{ q.help_text }}</td>
-              <td>{{ q.state }}</td>
+              <td>{{ $db.get_pretty_state(q.state) }}</td>
             </tr>
           </tbody>
       </table>
