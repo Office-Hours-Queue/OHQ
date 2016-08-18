@@ -177,6 +177,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		return d.model["questions"][0].is_frozen
 	}
 	var on_queue = function (q) { return q.state == "on_queue" };
+	var on_queue_or_frozen = function (q) { return on_queue(q) || q.state == "frozen" }
 	d.n_open_questions = function () {
 		return d.model["questions"].filter(on_queue).length;
 	}
@@ -184,7 +185,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		if ($rootScope.show_history) {
 			return d.model["questions"]	
 		} else {
-			return d.model["questions"].filter(on_queue);
+			return d.model["questions"].filter(on_queue_or_frozen);
 		}
 	}
 
