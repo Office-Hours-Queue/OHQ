@@ -95,7 +95,7 @@ module.exports = function(io) {
       }]));
     });
 
-    queue.questions.getOpen().then(function(questions) {
+    queue.questions.selectLastNQuesitions(500).then(function(questions) {
       questions.forEach(function(question) {
         socket.emit('questions', makeCaQuestion(question));
       });

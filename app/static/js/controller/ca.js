@@ -20,4 +20,8 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 		var min_rule =  $("#minuteRule").val();
 		$db.update_minute_rule(min_rule);
 	}
+
+	$scope.toggle_history = function () {
+		$rootScope.show_history = !($rootScope.show_history);
+	}
 }];

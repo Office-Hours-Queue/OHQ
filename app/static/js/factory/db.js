@@ -39,7 +39,10 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 				d.io_connected = false;
 				$rootScope.$apply();
 			})
-			d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
+			d.qsio.on("questions",function (payload) { 
+				console.log("here",payload)
+				handle_db_update("questions",payload); 
+			});
 			d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
 			d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
 			d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
@@ -172,6 +175,17 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			return false	
 		}
 		return d.model["questions"][0].is_frozen
+	}
+	var on_queue = function (q) { return q.state == "on_queue" };
+	d.n_open_questions = function () {
+		return d.model["questions"].filter(on_queue).length;
+	}
+	d.get_question_list = function() {
+		if ($rootScope.show_history) {
+			return d.model["questions"]	
+		} else {
+			return d.model["questions"].filter(on_queue);
+		}
 	}
 
 	return d 

@@ -40,7 +40,7 @@
 		        <div class="card cyan darken-1">
 		            <div class="center card-content white-text">
 		                  <span class="card-title" style="font-size:20px;">Questions</span>
-		                  <p id="numQuestions" style="font-size:50px;">{{ $db.model["questions"].length }}</p>
+		                  <p id="numQuestions" style="font-size:50px;">{{ $db.n_open_questions() }}</p>
 		            </div>
 		        </div>
 		    </div>
@@ -70,11 +70,11 @@
               <th>Topic</th>
               <th>Location</th>
               <th>Question Description</th>
-              <th>State</th>
+              <th>State (<a href="" ng-click="toggle_history()">Toggle History</a>)</th>
           </tr>
           </thead>
           <tbody>
-            <tr name="q_row" ng-repeat="q in $db.model['questions'] | orderBy:'queue_ps'">
+            <tr name="q_row" ng-repeat="q in $db.get_question_list() | orderBy:'queue_ps'">
             	<td>{{ q.first_name }}</td>
             	<td>{{ q.andrew_id }}</td>
               <td>{{ q.topic }}</td>
