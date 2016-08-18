@@ -74,7 +74,7 @@
           </tr>
           </thead>
           <tbody>
-            <tr name="q_row" ng-repeat="q in $db.get_question_list() | orderBy:'queue_ps'">
+            <tr name="q_row" ng-repeat="q in $db.get_question_list()">
             	<td>{{ q.first_name }}</td>
             	<td>{{ q.andrew_id }}</td>
               <td>{{ q.topic }}</td>
