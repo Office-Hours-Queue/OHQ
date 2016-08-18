@@ -19,15 +19,15 @@ def login_as_student_and_wait(andrew_id,password):
 		"last_name" : "haa", 
 		"registration_code" : "private"
 	}
-	print("Register: ", s.post(url + "/user/createlocal", json=reg_payload))
+	print("Register: ", s.post(url + "/api/user/createlocal", json=reg_payload))
 
 	#login
 	user_info = {
 		"username": andrew_id,
 		"password": password
 	}
-	login_route = url + "/login/localauth"
-	logout_route = url + "/login/endauth"
+	login_route = url + "/api/login/localauth"
+	logout_route = url + "/api/login/endauth"
 	print("Login:", s.post(login_route, json=user_info))
 
 	#start socketio
