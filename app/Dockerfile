@@ -21,4 +21,4 @@ RUN chown -R app:app .
 
 # Run our app
 USER app
-ENTRYPOINT ["npm", "start-docker"]
+ENTRYPOINT ["npm", "run-script", "start-docker"]
