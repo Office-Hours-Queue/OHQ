@@ -98,6 +98,7 @@ class User(object):
             self.cur.execute(query)
             self.conn.commit()
         except:
+            self.conn.rollback()
             print("Failed to remove user questions")
 
         #delete user (they may not have registered!)
@@ -106,6 +107,7 @@ class User(object):
             self.cur.execute(query)
             self.conn.commit()
         except:
+            self.conn.rollback()
             print("Failed to delete user")
 
         #remove from valid_andrew_ids
@@ -428,6 +430,7 @@ class CMULoginCA(User):
                 self.cur.execute(remove_query)
                 self.conn.commit()
             except:
+                self.conn.rollback()
                 pass
             #Insert self into valid_andrew_ids
             role = self.info["role"]
