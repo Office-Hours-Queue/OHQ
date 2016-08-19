@@ -105,12 +105,12 @@ A certbot update service would look like this:
 `certbot-update.service`
 
     [Unit]
-    Description=Cerbot Certificate Update
+    Description=Cerbot certificate update
     After=syslog.target network.target
 
     [Service]
     Type=simple
-    ExecStart=certbot renew --quiet
+    ExecStart=/usr/bin/certbot renew --quiet
 
     [Install]
     WantedBy=multi-user.target
@@ -118,7 +118,7 @@ A certbot update service would look like this:
 `certbot-update.timer`
 
     [Unit]
-    Description=Run cerbot-update twice a day
+    Description=Twice-daily certbot certificate update
 
     [Timer]
     OnCalendar=*-*-* 11,23:23:11
@@ -128,3 +128,5 @@ A certbot update service would look like this:
     [Install]
     WantedBy=timers.target
 
+`systemctl enable certbot-update.timer`
+`systemctl start certbot-update.timer`
