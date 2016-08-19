@@ -4,9 +4,9 @@
   "description": "Realtime queueing for office hours",
   "private": true,
   "scripts": {
-    "prestart": "knex migrate:latest && ./bin/prestart_checks",
-    "start": "./bin/www",
-    "start-dev": "DEBUG=app:* NODE_ENV=development ./bin/prestart_checks && DEBUG=app:* NODE_ENV=development ./bin/www",
+    "prestart": "NODE_ENV=development ./bin/prestart_checks",
+    "start": "DEBUG=app:* NODE_ENV=development ./bin/www",
+    "start-docker": "knex migrate:latest && ./bin/prestart_checks && ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
