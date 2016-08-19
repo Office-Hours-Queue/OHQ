@@ -16,6 +16,7 @@ var server = http.Server(app);
 var io = socketio(server);
 
 var sessionMiddleware = session({
+  name: 'session_id',
   secret: 'supersecret',
   resave: false,
   saveUninitialized: false,
