@@ -9,7 +9,7 @@ npm install
 npm install knex -g
 knex migrate:latest
 knex seed:run
-npm run-script start-dev
+npm start
 ```
 
 Navigate to `localhost:3000`. Don't use `127.0.0.1:3000`. It will break parts of the queue (a cookie domain issue). 
