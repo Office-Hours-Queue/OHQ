@@ -30,13 +30,17 @@ Here's a rough outline of what needs to be done:
  - Create a user account for yourself
  - Create a user account to hold the files
  - Run package manager updates
- - Install nginx
  - Install docker and add yourself to the `docker` group
  - Start and enable the docker service
  - Get the release you want to deploy from git
- - Copy `deploy_configs/nginx.conf` into nginx's config directory
- - Start the nginx service
  - In the root directory of the repo, `docker-compose up -d`
+ - Install certbot
+ - Get a certificate
+ - Install certbot auto-update systemd timer / cron task
+ - Install nginx
+ - Copy `deploy_configs/nginx.conf` into nginx's config directory
+ - Modify the nginx configuration to match the system
+ - Start the nginx service
 
 On CentOS, here are some specific commands:
 
@@ -79,6 +83,14 @@ systemctl start docker
 # build and start the app service
 docker-compose up --build -d
 
+# get a certificate
+yum install epel-release
+yum install certbot
+certbot certonly --webroot -w /home/queue/15-112-Queue/app/static -d queue.edwarddryer.om
+
+# at this point, also install a systemd timer / cron task that auto-renews
+# the certificates twice daily by running certbot renew --quiet
+
 # copy the nginx config over
 # also edit the main nginx config to make sure this one is included
 cp /home/queue/15-112-Queue/deploy_configs/nginx.conf /etc/nginx/conf.d/queue.conf
@@ -87,3 +99,32 @@ cp /home/queue/15-112-Queue/deploy_configs/nginx.conf /etc/nginx/conf.d/queue.co
 systemctl enable nginx
 systemctl start nginx
 ```
+
+A certbot update service would look like this:
+
+`certbot-update.service`
+
+    [Unit]
+    Description=Cerbot Certificate Update
+    After=syslog.target network.target
+
+    [Service]
+    Type=simple
+    ExecStart=certbot renew --quiet
+
+    [Install]
+    WantedBy=multi-user.target
+
+`certbot-update.timer`
+
+    [Unit]
+    Description=Run cerbot-update twice a day
+
+    [Timer]
+    OnCalendar=*-*-* 11,23:23:11
+    Persistent=true
+    Unit=certbot-update.service
+
+    [Install]
+    WantedBy=timers.target
+
