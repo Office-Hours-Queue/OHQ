@@ -20,7 +20,7 @@ var ValiduserInsertSchema = {
 };
 
 router.post('/add/student',
-            auth.hasRole('ca'),
+            auth.hasRole('ca').errorJson,
             validate({body: ValiduserInsertSchema}),
             function(req, res, next) {
 

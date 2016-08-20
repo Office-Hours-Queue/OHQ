@@ -6,7 +6,7 @@ var db = require('../../db');
 var cleanUser = require('./user').cleanUser;
 var Promise = require('bluebird');
 
-router.get('/', isAuthenticated, function(req, res, next) {
+router.get('/', isAuthenticated.errorJson, function(req, res, next) {
   res.send(req.user);
 });
 
@@ -27,7 +27,7 @@ var UserEditSchema = {
   }
 };
 
-router.post('/edit', isAuthenticated, validate({body: UserEditSchema}), function(req, res, next) {
+router.post('/edit', isAuthenticated.errorJson, validate({body: UserEditSchema}), function(req, res, next) {
   var newFields = { };
   var body = req.body;
   db.select('google_id')

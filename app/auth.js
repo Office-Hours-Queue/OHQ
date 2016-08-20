@@ -143,22 +143,51 @@ passport.use(new LocalStrategy(
   })
 );
 
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/');
-}
+var isAuthenticated = {
 
-function hasRole(role) {
-  return function(req, res, next) {
-    if (req.isAuthenticated() &&
-        req.user.role === role) {
-      return next();
+  redirect: function(req, res, next) {
+    if (req.isAuthenticated()) {
+      next();
+    } else {
+      res.redirect('/');
     }
-    res.redirect('/');
+  },
+
+  errorJson: function(req, res, next) {
+    if (req.isAuthenticated()) {
+      next();
+    } else {
+      res.status(401).send({ name: 'AuthenticationError',
+                             message: 'Not authenticated' });
+    }
+  }
+
+};
+
+var hasRole = function(role) {
+  return {
+
+    redirect: function(req, res, next) {
+      if (req.isAuthenticated() &&
+          req.user.role === role) {
+        next();
+      } else {
+        res.redirect('/');
+      }
+    },
+
+    errorJson: function(req, res, next) {
+      if (req.isAuthenticated() &&
+          req.user.role === role) {
+        next();
+      } else {
+        res.status(401).send({ name: 'AuthorizationError',
+                               message: 'Not authorized' });
+      }
+    }
+
   };
-}
+};
 
 function ioIsAuthenticated(socket, next) {
   if (socket.request.isAuthenticated()) {
