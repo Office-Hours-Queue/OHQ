@@ -53,7 +53,7 @@
           </h5>
           <h5>
             <span>{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
-            <span class="grey-text"><small> {{ $db.n_open_questions() === 1 ? 'is' : 'are' }} at OH.</small></span>
+            <span class="grey-text"><small> {{ $db.model.ca_count[0].count === 1 ? 'is' : 'are' }} at OH.</small></span>
           </h5>
           <h5>
             <span>{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
