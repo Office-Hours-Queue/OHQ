@@ -19,10 +19,8 @@
     </div>
 
     <div class="row">
-      <a id="go_offline_btn" ng-if="user.is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn btn-half orange">Go Offline</a>
-      <a id="go_online_btn" ng-if="!(user.is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn btn-half green">Go Online</a>
-      <a id="close_queue_btn" ng-if="$db.model['queue_meta'][0].open" ng-click="$db.close_queue()" class="waves-effect waves-light btn btn-half red">Close Queue</a>
-      <a id="open_queue_btn" ng-if="!($db.model['queue_meta'][0].open)" ng-click="$db.open_queue()" class="waves-effect waves-light btn btn-half blue">Open Queue</a>
+      <a class="waves-effect waves-light btn btn-half {{ user.is_online ? 'orange' : 'green' }}" id="{{ user.is_online ? 'go_offline_btn' : 'go_online_btn' }}" ng-click="user.is_online ? $db.go_offline() : $db.go_online()">Go {{ user.is_online ? 'offline' : 'online' }}</a>
+      <a class="waves-effect waves-light btn btn-half {{ $db.model.queue_meta[0].open ? 'red' : 'blue' }}" id="{{ $db.model.queue_meta[0].open ? 'close_queue_btn' : 'open_queue_btn'" ng-click="$db.model.queue_meta[0].open ? $db.close_queue() : $db.open_queue()">{{ $db.model.queue_meta[0].open ? 'Close' : 'open' }} queue</a>
     </div>
 
 
