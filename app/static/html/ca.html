@@ -60,30 +60,15 @@
 		</div>
 
   	<!-- Questions Table -->
-    <div class="center row">
-      <h4>Queue</h4>
-      <table class="highlight centered" id="questionList">
-          <thead>
-          <tr>
-          		<th>Name</th>
-          		<th>Andrew ID</th>
-              <th>Topic</th>
-              <th>Location</th>
-              <th>Question Description</th>
-              <th>Status (<a href="" ng-click="toggle_history()">Toggle History</a>)</th>
-          </tr>
-          </thead>
-          <tbody>
-            <tr name="q_row" ng-repeat="q in $db.get_question_list()">
-            	<td>{{ q.first_name }}</td>
-            	<td>{{ q.andrew_id }}</td>
-              <td>{{ q.topic }}</td>
-              <td>{{ q.location }}</td>
-              <td>{{ q.help_text }}</td>
-              <td>{{ $db.get_pretty_state(q.state) }}</td>
-            </tr>
-          </tbody>
-      </table>
+    <div class="row">
+      <ul class="collection">
+        <li class="collection-item" ng-repeat="q in $db.get_question_list()">
+          <span class="badge"></span>
+          <h5>{{ q.first_name }}&nbsp;&nbsp;<small>{{ q.location }}</small></h5>
+          <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
+          <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+        </li>
+      </div>
     </div>
 
      <!-- Answer Question Modal -->
