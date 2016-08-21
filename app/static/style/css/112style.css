@@ -189,3 +189,7 @@ footer.page-footer {
   font-weight: 300;
 
 }
+
+.container {
+  max-width: 768px;
+}
