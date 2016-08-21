@@ -34,31 +34,31 @@
             Happening now
           </span>
           <div class="divider"></div>
-          <h4>
+          <h5>
             <span class="grey-text"><small>The queue is </small></span>
             <span class="green-text" ng-if="$db.model.queue_meta[0].open">open</span>
             <span class="red-text" ng-if="!$db.model.queue_meta[0].open">closed</span>
             <span class="grey-text"><small>.</small></span>
-          </h4>
-          <h4>
+          </h5>
+          <h5>
             <span class="grey-text"><small>You are </small></span>
             <span class="green-text" ng-if="user.is_online">online</span>
             <span class="red-text" ng-if="!user.is_online">offline</span>
             <span class="grey-text"><small>.</small></span>
-          </h4>
+          </h5>
           <div class="divider"></div>
-          <h4>
+          <h5>
             <span>{{ $db.n_open_questions() === 0 ? 'No' : $db.n_open_questions() }} student{{ $db.n_open_questions() === 1 ? '' : 's' }}</span>
             <span class="grey-text"><small> waiting.</small></span>
-          </h4>
-          <h4>
+          </h5>
+          <h5>
             <span>{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
             <span class="grey-text"><small> at OH.</small></span>
-          </h4>
-          <h4>
+          </h5>
+          <h5>
             <span>{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
             <span class="grey-text"><small> per student.</small></span>
-          </h4>
+          </h5>
         </div>
       </div>
     </div>
