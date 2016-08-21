@@ -288,7 +288,8 @@ module.exports = function(io) {
       location: question.location,
       help_text: question.help_text,
       state: getQuestionState(question),
-      queue_ps: parseInt(question.queue_position)
+      queue_ps: parseInt(question.queue_position),
+      on_time: question.on_time
     }]);
   };
 

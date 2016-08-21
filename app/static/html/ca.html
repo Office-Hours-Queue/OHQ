@@ -85,6 +85,7 @@
             </h5>
             <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
             <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+            <p class="grey-text"><em>Waiting since <span am-time-ago="q.on_time"></span></em></p>
           </li>
         </ul>
       </div>
