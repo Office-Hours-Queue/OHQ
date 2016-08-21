@@ -13,21 +13,18 @@
 
     <!-- Buttons -->
     <div class="row">
-      <a class="waves-effect waves-light btn btn-full {{ $db.get_question_list().length > 0 ? '' : 'disabled' }}" id="answer-btn" ng-click="$db.get_question_list().length > 0 ? $db.answer_question() : null">Answer question</a>
+      <a class="waves-effect waves-light btn btn-tall btn-full {{ $db.get_question_list().length > 0 ? '' : 'disabled' }}" id="answer-btn" ng-click="$db.get_question_list().length > 0 ? $db.answer_question() : null">
+        Answer question
+      </a>
     </div>
 
-		<div class="center row">
-		    <div class="col s6" style="margin-bottom: 10px">
-		        <a id="close_queue_btn" ng-show="$db.model['queue_meta'][0].open" ng-click="$db.close_queue()" class="waves-effect waves-light btn red">Close Queue</a>
+    <div class="row">
+      <a id="go_offline_btn" ng-if="user.is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn btn-half orange">Go Offline</a>
+      <a id="go_online_btn" ng-if="!(user.is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn btn-half green">Go Online</a>
+      <a id="close_queue_btn" ng-if="$db.model['queue_meta'][0].open" ng-click="$db.close_queue()" class="waves-effect waves-light btn btn-half red">Close Queue</a>
+      <a id="open_queue_btn" ng-if="!($db.model['queue_meta'][0].open)" ng-click="$db.open_queue()" class="waves-effect waves-light btn btn-half blue">Open Queue</a>
+    </div>
 
-		        <a id="open_queue_btn" ng-show="!($db.model['queue_meta'][0].open)" ng-click="$db.open_queue()" class="waves-effect waves-light btn blue">Open Queue</a>
-		    </div>
-		   	<div class="col s6" style="margin-bottom: 10px">
-		        <a id="go_offline_btn" ng-show="user.is_online" ng-click="$db.go_offline()" class="waves-effect waves-light btn orange">Go Offline</a>
-
-		        <a id="go_online_btn" ng-show="!(user.is_online)" ng-click="$db.go_online()" class="waves-effect waves-light btn green">Go Online</a>
-		    </div>
-		</div>
 
     <!-- Status info -->
     <div class="row">

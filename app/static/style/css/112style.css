@@ -197,6 +197,13 @@ footer.page-footer {
 
 .btn-full {
   width: 100%;
+}
+
+.btn-half {
+  width: 49%;
+}
+
+.btn-tall {
   height: 84px;
   line-height: 86px;
 }
