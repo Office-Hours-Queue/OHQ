@@ -61,7 +61,8 @@ function selectDefaultUserFields() {
 
 function selectUserId(userid) {
   return selectDefaultUserFields()
-    .where('u.id', userid);
+    .where('u.id', userid)
+    .first();
 }
 
 function selectOnlineCas() {
