@@ -250,6 +250,12 @@ function questionAnswering() {
   return db.raw('(q.help_time IS NOT NULL AND q.off_time IS NULL)');
 }
 
+// condition for a question to be not answering
+// (apply demorgan's to questionAnswering)
+function questionNotAnswering() {
+  return db.raw('(q.help_time IS NULL OR q.off_time IS NOT NULL)');
+}
+
 // condition for a question to be frozen
 function questionFrozen() {
   return db.raw(
@@ -369,6 +375,7 @@ function answerQuestion(caUserId) {
           .from('questions AS q')
           .where(questionNotFrozen())
           .andWhere(questionOpen())
+          .andWhere(questionNotAnswering())
           .orderBy('on_time', 'asc')
           .first();
     })
