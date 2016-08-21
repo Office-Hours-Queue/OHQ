@@ -36,6 +36,12 @@
           </span>
           <div class="divider"></div>
           <h4>
+            <span class="grey-text"><small>The queue is </small></span>
+            <span class="green-text" ng-if="$db.model.queue_meta[0].open">open</span>
+            <span class="red-text" ng-if="!$db.model.queue_meta[0].open">closed</span>
+            <span class="grey-text"><small>.</small></span>
+          </h4>
+          <h4>
             <span>{{ $db.n_open_questions() }} students</span>
             <span class="grey-text"><small> waiting.</small></span>
           </h4>
