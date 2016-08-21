@@ -27,47 +27,54 @@
 			</div>
 		</div>
 
-		<div class="center row">
-		    <div class="col m4 s6">
-		        <div class="card light-blue darken-3">
-		            <div class="center card-content white-text">
-		                  <span class="card-title" style="font-size:20px;">CAs</span>
-		                  <p id="numCAs" style="font-size:50px;">{{ $db.model["ca_count"][0].count }}</p>
-		            </div>
-		        </div>
-		    </div>
-		    <div class="col m4 s6">
-		        <div class="card cyan darken-1">
-		            <div class="center card-content white-text">
-		                  <span class="card-title" style="font-size:20px;">Questions</span>
-		                  <p id="numQuestions" style="font-size:50px;">{{ $db.n_open_questions() }}</p>
-		            </div>
-		        </div>
-		    </div>
-		    <div class="col m4 s6">
-		        <div class="card orange">
-		            <div class="center card-content white-text">
-		                  <span id="min_rule" class="card-title" style="font-size:20px;">MinRule</span>
-		                  <p id="min_rule_text" style="font-size:50px;">{{ $db.model['queue_meta'][0].time_limit }}</p>
-		                  <a id="min_rule_change" class="activator white-text right" style="margin-top:-10px;"><i class="material-icons right" style="font-size:20px; margin-bottom:5px; margin-right:-10px;">more_vert</i></a>
-		            </div>
-		            <div class="card-reveal">
-		                <span class="card-title grey-text text-darken-4" style="font-size:20px; margin-left:-30px;">Edit<a id="minbtn"><i id="update_rule_btn" ng-click="update_minute_rule()" class="grey-text material-icons right" style="font-size:20px;">close</i></a></span>
-		                <input type="text" id="minuteRule" name="minuteRule" value="{{ $db.model['queue_meta'][0].time_limit }}" class="validate" style="margin-top:15px;">
-		            </div>
-		        </div>
-		    </div>
-		</div>
+    <!-- Status info -->
+    <div class="row">
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title black-text">
+            Happening now
+          </span>
+          <div class="divider"></div>
+          <h4>
+            <span>{{ $db.n_open_questions() }} students</span>
+            <span class="grey-text"><small> waiting.</small></span>
+          </h4>
+          <h4>
+            <span>{{ $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
+            <span class="grey-text"><small> at OH.</small></span>
+          </h4>
+          <h4>
+            <span>{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
+            <span class="grey-text"><small> per student.</small></span>
+          </h4>
+        </div>
+      </div>
+    </div>
 
   	<!-- Questions Table -->
     <div class="row">
-      <ul class="collection">
-        <li class="collection-item" ng-repeat="q in $db.get_question_list()">
-          <span class="badge"></span>
-          <h5>{{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small></h5>
-          <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
-          <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
-        </li>
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title black-text">
+            Queue
+          </span>
+          <div ng-if="$db.get_question_list().length === 0">
+            <div class="divider"></div>
+            <div class="section grey-text">
+              <p>The queue is empty.</p>
+            </div>
+          </div>
+        </div>
+        <ul class="collection" ng-if="$db.get_question_list().length > 0">
+          <li class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.get_question_list()">
+            <h5>
+              {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
+              <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
+            </h5>
+            <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
+            <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+          </li>
+        </ul>
       </div>
     </div>
 
