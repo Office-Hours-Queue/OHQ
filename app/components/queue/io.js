@@ -282,6 +282,7 @@ module.exports = function(io) {
     return makeMessage('data', [{
       id: question.id,
       first_name: question.student_first_name,
+      last_name: question.student_last_name,
       andrew_id: question.student_andrew_id,
       topic: question.topic,
       location: question.location,

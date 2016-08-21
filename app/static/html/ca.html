@@ -64,7 +64,7 @@
       <ul class="collection">
         <li class="collection-item" ng-repeat="q in $db.get_question_list()">
           <span class="badge"></span>
-          <h5>{{ q.first_name }}&nbsp;&nbsp;<small>{{ q.location }}</small></h5>
+          <h5>{{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small></h5>
           <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
           <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
         </li>
