@@ -387,7 +387,8 @@ function makeCaQuestion(question) {
     help_text: question.help_text,
     state: getQuestionState(question),
     queue_ps: parseInt(question.queue_position),
-    on_time: question.on_time
+    on_time: question.on_time,
+    off_time: question.off_time
   }]);
 };
 
