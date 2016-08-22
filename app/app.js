@@ -60,7 +60,8 @@ app.use('/api/user', require('./components/user').routes );
 app.use('/api/validusers', require('./components/validusers').routes);
 
 // hook up socket handlers
-require('./components/queue').io(io.of('/queue'));
+require('./components/queue').io.queue(io.of('/queue'));
+require('./components/queue').io.history(io.of('/history'));
 require('./components/user').io(io.of('/user'));
 
 // custom error handlers (404, 500, ...) should go here when they're ready

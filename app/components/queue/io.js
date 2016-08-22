@@ -2,8 +2,14 @@ var queue = require('./queue');
 var auth = require('../../auth');
 var debug = require('debug')('app:io');
 
+//
+// Main queue update stream.
+//
+// This socket.io endpoint emits the current queue state on connect,
+// then keeps the client updated with events.
+//
 
-module.exports = function(io) {
+module.exports.queue = function(io) {
 
   // make sure that this endpoint is protected
   io.use(auth.ioIsAuthenticated);
@@ -255,63 +261,137 @@ module.exports = function(io) {
 
   })();
 
-  //
-  // utilities
-  //
-
-  function getQuestionState(question) {
-    if (question.off_time !== null) {
-      return 'closed: ' + question.off_reason;
-    } else if (question.is_frozen) {
-      return 'frozen';
-    } else if (question.help_time !== null) {
-      return 'answering';
-    } else {
-      return 'on_queue';
-    }
-  }
-
-  function makeMessage(type, payload) {
-    return {
-      type: type,
-      payload: payload
-    };
-  };
-
-  function makeCaQuestion(question) {
-    return makeMessage('data', [{
-      id: question.id,
-      first_name: question.student_first_name,
-      last_name: question.student_last_name,
-      andrew_id: question.student_andrew_id,
-      topic: question.topic,
-      location: question.location,
-      help_text: question.help_text,
-      state: getQuestionState(question),
-      queue_ps: parseInt(question.queue_position),
-      on_time: question.on_time
-    }]);
-  };
-
   function emitCaQuestion(question) {
     cas().emit('questions', makeCaQuestion(question));  
-  };
-
-  function makeStudentQuestion(question) {
-    return makeMessage('data', [{
-      id: question.id,
-      topic_id: question.topic_id,
-      location_id: question.location_id,
-      help_text: question.help_text,
-      queue_ps: parseInt(question.queue_position),
-      is_frozen: question.is_frozen,
-      can_freeze: question.can_freeze,
-      state: getQuestionState(question),
-    }]);
   };
 
   function emitStudentQuestion(question) {
     student(question.student_user_id).emit('questions', makeStudentQuestion(question));
   };
 
+};
+
+//
+// Queue history endpoint
+//
+// This endpoint emits the past n questions, given by the 'count'
+// querystring paramter. It then keeps clients updated on closed questions.
+//
+module.exports.history = function(io) {
+
+  // make sure that this endpoint is protected
+  io.use(auth.ioIsAuthenticated);
+
+  // on client connection, join appropriate room, and
+  // handle subsequent client -> server communications
+  // students join room student_USERID
+  // cas join room cas_USERID
+  io.on('connection', function(socket) {
+    var userid = socket.request.user.id;
+    if (socket.request.user.role === 'ca') {
+      socket.join('ca');
+      socket.join('ca_' + socket.request.user.id);
+      oncajoin(socket, userid);
+    } else if (socket.request.user.role === 'student') {
+      socket.join('student');
+      socket.join('student_' + socket.request.user.id);
+      onstudentjoin(socket, userid);
+    } else {
+      throw new Error('Not authorized');
+    }
+  });
+
+  // these helper utilities get a handle to the corresponding
+  // socket.io room
+  var cas = function() {
+    return io.to('ca');
+  };
+  var ca = function(userid) {
+    return io.to('ca_' + userid);
+  };
+  var students = function() {
+    return io.to('student');
+  };
+  var student = function(userid) {
+    return io.to('student_' + userid);
+  };
+
+  // on connect, send down the latest n closed questions
+  var oncajoin = function(socket, userid) {
+    if ((parseInt(socket.handshake.query.count) || 0) > 0) {
+      queue.questions.getLatestClosed(n).then(emitCaQuestion);
+    }
+  };
+
+  var onstudentjoin = function(socket, userid) {
+    if ((parseInt(socket.handshake.query.count) || 0) > 0) {
+      queue.questions.getLatestClosedUserId(n, userid).then(emitCaQuestion);
+    }
+  };
+
+  // listen for new closed questions, and send them to cas + student
+  (function () {
+    queue.questions.emitter.on('question_closed', emitCaQuestion);
+    queue.questions.emitter.on('question_closed', emitStudentQuestion);
+  })();
+
+  function emitCaQuestion(question) {
+    cas().emit('questions', makeCaQuestion(question));  
+  };
+
+  function emitStudentQuestion(question) {
+    student(question.student_user_id).emit('questions', makeStudentQuestion(question));
+  };
+
+};
+
+//
+// utilities
+//
+
+function getQuestionState(question) {
+  if (question.off_time !== null) {
+    return 'closed: ' + question.off_reason;
+  } else if (question.is_frozen) {
+    return 'frozen';
+  } else if (question.help_time !== null) {
+    return 'answering';
+  } else {
+    return 'on_queue';
+  }
+}
+
+function makeMessage(type, payload) {
+  return {
+    type: type,
+    payload: payload
+  };
+};
+
+function makeCaQuestion(question) {
+  return makeMessage('data', [{
+    id: question.id,
+    first_name: question.student_first_name,
+    last_name: question.student_last_name,
+    andrew_id: question.student_andrew_id,
+    topic: question.topic,
+    location: question.location,
+    help_text: question.help_text,
+    state: getQuestionState(question),
+    queue_ps: parseInt(question.queue_position),
+    on_time: question.on_time
+  }]);
+};
+
+function makeStudentQuestion(question) {
+  return makeMessage('data', [{
+    id: question.id,
+    topic_id: question.topic_id,
+    location_id: question.location_id,
+    help_text: question.help_text,
+    queue_ps: parseInt(question.queue_position),
+    is_frozen: question.is_frozen,
+    can_freeze: question.can_freeze,
+    state: getQuestionState(question),
+  }]);
 };
