@@ -318,15 +318,23 @@ module.exports.history = function(io) {
 
   // on connect, send down the latest n closed questions
   var oncajoin = function(socket, userid) {
-    if ((parseInt(socket.handshake.query.count) || 0) > 0) {
-      queue.questions.getLatestClosed(n).then(emitCaQuestion);
-    }
+    socket.on('get_last_n', function(n) {
+      if (Number.isInteger(n)) {
+        queue.questions.getLatestClosed(n).then(function(questions) {
+          questions.forEach(emitCaQuestion);  
+        });
+      }
+    });
   };
 
   var onstudentjoin = function(socket, userid) {
-    if ((parseInt(socket.handshake.query.count) || 0) > 0) {
-      queue.questions.getLatestClosedUserId(n, userid).then(emitCaQuestion);
-    }
+    socket.on('get_last_n', function(n) {
+      if (Number.isInteger(n)) {
+        queue.questions.getLatestClosedUserId(n).then(function(questions) {
+          questions.forEach(emitCaQuestion);  
+        });
+      }
+    });
   };
 
   // listen for new closed questions, and send them to cas + student
