@@ -89,6 +89,28 @@
       </div>
     </div>
 
+    <!-- Recently closed questions -->
+    <div class="row">
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title black-text">
+            Recently finished
+          </span>
+        </div>
+        <ul class="collection" ng-if="$db.model.closed_questions.length > 0">
+          <li class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
+            <h5>
+              {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
+              <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
+            </h5>
+            <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
+            <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+            <p class="grey-text"><em>{{ $db.get_pretty_state(q.state) }} <span am-time-ago="q.off_time"></span></em></p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
      <!-- Answer Question Modal -->
      <div class="modal modal-fixed-footer" id="modalanswerquestion">
           <div class="modal-content">

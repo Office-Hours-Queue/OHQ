@@ -17,7 +17,8 @@ var questions = (function() {
     getUserId: selectQuestionUserId,
     getOpenUserId: selectOpenQuestionUserId,
     getAnsweringUserId: selectAnsweringQuestionCaUserId,
-    selectLastNQuesitions: selectLastNQuesitions,
+    getLatestClosed: selectLatestClosed,
+    getLatestClosedUserId: selectLatestClosedUserId,
     add: addQuestion,
     answer: answerQuestion,
     freezeStudent: freezeStudentQuestion,
@@ -230,10 +231,17 @@ function selectQuestionsOpen() {
     .orderBy('q.on_time', 'desc');
 }
 
-// get n recent questions
-function selectLastNQuesitions(n) {
-  return selectDefaultQuestionFields().limit(n).orderBy('q.on_time', 'desc');
-} 
+// get the last n closed questions
+function selectLatestClosed(n) {
+  return selectDefaultQuestionFields()
+    .limit(n)
+    .where(questionClosed())
+    .orderBy('q.on_time', 'desc');
+}
+
+function selectLatestClosedUserId(n, studentId) {
+  return selectLatestClosed(n).andWhere('q.student_user_id', studentId);
+}
 
 // condition for a question to be open
 function questionOpen() {

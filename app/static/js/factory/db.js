@@ -30,6 +30,8 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			/* Initialize SocketIO */
 			d.qsio = io('/queue');
       d.usio = io('/user');
+      d.hsio = io('/history');
+      d.hsio.emit('get_last_n', 5);
 			d.qsio.on("connect", function() {
         setEmptyModel();
 				d.io_connected = true;
@@ -50,6 +52,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			d.qsio.on("message", function (payload) { Materialize.toast(payload); });
       d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
       d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
+      d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
     }
 	});
 
@@ -63,7 +66,8 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       "locations":[],
       "queue_meta": [],
       "current_question": [],
-      "ca_count": []
+      "ca_count": [],
+      "closed_questions": []
     };
   };
   setEmptyModel();
