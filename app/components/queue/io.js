@@ -95,7 +95,7 @@ module.exports = function(io) {
       }]));
     });
 
-    queue.questions.selectLastNQuesitions(500).then(function(questions) {
+    queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
         socket.emit('questions', makeCaQuestion(question));
       });
@@ -282,12 +282,14 @@ module.exports = function(io) {
     return makeMessage('data', [{
       id: question.id,
       first_name: question.student_first_name,
+      last_name: question.student_last_name,
       andrew_id: question.student_andrew_id,
       topic: question.topic,
       location: question.location,
       help_text: question.help_text,
       state: getQuestionState(question),
-      queue_ps: parseInt(question.queue_position)
+      queue_ps: parseInt(question.queue_position),
+      on_time: question.on_time
     }]);
   };
 

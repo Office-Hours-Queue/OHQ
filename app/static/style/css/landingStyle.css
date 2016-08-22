@@ -7,8 +7,8 @@
   min-height: 80vh;
 }
 
-html {
-    background: url(../images/bluebg3.jpg) no-repeat center center fixed #000; 
+body {
+    background: url(../images/bluebg3.jpg) no-repeat center center fixed #000;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
