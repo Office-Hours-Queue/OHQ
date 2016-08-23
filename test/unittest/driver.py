@@ -404,7 +404,6 @@ class CA(User):
             result.append(vals)
         return result
 
-
     def get_recent_questions(self,check_fn=None):
         """Get all recent questions as python list."""
         rows = self.driver.find_elements_by_name("recent-question")
@@ -416,6 +415,19 @@ class CA(User):
                 vals.append(field.text)
             result.append(vals)
         return result
+
+    def get_table(self,check_fn=None):
+        """Get the questions table as python list."""
+        rows = self.driver.find_elements_by_name("q_row")
+        result = []
+        for row in rows:
+            vals = []
+            fields = row.find_elements_by_tag_name("td")
+            for field in fields:
+                vals.append(field.text)
+            result.append(vals)
+        return result
+
 
 class CMULoginCA(User):
     """Represents a User with role 'ca' who logged in through CMU."""

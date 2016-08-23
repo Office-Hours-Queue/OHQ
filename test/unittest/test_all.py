@@ -89,15 +89,15 @@ class TestStudent(unittest.TestCase):
 
     def test_ask_edit_freeze_delete_question(self):
         # #ask, edit
-        # self.student.ask_question()
-        # self.student.edit_question()
-        # table = self.ca.get_table()
-        # found_edit = False
-        # for row in table:
-        #     desc = row[4]
-        #     if (desc == "woosecondwoo"):
-        #         found_edit = True 
-        # assert(found_edit)
+        self.student.ask_question()
+        self.student.edit_question()
+        table = self.ca.get_table()
+        found_edit = False
+        for row in table:
+            desc = row[4]
+            if (desc == "woosecondwoo"):
+                found_edit = True 
+        assert(found_edit)
 
         #freeze
         self.student.freeze_question()
@@ -169,8 +169,8 @@ class TestCA(unittest.TestCase):
         ca2.register()
         ca2.login()
         self.ca.update_minute_rule(10)
-        min_rule = self.ca.get_minute_rule()
-        min_rule2 = ca2.get_minute_rule()
+        min_rule = self.ca.get_minute_rule().split(" ")[0];
+        min_rule2 = ca2.get_minute_rule().split(" ")[0];
         assert(min_rule == "10")
         assert(min_rule2 == "10")
         self.ca.update_minute_rule(5)
@@ -211,37 +211,38 @@ class TestCA(unittest.TestCase):
         other_ca.tearDown()
 
     def test_n_cas(self):
-        n_cas = self.ca.get_num_cas()
-        assert(n_cas != "")
-        assert(n_cas.isdigit())
-        n = int(n_cas)        
-        ca2 = CA()
+        n_cas = self.ca.get_num_cas().split(" ");
+        n = 0
+        if (n_cas[0] != "No"):
+            assert(n_cas[0].isdigit())
+            n = int(n_cas[0])        
+        ca2  = CA()
         ca2.register()
         ca2.login()
         ca2.go_online()
-        n_cas = self.ca.get_num_cas()
-        assert(n_cas != "")
-        assert(n_cas.isdigit())
-        n_after = int(n_cas)
+        n_cas = self.ca.get_num_cas().split(" ");
+        assert(n_cas[0].isdigit())
+        n_after = int(n_cas[0])
         assert(n_after == n + 1)
         ca2.logout()
         ca2.tearDown()
 
     def test_n_questions(self):
-        n_questions = self.ca.get_n_questions() 
-        assert(n_questions != "")
-        assert(n_questions.isdigit())
-        n = int(n_questions)
+        n_questions = self.ca.get_n_questions().split(" ");
+        if (n_questions[0] == "No"):
+            assert(n_questions[0].isdigit())
+            n = int(n_questions[0])
         self.student.ask_question()
-        n_questions = self.ca.get_n_questions() 
-        assert(n_questions != "")
+        n_questions = self.ca.get_n_questions().split(" ")[0]
         assert(n_questions.isdigit())
         n1 = int(n_questions)
         self.student.delete_question()
-        n_questions = self.ca.get_n_questions() 
-        assert(n_questions != "")
-        assert(n_questions.isdigit())
-        n2 = int(n_questions)
+        n_questions = self.ca.get_n_questions() .split(" ")[0]
+        if (n_questions == "No"):
+            n2 = 0 
+        else:
+            assert(n_questions.isdigit())
+            n2 = int(n_questions)
         assert(n == n2)
         assert(n + 1 == n1)
 
