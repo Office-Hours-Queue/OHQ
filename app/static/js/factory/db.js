@@ -29,10 +29,11 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		if (old_val == undefined && new_val != undefined)  {
 			/* Initialize SocketIO */
 			d.qsio = io('/queue');
-      d.usio = io('/user');
-      d.hsio = io('/history');
+		      d.usio = io('/user');
+		      d.hsio = io('/history');
+		    d.n_history = 5;
 			d.qsio.on("connect", function() {
-        setEmptyModel();
+        		setEmptyModel();
 				d.io_connected = true;
 				$rootScope.$apply();
 			});
@@ -40,9 +41,9 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 				d.io_connected = false;
 				$rootScope.$apply();
 			})
-      d.hsio.on("connect", function() {
-        d.hsio.emit('get_last_n', 5);
-      });
+	      d.hsio.on("connect", function() {
+	        d.hsio.emit('get_last_n', d.n_history);
+	      });
 			d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
 			d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
 			d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
@@ -154,6 +155,10 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	d.go_offline = function () {
 		console.log("go offline")
 		d.usio.emit("go_offline")
+	}
+	d.add_n_history = function(n) {
+    	d.n_history = d.n_history + 5;
+    	d.hsio.emit('get_last_n', d.n_history);
 	}
 
 	/* Helpers */

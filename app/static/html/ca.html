@@ -109,7 +109,7 @@
             </span>
           </div>
           <ul class="collection" ng-if="$db.model.closed_questions.length > 0">
-            <li name="recent-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
+            <li name="recent-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time'">
               <h5 name="recent-question-field">
                 {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
                 <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
@@ -118,10 +118,13 @@
               <p name="recent-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
               <p name="recent-question-field" class="grey-text"><em>{{ $db.get_pretty_state(q.state) }} <span am-time-ago="q.off_time"></span></em></p>
             </li>
+          <li><a class="collection-item" href="" style="color:black" ng-click="$db.add_n_history()">View More</a></li>
           </ul>
         </div>
       </div>
     </div>
+
+    
 
      <!-- Answer Question Modal -->
      <div class="modal modal-fixed-footer" id="modalanswerquestion">
