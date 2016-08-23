@@ -180,19 +180,12 @@ class User(object):
 
     def on_ca_page(self):
         """Checks if the user is on the CA page."""
-        min_rule = self.driver.find_element_by_id("min_rule")
-        assert(min_rule.text == "MinRule")
+        min_rule = self.driver.find_element_by_id("answer-btn")
 
     def on_student_page(self):
         """Checks if the user is on the Student page."""
         q = self.driver.find_element_by_id("your_question")
         assert(q.text == "Your Question")
-
-    def check_toast(self,expected_text):
-        """Check if there was a toast on the page."""
-        toast = self.driver.find_element_by_class_name("toast")
-        text = toast.text
-        assert(text == expected_text)
 
     def run(self,run_fn):
         """Run arbitrary selenium code on the web page."""
@@ -280,7 +273,6 @@ class Student(User):
         toggle_freeze = self.driver.find_element_by_id("toggle_freeze")
         toggle_freeze.click()
         time.sleep(1)
-        self.check_toast("Your question was frozen.")
         freeze_text = self.driver.find_element_by_id("freeze_text").text
         assert(freeze_text == "Unfreeze")
 
@@ -347,15 +339,14 @@ class CA(User):
 
     def update_minute_rule(self,n,check_fn=None):
         """Have the CA update the minute rule."""
-        min_rule_change = self.driver.find_element_by_id("min_rule_change")
-        min_rule_change.click()
-        time.sleep(1)
+        self.driver.get(User.Config["queue_url"]+"/#/admin")
         min_rule_input = self.driver.find_element_by_id("minuteRule")
         min_rule_input.clear()
         min_rule_input.send_keys(str(n))
         min_rule_save = self.driver.find_element_by_id("update_rule_btn")
         min_rule_save.click()
         time.sleep(1)
+        self.driver.get(User.Config["queue_url"])
 
         if (check_fn != None): check_fn(self)
 
@@ -401,13 +392,26 @@ class CA(User):
 
         if (check_fn != None): check_fn(self)
 
-    def get_table(self,check_fn=None):
-        """Get the questions table as python list."""
-        rows = self.driver.find_elements_by_name("q_row")
+    def get_active_questions(self,check_fn=None):
+        """Get all active questions as python list."""
+        rows = self.driver.find_elements_by_name("active-question")
         result = []
         for row in rows:
             vals = []
-            fields = row.find_elements_by_tag_name("td")
+            fields = row.find_elements_by_name("active-question-field")
+            for field in fields:
+                vals.append(field.text)
+            result.append(vals)
+        return result
+
+
+    def get_recent_questions(self,check_fn=None):
+        """Get all recent questions as python list."""
+        rows = self.driver.find_elements_by_name("recent-question")
+        result = []
+        for row in rows:
+            vals = []
+            fields = row.find_elements_by_name("recent-question-field")
             for field in fields:
                 vals.append(field.text)
             result.append(vals)

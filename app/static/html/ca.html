@@ -46,16 +46,16 @@
           </h5>
           <div class="divider"></div>
           <h5>
-            <span>{{ $db.n_open_questions() === 0 ? 'No' : $db.n_open_questions() }} student{{ $db.n_open_questions() === 1 ? '' : 's' }}</span>
+            <span id="numQuestions">{{ $db.n_open_questions() === 0 ? 'No' : $db.n_open_questions() }} student{{ $db.n_open_questions() === 1 ? '' : 's' }}</span>
             <span class="grey-text"><small> {{ $db.n_open_questions() === 1 ? 'is' : 'are' }} waiting.</small></span>
           </h5>
           <h5>
-            <span>{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
+            <span id="numCAs">{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
             <span class="grey-text"><small> {{ $db.model.ca_count[0].count === 1 ? 'is' : 'are' }} at OH.</small></span>
           </h5>
           <h5>
             <span>{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
-            <span class="grey-text"><small> per student.</small></span>
+            <span id="min_rule_text" class="grey-text"><small> per student.</small></span>
           </h5>
         </div>
       </div>
@@ -76,14 +76,14 @@
           </div>
         </div>
         <ul class="collection" ng-if="$db.get_question_list().length > 0">
-          <li class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.get_question_list()">
-            <h5>
+          <li name="active-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.get_question_list()">
+            <h5 name="active-question-field" >
               {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
               <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
             </h5>
-            <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
-            <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
-            <p class="grey-text"><em>Waiting since <span am-time-ago="q.on_time"></span></em></p>
+            <p  name="active-question-field" ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
+            <p  name="active-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+            <p  name="active-question-field" class="grey-text"><em>Waiting since <span am-time-ago="q.on_time"></span></em></p>
           </li>
         </ul>
       </div>
@@ -98,14 +98,14 @@
           </span>
         </div>
         <ul class="collection" ng-if="$db.model.closed_questions.length > 0">
-          <li class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
-            <h5>
+          <li name="recent-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
+            <h5 name="recent-question-field" >
               {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
               <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
             </h5>
-            <p ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
-            <p ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
-            <p class="grey-text"><em>{{ $db.get_pretty_state(q.state) }} <span am-time-ago="q.off_time"></span></em></p>
+            <p  name="recent-question-field" ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
+            <p  name="recent-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+            <p  name="recent-question-field" class="grey-text"><em>{{ $db.get_pretty_state(q.state) }} <span am-time-ago="q.off_time"></span></em></p>
           </li>
         </ul>
       </div>
