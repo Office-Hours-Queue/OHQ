@@ -196,7 +196,16 @@ footer.page-footer {
 }
 
 .container {
+  padding: 0;
   max-width: 768px;
+}
+
+/* 358px determined from /ca page's go online and */
+/* close queue button sizing on iphone 4 */
+@media only screen and (max-width : 358px) {
+  .btn-small-shrink-text {
+    font-size: 11px;
+  }
 }
 
 .btn-full {

@@ -1,142 +1,157 @@
 <div data-extend-template="/html/base.html">
 
-	<!-- Nav Bar -->
-	<ul data-block-append="menu_links">
-		<li><a href="/api/login/endauth">Log Out</a></li>
-    	<li><a href="/#/admin">Administration</a></li>
-	</ul>
+  <!-- Nav Bar -->
+  <ul data-block-append="menu_links">
+    <li><a href="/api/login/endauth">Log Out</a></li>
+      <li><a href="/#/admin">Administration</a></li>
+  </ul>
 
-	<!-- Content --> 
-	<div data-block-append="content">
-	<div class="container">
-   	<br />
+  <!-- Content --> 
+  <div data-block-append="content">
+  <div class="container">
+    <br />
 
     <!-- Buttons -->
     <div class="row">
-      <a class="waves-effect waves-light btn btn-tall btn-full {{ $db.get_question_list().length > 0 ? '' : 'disabled' }}" id="answer-btn" ng-click="$db.get_question_list().length > 0 ? $db.answer_question() : null">
-        Answer question
-      </a>
+      <div class="col s12">
+        <a class="waves-effect waves-light btn btn-tall btn-full {{ $db.get_question_list().length > 0 ? '' : 'disabled' }}" id="answer-btn" ng-click="$db.get_question_list().length > 0 ? $db.answer_question() : null">
+          Answer question
+        </a>
+      </div>
     </div>
 
     <div class="row">
-      <a class="waves-effect waves-light btn btn-half {{ user.is_online ? 'orange' : 'green' }}" id="{{ user.is_online ? 'go_offline_btn' : 'go_online_btn' }}" ng-click="user.is_online ? $db.go_offline() : $db.go_online()">Go {{ user.is_online ? 'offline' : 'online' }}</a>
-      <a class="waves-effect waves-light btn btn-half {{ $db.model.queue_meta[0].open ? 'red' : 'blue' }}" id="{{ $db.model.queue_meta[0].open ? 'close_queue_btn' : 'open_queue_btn'" ng-click="$db.model.queue_meta[0].open ? $db.close_queue() : $db.open_queue()">{{ $db.model.queue_meta[0].open ? 'Close' : 'open' }} queue</a>
+      <div class="col s6">
+        <a class="waves-effect waves-light btn btn-full btn-small-shrink-text {{ user.is_online ? 'orange' : 'green' }}" id="{{ user.is_online ? 'go_offline_btn' : 'go_online_btn' }}" ng-click="user.is_online ? $db.go_offline() : $db.go_online()">Go {{ user.is_online ? 'offline' : 'online' }}</a>
+      </div>
+      <div class="col s6">
+        <a class="waves-effect waves-light btn btn-full btn-small-shrink-text {{ $db.model.queue_meta[0].open ? 'red' : 'blue' }}" id="{{ $db.model.queue_meta[0].open ? 'close_queue_btn' : 'open_queue_btn'" ng-click="$db.model.queue_meta[0].open ? $db.close_queue() : $db.open_queue()">{{ $db.model.queue_meta[0].open ? 'Close' : 'open' }} queue</a>
+      </div>
     </div>
 
 
     <!-- Status info -->
     <div class="row">
-      <div class="card">
-        <div class="card-content">
-          <span class="card-title black-text">
-            Happening now
-          </span>
-          <div class="divider"></div>
-          <h5>
-            <span class="grey-text"><small>The queue is </small></span>
-            <span class="green-text" ng-if="$db.model.queue_meta[0].open">open</span>
-            <span class="red-text" ng-if="!$db.model.queue_meta[0].open">closed</span>
-            <span class="grey-text"><small>.</small></span>
-          </h5>
-          <h5>
-            <span class="grey-text"><small>You are </small></span>
-            <span class="green-text" ng-if="user.is_online">online</span>
-            <span class="red-text" ng-if="!user.is_online">offline</span>
-            <span class="grey-text"><small>.</small></span>
-          </h5>
-          <div class="divider"></div>
-          <h5>
-            <span id="numQuestions">{{ $db.n_open_questions() === 0 ? 'No' : $db.n_open_questions() }} student{{ $db.n_open_questions() === 1 ? '' : 's' }}</span>
-            <span class="grey-text"><small> {{ $db.n_open_questions() === 1 ? 'is' : 'are' }} waiting.</small></span>
-          </h5>
-          <h5>
-            <span id="numCAs">{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
-            <span class="grey-text"><small> {{ $db.model.ca_count[0].count === 1 ? 'is' : 'are' }} at OH.</small></span>
-          </h5>
-          <h5>
-            <span>{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
-            <span id="min_rule_text" class="grey-text"><small> per student.</small></span>
-          </h5>
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title black-text">
+              Happening now
+            </span>
+            <div class="divider"></div>
+            <h5>
+              <span class="grey-text"><small>The queue is </small></span>
+              <span class="green-text" ng-if="$db.model.queue_meta[0].open">open</span>
+              <span class="red-text" ng-if="!$db.model.queue_meta[0].open">closed</span>
+              <span class="grey-text"><small>.</small></span>
+            </h5>
+            <h5>
+              <span class="grey-text"><small>You are </small></span>
+              <span class="green-text" ng-if="user.is_online">online</span>
+              <span class="red-text" ng-if="!user.is_online">offline</span>
+              <span class="grey-text"><small>.</small></span>
+            </h5>
+            <div class="divider"></div>
+            <h5>
+              <span id="numQuestions">{{ $db.n_open_questions() === 0 ? 'No' : $db.n_open_questions() }} student{{ $db.n_open_questions() === 1 ? '' : 's' }}</span>
+              <span class="grey-text"><small> {{ $db.n_open_questions() === 1 ? 'is' : 'are' }} waiting.</small></span>
+            </h5>
+            <h5>
+              <span id="numCAs">{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
+              <span class="grey-text"><small> {{ $db.model.ca_count[0].count === 1 ? 'is' : 'are' }} at OH.</small></span>
+            </h5>
+            <h5>
+              <span id="min_rule_text">{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
+              <span class="grey-text"><small> per student.</small></span>
+            </h5>
+          </div>
         </div>
       </div>
     </div>
 
-  	<!-- Questions Table -->
+    <!-- Questions Table -->
     <div class="row">
-      <div class="card">
-        <div class="card-content">
-          <span class="card-title black-text">
-            Queue
-          </span>
-          <div ng-if="$db.get_question_list().length === 0">
-            <div class="divider"></div>
-            <div class="section grey-text">
-              <p>The queue is empty.</p>
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title black-text">
+              Queue
+            </span>
+            <div ng-if="$db.get_question_list().length === 0">
+              <div class="divider"></div>
+              <div class="section grey-text">
+                <p>The queue is empty.</p>
+              </div>
             </div>
           </div>
+          <ul class="collection" ng-if="$db.get_question_list().length > 0">
+            <li name="active-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.get_question_list()">
+              <h5 name="active-question-field">
+                {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
+                <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
+              </h5>
+              <p name="active-question-field" ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
+              <p name="active-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+              <p name="active-question-field" class="grey-text"><em>Waiting since <span am-time-ago="q.on_time"></span></em></p>
+            </li>
+          </ul>
         </div>
-        <ul class="collection" ng-if="$db.get_question_list().length > 0">
-          <li name="active-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.get_question_list()">
-            <h5 name="active-question-field" >
-              {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
-              <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
-            </h5>
-            <p  name="active-question-field" ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
-            <p  name="active-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
-            <p  name="active-question-field" class="grey-text"><em>Waiting since <span am-time-ago="q.on_time"></span></em></p>
-          </li>
-        </ul>
       </div>
     </div>
 
     <!-- Recently closed questions -->
     <div class="row">
-      <div class="card">
-        <div class="card-content">
-          <span class="card-title black-text">
-            Recently finished
-          </span>
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title black-text">
+              Recently finished
+            </span>
+          </div>
+          <ul class="collection" ng-if="$db.model.closed_questions.length > 0">
+            <li name="recent-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
+              <h5 name="recent-question-field">
+                {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
+                <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
+              </h5>
+              <p name="recent-question-field" ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
+              <p name="recent-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
+              <p name="recent-question-field" class="grey-text"><em>{{ $db.get_pretty_state(q.state) }} <span am-time-ago="q.off_time"></span></em></p>
+            </li>
+          </ul>
         </div>
-        <ul class="collection" ng-if="$db.model.closed_questions.length > 0">
-          <li name="recent-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
-            <h5 name="recent-question-field" >
-              {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
-              <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
-            </h5>
-            <p  name="recent-question-field" ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
-            <p  name="recent-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
-            <p  name="recent-question-field" class="grey-text"><em>{{ $db.get_pretty_state(q.state) }} <span am-time-ago="q.off_time"></span></em></p>
-          </li>
-        </ul>
       </div>
     </div>
 
      <!-- Answer Question Modal -->
-     <div class="modal" id="modalanswerquestion">
+     <div class="modal modal-fixed-footer" id="modalanswerquestion">
           <div class="modal-content">
-          	<h3 class="center"> Answering Question </h3>
-						<br />
-          	<div class="center">
-								<h5>You are answering {{ $db.model['current_question'][0].first_name + '\'s'}} question in room {{ $db.model['current_question'][0].location}} . </h5>
-								<br />
-								<h5>Topic: {{ $db.model['current_question'][0].topic }} </h5>
-								<br />
-								<h5>Description: {{ $db.model['current_question'][0].help_text }} </h5>
+            <h3 class="center"> Answering Question </h3>
+            <br />
+            <div class="center">
+                <h5>You are answering {{ $db.model['current_question'][0].first_name + '\'s'}} question in room {{ $db.model['current_question'][0].location}} . </h5>
                 <br />
-            <hr>
-              <a id="kick_q" ng-click="$db.kick_question()"     class="modal-footer-btn waves-effect waves-light btn red">Kick</a>
-              <a id="finish_q" ng-click="$db.finish_question()" class="modal-footer-btn waves-effect waves-light btn lightblue">Finish</a>
-              <a id="freeze_q" ng-click="$db.freeze_question()" class="modal-footer-btn waves-effect waves-light btn blue">Freeze</a>
+                <h5>Topic: {{ $db.model['current_question'][0].topic }} </h5>
+                <br />
+                <h5>Description: {{ $db.model['current_question'][0].help_text }} </h5>
             </div>
           </div>
+          <div class="modal-footer">
+              <div class="left">
+                <a id="kick_q" ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
+              </div>
+              <div class="right">
+                <a id="finish_q" ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
+                <a id="freeze_q" ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
+              </div>
+          </div>
       </div>
-	</div>
-	</div>
+
+
+
+
+  </div>
+  </div>
 
 
 </div>
-
-
-
-
-
