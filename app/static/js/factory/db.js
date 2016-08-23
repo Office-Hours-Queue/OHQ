@@ -30,6 +30,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			/* Initialize SocketIO */
 			d.qsio = io('/queue');
       d.usio = io('/user');
+      d.hsio = io('/history');
 			d.qsio.on("connect", function() {
         setEmptyModel();
 				d.io_connected = true;
@@ -39,10 +40,10 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 				d.io_connected = false;
 				$rootScope.$apply();
 			})
-			d.qsio.on("questions",function (payload) { 
-				console.log("here",payload)
-				handle_db_update("questions",payload); 
-			});
+      d.hsio.on("connect", function() {
+        d.hsio.emit('get_last_n', 5);
+      });
+			d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
 			d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
 			d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
 			d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
@@ -50,6 +51,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			d.qsio.on("message", function (payload) { Materialize.toast(payload); });
       d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
       d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
+      d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
     }
 	});
 
@@ -63,7 +65,8 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       "locations":[],
       "queue_meta": [],
       "current_question": [],
-      "ca_count": []
+      "ca_count": [],
+      "closed_questions": []
     };
   };
   setEmptyModel();
