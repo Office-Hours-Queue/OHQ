@@ -112,7 +112,7 @@
     </div>
 
      <!-- Answer Question Modal -->
-     <div class="modal modal-fixed-footer" id="modalanswerquestion">
+     <div class="modal" id="modalanswerquestion">
           <div class="modal-content">
           	<h3 class="center"> Answering Question </h3>
 						<br />
@@ -122,22 +122,14 @@
 								<h5>Topic: {{ $db.model['current_question'][0].topic }} </h5>
 								<br />
 								<h5>Description: {{ $db.model['current_question'][0].help_text }} </h5>
-          	</div>
-          </div>
-          <div class="modal-footer">
-          		<div class="left">
-          			<a id="kick_q" ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
-          		</div>
-          		<div class="right">
-	          		<a id="finish_q" ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
-	          		<a id="freeze_q" ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
-          		</div>
+                <br />
+            <hr>
+              <a id="kick_q" ng-click="$db.kick_question()"     class="modal-footer-btn waves-effect waves-light btn red">Kick</a>
+              <a id="finish_q" ng-click="$db.finish_question()" class="modal-footer-btn waves-effect waves-light btn lightblue">Finish</a>
+              <a id="freeze_q" ng-click="$db.freeze_question()" class="modal-footer-btn waves-effect waves-light btn blue">Freeze</a>
+            </div>
           </div>
       </div>
-
-
-
-
 	</div>
 	</div>
 
