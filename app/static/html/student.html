@@ -8,6 +8,112 @@
 
   <!-- Content --> 
   <div data-block-append="content">
+    <div class="container">
+      <br />
+
+      <!-- Status info -->
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title black-text">
+                Happening now
+              </span>
+              <div class="divider"></div>
+              <h5>
+                <span class="grey-text"><small>The queue is </small></span>
+                <span class="{{ $db.model.queue_meta[0].open ? 'green-text' : 'red-text' }}">{{ $db.model.queue_meta[0].open ? 'open' : 'closed' }}</span>
+                <span class="grey-text"><small>.</small></span>
+              </h5>
+              <h5 ng-if="$db.model.queue_meta[0].open">
+                <span class="grey-text"><small>OH is in</small></span>
+                <span>GHC 5 commons</span>
+                <span class="grey-text"><small>.</small></span>
+              </h5>
+              <h5 ng-if="$db.model.queue_meta[0].open">
+                <span>10 students</span>
+                <span class="grey-text"><small> are on the queue.</small></span>
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" ng-if"$db.model.questions.length === 0">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title black-text">
+                Ask a question
+              </span>
+              <div class="divider"></div>
+              <div class="section">
+                <div class="row">
+                  <div class="input-field col s6">
+                    <select ng-model="selected.topic" material-select watch>
+                      <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
+                    </select>
+                    <label>Topic</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <select class="" ng-model="selected.location" material-select watch>
+                      <option value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
+                    </select>
+                    <label>Location</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="input-field col s12">
+                    <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea"></textarea>
+                    <label>Question</label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col s12 center">
+                    <a class="btn btn-full waves-effect waves-light green">Ask</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title black-text">
+                Your question
+              </span>
+              <div class="divider"></div>
+              <h5>
+                <span>Bob Smith</span>
+                <span><small>GHC 5000</small></span>
+              </h5>
+              <h5>
+                <span class="grey-text"><small>, and have a question about </small></span>
+                <span>recursion</span>
+                <span class="grey-text"><small>.</small></span>
+              </h5>
+              <h5>
+                <span class="grey-text"><small>You are </small></span>
+                #10 on the queue
+                <span class="grey-text"><small>.</small></span>
+              </h5>
+            </div>
+            <div class="card-action">
+              <a><i class="material-icons">mode_edit</i></a>
+              <a><i class="material-icons">snooze</i></a>
+              <a><i class="material-icons">delete</i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
       <div class="container">
         <br />
 
