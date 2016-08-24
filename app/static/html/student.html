@@ -44,7 +44,7 @@
               </span>
               <div class="divider"></div>
               <form novalidate class="section">
-                <div class="row">
+                <div class="row row-tight">
                   <div class="input-field col s6">
                     <select ng-model="selected.topic" material-select watch>
                       <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
@@ -58,13 +58,13 @@
                     <label>Location</label>
                   </div>
                 </div>
-                <div class="row">
+                <div class="row row-tight">
                   <div class="input-field col s12">
                     <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea"></textarea>
                     <label>Question</label>
                   </div>
                 </div>
-                <div class="row">
+                <div class="row row-tight">
                   <div class="col s12 center">
                     <a class="btn btn-full waves-effect waves-light green" ng-click="ask_question()">Ask</a>
                   </div>

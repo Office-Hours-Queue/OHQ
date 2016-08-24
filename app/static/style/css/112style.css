@@ -224,3 +224,7 @@ footer.page-footer {
 .non-clickable {
   cursor: default;
 }
+
+.row-tight {
+  margin-bottom: 0px;
+}
