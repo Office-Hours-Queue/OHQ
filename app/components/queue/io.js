@@ -344,7 +344,7 @@ module.exports.history = function(io) {
     socket.on('get_last_n', function(n) {
       if (Number.isInteger(n)) {
         queue.questions.getLatestClosedUserId(n, userid).then(function(questions) {
-          questions.forEach(emitCaQuestion);  
+          questions.forEach(emitStudentQuestion);
         });
       }
     });
