@@ -48,7 +48,7 @@
                 Ask a question
               </span>
               <div class="divider"></div>
-              <div class="section">
+              <form novalidate class="section">
                 <div class="row">
                   <div class="input-field col s6">
                     <select ng-model="selected.topic" material-select watch>
@@ -71,10 +71,10 @@
                 </div>
                 <div class="row">
                   <div class="col s12 center">
-                    <a class="btn btn-full waves-effect waves-light green">Ask</a>
+                    <a class="btn btn-full waves-effect waves-light green" ng-click="ask_question()">Ask</a>
                   </div>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
