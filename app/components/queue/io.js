@@ -417,5 +417,6 @@ function makeStudentQuestion(question) {
     is_frozen: question.is_frozen,
     can_freeze: question.can_freeze,
     state: getQuestionState(question),
+    off_time: question.off_time
   }]);
 };
