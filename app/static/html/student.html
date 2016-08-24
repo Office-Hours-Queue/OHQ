@@ -31,14 +31,15 @@
                 <span class="grey-text"><small>.</small></span>
               </h5>
               <h5 ng-if="$db.model.queue_meta[0].open">
-                <span>10 students</span>
-                <span class="grey-text"><small> are on the queue.</small></span>
+                <span>{{ $db.model.queue_meta[0].num_questions === 0 ? 'No' : $db.model.queue_meta[0].num_questions }} student{{ $db.model.queue_meta[0].num_questions === 1 ? '' : 's'}}</span>
+                <span class="grey-text"><small> {{ $db.model.queue_meta[0].num_questions === 1 ? 'is' : 'are' }} on the queue.</small></span>
               </h5>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Ask a question -->
       <div class="row" ng-if"$db.model.questions.length === 0">
         <div class="col s12">
           <div class="card">
