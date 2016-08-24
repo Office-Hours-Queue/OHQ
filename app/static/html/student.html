@@ -76,7 +76,7 @@
       </div>
 
       <!-- Current question -->
-      <div class="row">
+      <div class="row" ng-if="$db.model.questions.length > 0">
         <div class="col s12">
           <div class="card">
             <div class="card-content" ng-repeat="q in $db.model.questions">
