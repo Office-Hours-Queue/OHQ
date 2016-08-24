@@ -26,11 +26,6 @@
                 <span class="grey-text"><small>.</small></span>
               </h5>
               <h5 ng-if="$db.model.queue_meta[0].open">
-                <span class="grey-text"><small>OH is in</small></span>
-                <span>GHC 5 commons</span>
-                <span class="grey-text"><small>.</small></span>
-              </h5>
-              <h5 ng-if="$db.model.queue_meta[0].open">
                 <span>{{ $db.model.queue_meta[0].num_questions === 0 ? 'No' : $db.model.queue_meta[0].num_questions }} student{{ $db.model.queue_meta[0].num_questions === 1 ? '' : 's'}}</span>
                 <span class="grey-text"><small> {{ $db.model.queue_meta[0].num_questions === 1 ? 'is' : 'are' }} on the queue.</small></span>
               </h5>
@@ -80,33 +75,49 @@
         </div>
       </div>
 
+      <!-- Current question -->
       <div class="row">
         <div class="col s12">
           <div class="card">
-            <div class="card-content">
+            <div class="card-content" ng-repeat="q in $db.model.questions">
               <span class="card-title black-text">
                 Your question
+              <a class="right grey-text text-lighten-1" href="#modaldelete" modal>
+                <i class="material-icons">delete</i>
+              </a>
+              <span class="right">&nbsp;&nbsp;</span>
+              <a class="right grey-text text-lighten-1" href="#modaleditquestion" modal>
+                <i class="material-icons">mode_edit</i>
+              </a>
+              <span class="right">&nbsp;&nbsp;</span>
+              <a class="right grey-text {{ q.can_freeze || q.is_frozen ? 'text-lighten-1 clickable' : 'text-lighten-3 non-clickable' }}" ng-click="toggle_freeze()">
+                <i class="material-icons">{{ q.is_frozen ? 'play_arrow' : 'pause' }}</i>
+              </a>
               </span>
               <div class="divider"></div>
-              <h5>
-                <span>Bob Smith</span>
-                <span><small>GHC 5000</small></span>
-              </h5>
-              <h5>
-                <span class="grey-text"><small>, and have a question about </small></span>
-                <span>recursion</span>
-                <span class="grey-text"><small>.</small></span>
-              </h5>
-              <h5>
-                <span class="grey-text"><small>You are </small></span>
-                #10 on the queue
-                <span class="grey-text"><small>.</small></span>
-              </h5>
-            </div>
-            <div class="card-action">
-              <a><i class="material-icons">mode_edit</i></a>
-              <a><i class="material-icons">snooze</i></a>
-              <a><i class="material-icons">delete</i></a>
+              <div class="row section" style="margin-bottom: 0">
+                <div class="col s4 right-align">
+                  <h5>
+                    {{ q.queue_ps+1 }}
+                    <span class="grey-text"><small>of {{ $db.model.queue_meta[0].num_questions }}</small></span>
+                  </h5>
+                  <p>
+                    <span class="grey-text">on the queue.</span>
+                  </p>
+                </div>
+                <div class="col s8">
+                  <h5>
+                    {{ q.location }}
+                    <!-- This span is required for alignment with the other column -->
+                    <span><small></small></span>
+                  </h5>
+                  <p>
+                    <span>{{ q.topic }}:<span>
+                    <span ng-if="q.help_text">{{ q.help_text }}</span>
+                    <span ng-if="!q.help_text"><em>No additional details</em></span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

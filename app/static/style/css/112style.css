@@ -216,3 +216,11 @@ footer.page-footer {
   height: 84px;
   line-height: 86px;
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.non-clickable {
+  cursor: default;
+}

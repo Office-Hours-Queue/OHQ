@@ -409,7 +409,9 @@ function makeStudentQuestion(question) {
   return makeMessage('data', [{
     id: question.id,
     topic_id: question.topic_id,
+    topic: question.topic,
     location_id: question.location_id,
+    location: question.location,
     help_text: question.help_text,
     queue_ps: parseInt(question.queue_position),
     is_frozen: question.is_frozen,
