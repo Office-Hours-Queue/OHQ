@@ -52,15 +52,15 @@
                     <label>Topic</label>
                   </div>
                   <div class="input-field col s6">
-                    <select class="" ng-model="selected.location" material-select watch>
-                      <option value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
+                    <select ng-model="selected.location" material-select watch>
+                      <option value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{ l.location }}</option>
                     </select>
                     <label>Location</label>
                   </div>
                 </div>
                 <div class="row row-tight">
                   <div class="input-field col s12">
-                    <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea"></textarea>
+                    <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
                     <label>Question</label>
                   </div>
                 </div>
@@ -145,27 +145,37 @@
       </div>
 
       <!-- Edit Question Modal -->
-      <div class="modal modal-fixed-footer" id="modaleditquestion">
-          <div class="modal-content">
-              <h4 class="center">Edit Question</h4>
-                <h5>Topic</h5>
-                <div input-field>
-                  <select ng-model="selected.topic" class=""  material-select watch>
-                  <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model['topics']">{{t.topic}}</option>
-                  </select>
-                </div>
-                <h5>Location</h5>
-                <div input-field>
-                  <select ng-model="selected.location" class=""  material-select watch>
-                  <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
-                  </select>
-                </div>
-                <h5>Description</h5>
-                <textarea id="q_desc_update" class="materialize-textarea">{{ $db.model['questions'][0].help_text }}</textarea>
+      <div class="modal bottom-sheet" id="modaleditquestion">
+        <div class="modal-content">
+          <h5>Edit question</h5>
+          <form novalidate class="section">
+            <div class="row row-tight">
+              <div class="input-field col s6">
+                <select ng-model="selected.topic" material-select watch>
+                  <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
+                </select>
+                <label>Topic</label>
               </div>
-          <div ng-click="update_question()" class="modal-footer">
-              <a id="prefbtn" name="submit_edit_q" class="waves-effect btn-flat">Submit Edit</a>
-          </div>
+              <div class="input-field col s6">
+                <select class="" ng-model="selected.location" material-select watch>
+                  <option value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{l.location}}</option>
+                </select>
+                <label>Location</label>
+              </div>
+            </div>
+            <div class="row row-tight">
+              <div class="input-field col s12">
+                <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                <label>Question</label>
+              </div>
+            </div>
+            <div class="row row-tight">
+              <div class="col s12 center">
+                <a class="btn btn-full waves-effect waves-light green" ng-click="update_question()">Edit</a>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
 
       <!-- FAQ Modal -->

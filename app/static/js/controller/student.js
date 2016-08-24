@@ -5,11 +5,12 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 
 
 	$rootScope.check_login();
-
-	$scope.selected = {
-		"topic": "",
-		"location":""
-	};
+  
+  $scope.selected = {
+    "topic": "",
+    "location":"",
+    "help_text":""
+  };
 
 	$scope.toggle_freeze = function() {
 		if ($db.is_frozen()) {
@@ -20,6 +21,34 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 			}
 		}
 	}
+
+  $scope.$watch(function() {
+    return $db.model.questions[0];
+  }, function() {
+    if ($db.model.questions.length > 0) {
+      $scope.selected = {
+        "topic": $db.model.questions[0].topic_id.toString(),
+        "location": $db.model.questions[0].location_id.toString(),
+        "help_text": $db.model.questions[0].help_text
+      };
+    } else if (
+        typeof $db.model.topics !== 'undefined' &&
+        typeof $db.model.locations !== 'undefined' &&
+        $db.model.topics.length > 0 &&
+        $db.model.locations.length > 0) {
+      $scope.selected = {
+        "topic": $db.model.topics[0].id,
+        "location": $db.model.locations[0].id,
+        "help_text": ""
+      };
+    } else {
+      $scope.selected = {
+        "topic": "",
+        "location":"",
+        "help_text":""
+      };
+    }
+  });
 
 	var unbind_topic_watch = $scope.$watch(function () {
 		return $db.model['topics'].length;	
@@ -50,7 +79,7 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 		$db.add_question({
 			"location_id": parseFloat($scope.selected.location), 
 			"topic_id": parseFloat($scope.selected.topic), 
-			"help_text": $("#q_desc").val()
+			"help_text": $scope.selected.help_text
 		})
 		$('#modalnewquestion').closeModal();
 	}
@@ -60,7 +89,7 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 		$db.update_question({
 			"location_id": parseFloat($scope.selected.location), 
 			"topic_id": parseFloat($scope.selected.topic), 
-			"help_text": $("#q_desc_update").val()
+			"help_text": $scope.selected.help_text
 		});
 		$('#modaleditquestion').closeModal();
 	}
