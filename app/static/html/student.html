@@ -8,164 +8,226 @@
 
   <!-- Content --> 
   <div data-block-append="content">
-      <div class="container">
-        <br />
+    <div class="container">
+      <br />
 
-        <div ng-show="$db.model['queue_meta'][0].open == false">
-          <div class="center row">
-            <div class="col l12 m12 s12" id="questionCol">
-            <a><div class="card">
-                <div class="center card-content black-text">
-                  <p id="closed" style="font-size:25px;">The queue is closed.</p>
-                </div>
-            </div>
+      <!-- Status info -->
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title black-text">
+                Happening now
+              </span>
+              <div class="divider"></div>
+              <h5>
+                <span class="grey-text"><small>The queue is </small></span>
+                <span class="{{ $db.model.queue_meta[0].open ? 'green-text' : 'red-text' }}">{{ $db.model.queue_meta[0].open ? 'open' : 'closed' }}</span>
+                <span class="grey-text"><small>.</small></span>
+              </h5>
+              <h5 ng-if="$db.model.queue_meta[0].open">
+                <span>{{ $db.model.queue_meta[0].num_questions === 0 ? 'No' : $db.model.queue_meta[0].num_questions }} student{{ $db.model.queue_meta[0].num_questions === 1 ? '' : 's'}}</span>
+                <span class="grey-text"><small> {{ $db.model.queue_meta[0].num_questions === 1 ? 'is' : 'are' }} on the queue.</small></span>
+              </h5>
             </div>
           </div>
         </div>
+      </div>
 
-        <div ng-show="$db.model['queue_meta'][0].open">
-          <!-- Cards Display -->
-          <div class="center row">
-            <div class="col l4 m6 s12" id="questionCol">
-              <a id="new_q" href="#modalnewquestion" modal><div class="card  {{ ($db.has_active_question()) ? 'grey lighten-2' : 'green' }}">
-                <div class="center card-content {{ ($db.has_active_question()) ? 'grey-text text-lighten-1' : 'white-text' }}">
-                  <p id="ask" style="font-size:20px;">Ask a Question</p>
+      <!-- Ask a question -->
+      <div class="row" ng-if="$db.model.questions.length === 0">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title black-text">
+                Ask a question
+              </span>
+              <div class="divider"></div>
+              <form novalidate class="section">
+                <div class="row row-tight">
+                  <div class="input-field col s6">
+                    <select ng-model="selected.topic" material-select watch>
+                      <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
+                    </select>
+                    <label>Topic</label>
+                  </div>
+                  <div class="input-field col s6">
+                    <select ng-model="selected.location" material-select watch>
+                      <option value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{ l.location }}</option>
+                    </select>
+                    <label>Location</label>
+                  </div>
                 </div>
-              </div></a>
+                <div class="row row-tight">
+                  <div class="input-field col s12">
+                    <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                    <label>Question</label>
+                  </div>
+                </div>
+                <div class="row row-tight">
+                  <div class="col s12 center">
+                    <a class="btn btn-full waves-effect waves-light green" ng-click="ask_question()">Ask</a>
+                  </div>
+                </div>
+              </form>
             </div>
-            <div class="col l4 m6 s12"> 
-              <div class="card {{ (!$db.has_active_question()) ? 'grey lighten-2' : '' }}">
-                <div class="center card-content {{ (!$db.has_active_question()) ? 'grey-text text-lighten-1' : '' }} ">     
-                  <span id="pos_card" style="font-size:20px;">{{ (!$db.has_active_question()) ? 'Position: NA' : 'Position: ' + $db.model["questions"][0]["queue_ps"]}}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current question -->
+      <div class="row" ng-if="$db.model.questions.length > 0">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content {{ q.is_frozen ? 'grey-text' : '' }}" ng-repeat="q in $db.model.questions">
+              <span class="card-title black-text">
+                Your question
+              <a class="right grey-text text-lighten-1" href="#modaldelete" modal>
+                <i class="material-icons">delete</i>
+              </a>
+              <span class="right">&nbsp;&nbsp;</span>
+              <a class="right grey-text text-lighten-1" href="#modaleditquestion" modal>
+                <i class="material-icons">mode_edit</i>
+              </a>
+              <span class="right">&nbsp;&nbsp;</span>
+              <a class="right grey-text {{ q.can_freeze || q.is_frozen ? 'text-lighten-1 clickable' : 'text-lighten-3 non-clickable' }}" ng-click="toggle_freeze()">
+                <i class="material-icons">{{ q.is_frozen ? 'play_arrow' : 'pause' }}</i>
+              </a>
+              </span>
+              <div class="divider"></div>
+              <div class="row row-tight section">
+                <div class="col s4 m2" ng-if="q.state === 'answering'">
+                  <h5>
+                    <span class="green-text"><small>A TA is<br />on the way</small></span>
+                  </h5>
+                </div>
+                <div class="col s4 m2" ng-if="q.state !== 'answering'">
+                  <h5>
+                    {{ q.queue_ps+1 }}
+                    <span class="grey-text"><small>of {{ $db.model.queue_meta[0].num_questions }}</small></span>
+                  </h5>
+                  <p>
+                    <span class="grey-text">{{ q.is_frozen ? 'frozen' : 'on the queue' }}</span>
+                  </p>
+                </div>
+                <div class="col s8 m10">
+                  <h5>
+                    {{ q.location }}
+                    <!-- This span is required for alignment with the other column -->
+                    <span><small></small></span>
+                  </h5>
+                  <p>
+                    <span>{{ q.topic }}:<span>
+                    <span ng-if="q.help_text">{{ q.help_text }}</span>
+                    <span ng-if="!q.help_text"><em>No additional details</em></span>
+                  </p>
                 </div>
               </div>
             </div>
-            <div class="col l4 m6 s12">
-              <a id="toggle_freeze" href="" ng-click="toggle_freeze()"><div class="card {{ !($db.can_freeze())  && !($db.is_frozen()) ? 'grey lighten-2' : 'blue' }}">
-                <div class="center card-content {{ !($db.can_freeze()) || $db.is_frozen()   ? 'grey-text text-lighten-1' : 'white-text' }} ">     
-                  <span id="freeze_text" style="font-size:20px;">{{ $db.is_frozen() ? 'Unfreeze' : 'Freeze'}}</span>
-                </div>
-              </div></a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Old questions -->
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title black-text">
+                Your recent questions
+              </span>
+            </div>
+            <ul class="collection">
+              <li class="collection-item" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
+                <h5>{{ q.topic }} <small>{{ q.location }}</small></h5>
+                <p ng-if="q.help_text">{{ q.help_text }}</p>
+                <p ng-if="!q.help_text"><em>No additional details</em></p>
+                <p class="grey-text"><em>{{ $db.get_pretty_state(q.state) }} <span am-time-ago="q.off_time"></span></em></p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Question Modal -->
+      <div class="modal bottom-sheet" id="modaleditquestion">
+        <div class="modal-content">
+          <h5>Edit question</h5>
+          <form novalidate class="section">
+            <div class="row row-tight">
+              <div class="input-field col s6">
+                <select ng-model="selected.topic" material-select watch>
+                  <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
+                </select>
+                <label>Topic</label>
+              </div>
+              <div class="input-field col s6">
+                <select class="" ng-model="selected.location" material-select watch>
+                  <option value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{l.location}}</option>
+                </select>
+                <label>Location</label>
+              </div>
+            </div>
+            <div class="row row-tight">
+              <div class="input-field col s12">
+                <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                <label>Question</label>
+              </div>
+            </div>
+            <div class="row row-tight">
+              <div class="col s12 center">
+                <a class="btn btn-full waves-effect waves-light green" ng-click="update_question()">Edit</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- FAQ Modal -->
+      <div class="modal modal-fixed-footer" id="modalhelp">
+        <div class="modal-content container">
+          <h4>FAQ</h4>
+          <div class="divider"></div>
+          <div class="section">
+            <h5>How does freezing work?</h5>
+            <p>When you freeze your question, you'll keep your position on the queue, but a CA won't answer your question until you're unfrozen.</p>
+            <p>It's useful when you're near the front of the queue, but need to go to the bathroom or get some food.</p>
+            <div class="divider"></div>
+            <h5>How many times can I freeze my question?</h5>
+            <p>Up to once per question.</p>
+            <div class="divider"></div>
+            <h5>How do I freeze my question?</h5>
+            <p>Hit the freeze button: <i class="tiny material-icons grey-text lighten-1">pause</i></p>
+            <div class="divider"></div>
+            <h5>How can I unfreeze my question?</h5>
+            <p>Hit the unfreeze button: <i class="tiny material-icons grey-text lighten-1">play_arrow</i></p>
+            <p>Otherwise, you'll be automatically unfrozen after FREEZE_TIME minutes.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+            <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+        </div>
+      </div>
+
+      <!-- Confirm Delete  -->
+      <div class="modal bottom-sheet" id="modaldelete">
+        <div class="modal-content">
+          <div class="container">
+            <div class="row row-tight valign-wrapper">
+              <div class="col s8 valign">
+                <h5>Delete question?</h5>
+                <p>You will lose your position on the queue.</p>
+              </div>
+              <div class="col s4 valign right">
+                <a id="prefbtn" ng-click="$db.delete_question()" name="do_delete" class="modal-action modal-close waves-effect waves-light btn-flat red-text">Delete</a>
+                <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+              </div>
             </div>
           </div>
         </div>
-
-         <!-- Questions Table -->
-        <div class="center row">
-            <h4 id="your_question">Your Question</h4>
-            <table class="highlight centered" id="questionList">
-                <thead>
-                <tr>
-                    <th>Topic</th>
-                    <th>Location</th>
-                    <th>Question Description</th>
-                    <th>Status</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                </tr>
-                </thead>
-                <tbody>
-                  <tr name="q_row" ng-repeat="q in $db.model['questions']">
-                    <td>{{ $db.get_topic_by_id(q.topic_id) }}</td>
-                    <td>{{ $db.get_location_by_id(q.location_id) }}</td>
-                    <td id="help_text_table">{{ q.help_text }}</td>
-                    <td>{{ $db.get_pretty_state(q.state) }}</td>
-                    <td><a id="pencil_edit" href="#modaleditquestion" modal><i class="material-icons">edit</i></a></td>
-                    <td><a id="trash_delete" href="#modaldelete" modal><i class="material-icons">delete</i></a></td>
-                  </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- New Question Modal -->
-        <div class="modal modal-fixed-footer" id="modalnewquestion">
-            <div class="modal-content">  
-                <h4 id="have_q" class="center">{{ (!$db.has_active_question()) ? 'New Question' : 'You already have a question.' }}</h4>
-                <div ng-show="(!$db.has_active_question())" class="container">
-                  <h5>Topic</h5>
-                  <div input-field>
-                    <select class="" ng-model="selected.topic" id="woo"  material-select watch>
-                    <option value="{{ t.id }}" ng-repeat="t in $db.model['topics']">{{t.topic}}</option>
-                    </select>
-                  </div>
-                  <h5>Location</h5>
-                  <div input-field>
-                    <select class="" ng-model="selected.location" material-select watch>
-                    <option value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
-                    </select>
-                  </div>
-                  <h5>Description</h5>
-                  <textarea id="q_desc" class="materialize-textarea"></textarea>
-                </div>
-            </div>
-            <div ng-click="ask_question()" class="modal-footer">
-                <a id="prefbtn" name="submit_new_q" class="waves-effect btn-flat">{{ (!$db.has_active_question()) ? 'Ask' : 'Okay' }}</a>
-            </div>
-        </div>
-
-        <!-- Edit Question Modal -->
-        <div class="modal modal-fixed-footer" id="modaleditquestion">
-            <div class="modal-content">
-                <h4 class="center">Edit Question</h4>
-                  <h5>Topic</h5>
-                  <div input-field>
-                    <select ng-model="selected.topic" class=""  material-select watch>
-                    <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model['topics']">{{t.topic}}</option>
-                    </select>
-                  </div>
-                  <h5>Location</h5>
-                  <div input-field>
-                    <select ng-model="selected.location" class=""  material-select watch>
-                    <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model['locations']">{{l.location}}</option>
-                    </select>
-                  </div>
-                  <h5>Description</h5>
-                  <textarea id="q_desc_update" class="materialize-textarea">{{ $db.model['questions'][0].help_text }}</textarea>
-                </div>
-            <div ng-click="update_question()" class="modal-footer">
-                <a id="prefbtn" name="submit_edit_q" class="waves-effect btn-flat">Submit Edit</a>
-            </div>
-        </div>
-
-        <!-- FAQ Modal -->
-        <div class="modal modal-fixed-footer" id="modalhelp">
-            <div class="center modal-content container">
-                <h4 class="center">FAQ</h4>
-                <ul>
-                    <li><h5> How does freezing work?</h5>
-                    <br />
-                    Freezing a question freezes you on the queue for a certain time length. This is useful if you want to go get food, or go to the bathroom. Each question can be frozen once.  CA's will not see you on the queue if you are frozen, but you'll retain your position. 
-                    </li>
-                    <br />
-
-                    <li><h5>Why did I get helped when there were people ahead of me?</h5>
-                    Some other students who are higher on the queue than you may have frozen
-                    their place on the queue. When they do this, they are still counted as
-                    ahead of you, but you will be helped first.
-                    </li>
-                </ul>
-            </div>
-            <div class="modal-footer">
-                <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
-            </div>
-        </div>
-
-        <!-- Confirm Delete  -->
-        <div class="modal" id="modaldelete">
-            <div  class="modal-content">
-                <h4 class="center">Are you sure you want to delete your question?</h4>
-            </div>
-            <div class="modal-footer">
-                <div  ng-click="$db.delete_question()"><a id="prefbtn"  name="do_delete" class="modal-action modal-close waves-effect btn-flat">Delete</a></div>
-                <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Cancel</a>
-            </div>
-        </div>
-       
       </div>
+
+    </div>
+
   </div>
-
-
 </div>
-
-
-

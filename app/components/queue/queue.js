@@ -14,6 +14,7 @@ var questions = (function() {
   var result = {
     getId: selectQuestionId,
     getOpen: selectQuestionsOpen,
+    getOpenCount: selectOpenCount,
     getUserId: selectQuestionUserId,
     getOpenUserId: selectOpenQuestionUserId,
     getAnsweringUserId: selectAnsweringQuestionCaUserId,
@@ -229,6 +230,18 @@ function selectQuestionsOpen() {
   return selectDefaultQuestionFields()
     .where(questionOpen())
     .orderBy('q.on_time', 'desc');
+}
+
+// get the count of questions on the queue
+function selectOpenCount() {
+  return db.count('*')
+    .from('questions AS q')
+    .where(questionOpen())
+    .andWhere(questionNotAnswering())
+    .first()
+    .then(function(questions) {
+      return Promise.resolve(parseInt(questions.count));
+    });
 }
 
 // get the last n closed questions
