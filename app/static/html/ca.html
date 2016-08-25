@@ -26,7 +26,7 @@
         <a class="waves-effect waves-light btn btn-full btn-small-shrink-text {{ user.is_online ? 'orange' : 'green' }}" id="{{ user.is_online ? 'go_offline_btn' : 'go_online_btn' }}" ng-click="user.is_online ? $db.go_offline() : $db.go_online()">Go {{ user.is_online ? 'offline' : 'online' }}</a>
       </div>
       <div class="col s6">
-        <a class="waves-effect waves-light btn btn-full btn-small-shrink-text {{ $db.model.queue_meta[0].open ? 'red' : 'blue' }}" id="{{ $db.model.queue_meta[0].open ? 'close_queue_btn' : 'open_queue_btn'" ng-click="$db.model.queue_meta[0].open ? $db.close_queue() : $db.open_queue()">{{ $db.model.queue_meta[0].open ? 'Close' : 'open' }} queue</a>
+        <a class="waves-effect waves-light btn btn-full btn-small-shrink-text {{ $db.model.queue_meta[0].open ? 'red' : 'blue' }}" id="{{ $db.model.queue_meta[0].open ? 'close_queue_btn' : 'open_queue_btn' }}" ng-click="$db.model.queue_meta[0].open ? $db.close_queue() : $db.open_queue()">{{ $db.model.queue_meta[0].open ? 'Close' : 'open' }} queue</a>
       </div>
     </div>
 
