@@ -123,40 +123,47 @@
       </div>
     </div>
 
-     <!-- Answer Question Modal -->
-     <div class="modal modal-fixed-footer" id="modalanswerquestion">
-          <div class="modal-content">
-          	<h3 class="center"> Answering Question </h3>
-						<br />
-          	<div class="center">
-								<h5>You are answering {{ $db.model['current_question'][0].first_name + '\'s'}} question in room {{ $db.model['current_question'][0].location}} . </h5>
-								<br />
-								<h5>Topic: {{ $db.model['current_question'][0].topic }} </h5>
-								<br />
-								<h5>Description: {{ $db.model['current_question'][0].help_text }} </h5>
-          	</div>
-          </div>
-          <div class="modal-footer">
-          		<div class="left">
-          			<a id="kick_q" ng-click="$db.kick_question()" class="waves-effect waves-light btn red">Kick</a>
-          		</div>
-          		<div class="right">
-	          		<a id="finish_q" ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
-	          		<a id="freeze_q" ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue {{ $db.model.current_question[0].can_freeze ? '' : 'disabled' }}">Freeze</a>
-          		</div>
+    <!-- Answer Question Modal -->
+    <div class="modal modal-fullheight" id="modalanswerquestion">
+      <div class="modal-content">
+        <h5> Answering Question </h5>
+        <div class="divider"></div>
+        <div class="section" style="padding-bottom: 0">
+          <h5>
+            {{ $db.model.current_question[0].first_name }} {{ $db.model.current_question[0].last_name }}
+            <small>{{ $db.model.current_question[0].location }}</small>
+          </h5>
+          <p ng-if="$db.model.current_question[0].help_text">{{ $db.model.current_question[0].topic }}: {{ $db.model.current_question[0].help_text }}</p>
+          <p ng-if="!$db.model.current_question[0].help_text">{{ $db.model.current_question[0].topic }}: <em>No additional details.</em></p>
+          <p class="grey-text">
+            <em>
+              Waited for {{ $db.model.current_question[0].help_time | amDifference : $db.model.current_question[0].on_time | amDurationFormat }}.
+            </em>
+            <br />
+            <em>
+              Began answering
+              <span am-time-ago="$db.model.current_question[0].help_time"></span>.
+            </em>
+          </p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="modal-footer">
+          <div class="row row-tight" style="margin-left: -6px; margin-right: -6px;">
+            <div class="col s6">
+              <a id="kick_q" ng-click="$db.kick_question()" class="btn btn-full waves-effect waves-light red lighten-1 z-depth-0">Kick</a>
+            </div>
+            <div class="col s6">
+              <a id="freeze_q" ng-click="$db.freeze_question()" class="btn btn-full waves-effect waves-light  blue-text {{ $db.model.current_question[0].can_freeze ? '' : 'disabled' }}">Freeze</a>
+            </div>
+            <div class="col s12">
+              <a id="finish_q" ng-click="$db.finish_question()" class="btn btn-full btn-large waves-effect waves-light z-depth-0">Finish</a>
+            </div>
           </div>
       </div>
-
-
-
+    </div>
 
 	</div>
-	</div>
-
+  </div>
 
 </div>
-
-
-
-
-

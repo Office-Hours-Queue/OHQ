@@ -232,3 +232,7 @@ footer.page-footer {
 .modal.bottom-sheet {
   max-height: 90%;
 }
+
+.modal-fullheight {
+  max-height: 90%;
+}
