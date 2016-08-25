@@ -79,7 +79,7 @@
       <div class="row" ng-if="$db.model.questions.length > 0">
         <div class="col s12">
           <div class="card">
-            <div class="card-content" ng-repeat="q in $db.model.questions">
+            <div class="card-content {{ q.is_frozen ? 'grey-text' : '' }}" ng-repeat="q in $db.model.questions">
               <span class="card-title black-text">
                 Your question
               <a class="right grey-text text-lighten-1" href="#modaldelete" modal>
@@ -96,16 +96,21 @@
               </span>
               <div class="divider"></div>
               <div class="row row-tight section">
-                <div class="col s4 right-align">
+                <div class="col s4 m2" ng-if="q.state === 'answering'">
+                  <h5>
+                    <span class="green-text"><small>A TA is<br />on the way</small></span>
+                  </h5>
+                </div>
+                <div class="col s4 m2" ng-if="q.state !== 'answering'">
                   <h5>
                     {{ q.queue_ps+1 }}
                     <span class="grey-text"><small>of {{ $db.model.queue_meta[0].num_questions }}</small></span>
                   </h5>
                   <p>
-                    <span class="grey-text">on the queue.</span>
+                    <span class="grey-text">{{ q.is_frozen ? 'frozen' : 'on the queue' }}</span>
                   </p>
                 </div>
-                <div class="col s8">
+                <div class="col s8 m10">
                   <h5>
                     {{ q.location }}
                     <!-- This span is required for alignment with the other column -->
