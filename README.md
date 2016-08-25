@@ -53,7 +53,7 @@ systemctl start firewalld
 
 # add a normal user
 adduser kevin
-useradd -aG wheel kevin
+usermod -aG wheel kevin
 passwd kevin
 logout
 
