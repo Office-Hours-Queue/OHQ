@@ -22,7 +22,7 @@
               <div class="divider"></div>
               <h5>
                 <span class="grey-text"><small>The queue is </small></span>
-                <span class="{{ $db.model.queue_meta[0].open ? 'green-text' : 'red-text' }}">{{ $db.model.queue_meta[0].open ? 'open' : 'closed' }}</span>
+                <span id="closed" class="{{ $db.model.queue_meta[0].open ? 'green-text' : 'red-text' }}">{{ $db.model.queue_meta[0].open ? 'open' : 'closed' }}</span>
                 <span class="grey-text"><small>.</small></span>
               </h5>
               <h5 ng-if="$db.model.queue_meta[0].open">
@@ -39,7 +39,7 @@
         <div class="col s12">
           <div class="card">
             <div class="card-content">
-              <span class="card-title black-text">
+              <span id="can_ask_question" class="card-title black-text">
                 Ask a question
               </span>
               <div class="divider"></div>
@@ -47,26 +47,26 @@
                 <div class="row row-tight">
                   <div class="input-field col s6">
                     <select ng-model="selected.topic" material-select watch>
-                      <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
+                      <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
                     </select>
                     <label>Topic</label>
                   </div>
                   <div class="input-field col s6">
                     <select ng-model="selected.location" material-select watch>
-                      <option value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{ l.location }}</option>
+                      <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{ l.location }}</option>
                     </select>
                     <label>Location</label>
                   </div>
                 </div>
                 <div class="row row-tight">
                   <div class="input-field col s12">
-                    <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                    <textarea id="q_desc" placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
                     <label>Question</label>
                   </div>
                 </div>
                 <div class="row row-tight">
                   <div class="col s12 center">
-                    <a class="btn btn-full waves-effect waves-light green" ng-click="ask_question()">Ask</a>
+                    <a id="submit_new_q" class="btn btn-full waves-effect waves-light green" ng-click="ask_question()">Ask</a>
                   </div>
                 </div>
               </form>
@@ -80,17 +80,17 @@
         <div class="col s12">
           <div class="card">
             <div class="card-content {{ q.is_frozen ? 'grey-text' : '' }}" ng-repeat="q in $db.model.questions">
-              <span class="card-title black-text">
+              <span id="your_question_student" class="card-title black-text">
                 Your question
-              <a class="right grey-text text-lighten-1" href="#modaldelete" modal>
+              <a id="delete_question" class="right grey-text text-lighten-1" href="#modaldelete" modal>
                 <i class="material-icons">delete</i>
               </a>
               <span class="right">&nbsp;&nbsp;</span>
-              <a class="right grey-text text-lighten-1" href="#modaleditquestion" modal>
+              <a id="edit_question" class="right grey-text text-lighten-1" href="#modaleditquestion" modal>
                 <i class="material-icons">mode_edit</i>
               </a>
               <span class="right">&nbsp;&nbsp;</span>
-              <a class="right grey-text {{ q.can_freeze || q.is_frozen ? 'text-lighten-1 clickable' : 'text-lighten-3 non-clickable' }}" ng-click="toggle_freeze()">
+              <a id="toggle_freeze" class="right grey-text {{ q.can_freeze || q.is_frozen ? 'text-lighten-1 clickable' : 'text-lighten-3 non-clickable' }}" ng-click="toggle_freeze()">
                 <i class="material-icons">{{ q.is_frozen ? 'play_arrow' : 'pause' }}</i>
               </a>
               </span>
@@ -98,16 +98,16 @@
               <div class="row row-tight section">
                 <div class="col s4 m2" ng-if="q.state === 'answering'">
                   <h5>
-                    <span class="green-text"><small>A TA is<br />on the way</small></span>
+                    <span id="question_status_ta" class="green-text"><small>A TA is<br />on the way</small></span>
                   </h5>
                 </div>
                 <div class="col s4 m2" ng-if="q.state !== 'answering'">
                   <h5>
-                    {{ q.queue_ps+1 }}
+                    <span id="queue_position">{{ q.queue_ps+1 }}</span>
                     <span class="grey-text"><small>of {{ $db.model.queue_meta[0].num_questions }}</small></span>
                   </h5>
                   <p>
-                    <span class="grey-text">{{ q.is_frozen ? 'frozen' : 'on the queue' }}</span>
+                    <span id="question_status" class="grey-text">{{ q.is_frozen ? 'frozen' : 'on the queue' }}</span>
                   </p>
                 </div>
                 <div class="col s8 m10">
@@ -118,7 +118,7 @@
                   </h5>
                   <p>
                     <span>{{ q.topic }}:<span>
-                    <span ng-if="q.help_text">{{ q.help_text }}</span>
+                    <span id="help_text" ng-if="q.help_text">{{ q.help_text }}</span>
                     <span ng-if="!q.help_text"><em>No additional details</em></span>
                   </p>
                 </div>
@@ -170,13 +170,13 @@
             </div>
             <div class="row row-tight">
               <div class="input-field col s12">
-                <textarea placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                <textarea id="edit_question_help_text" placeholder="Why is my isPrime timing out?" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
                 <label>Question</label>
               </div>
             </div>
             <div class="row row-tight">
               <div class="col s12 center">
-                <a class="btn btn-full waves-effect waves-light green" ng-click="update_question()">Edit</a>
+                <a id="edit_question_submit" class="btn btn-full waves-effect waves-light green" ng-click="update_question()">Edit</a>
               </div>
             </div>
           </form>

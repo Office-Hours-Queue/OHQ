@@ -91,13 +91,6 @@ class TestStudent(unittest.TestCase):
         # #ask, edit
         self.student.ask_question()
         self.student.edit_question()
-        table = self.ca.get_table()
-        found_edit = False
-        for row in table:
-            desc = row[4]
-            if (desc == "woosecondwoo"):
-                found_edit = True 
-        assert(found_edit)
 
         #freeze
         self.student.freeze_question()
@@ -108,18 +101,18 @@ class TestStudent(unittest.TestCase):
         student2.register()
         student2.login()
         student2.ask_question()
-        pos = student2.get_pos()
-        pos = pos[pos.index(":") + 1:].strip()
+        pos = student2.get_pos().strip()
         assert(pos.isdigit())
         n = int(pos)
         self.student.delete_question()
-        pos2 = student2.get_pos()
-        pos2 = pos2[pos2.index(":") + 1:].strip()
+        time.sleep(1)
+        pos2 = student2.get_pos().strip()
         assert(pos2.isdigit())
+
         assert(n - 1 == int(pos2))
+
         student2.logout()
         student2.tearDown()
-
 
 class TestCA(unittest.TestCase):
     """Test the CA Page"""
@@ -140,28 +133,39 @@ class TestCA(unittest.TestCase):
         self.student.logout()
         self.student.tearDown()
 
-    # def test_ca_table(self):
-    #     student1 = Student()
-    #     student1.register()
-    #     student1.login()
-    #     student1.ask_question()
-    #     table = self.ca.get_table()
-    #     found_q = False 
-    #     for row in table:
-    #         andrew_id = row[1]
-    #         desc = row[4]
-    #         if (desc == "woo" and andrew_id == student1.info["andrew_id"]):
-    #             found_q = True
-    #     assert(found_q)
-    #     student1.delete_question()
-    #     table = self.ca.get_table()
-    #     found_q = False
-    #     for row in table:
-    #         andrew_id = row[1]
-    #         desc = row[4]
-    #         if (desc == "woo" and andrew_id == student1.info["andrew_id"]):
-    #             found_q = True
-    #     assert(not(found_q))
+    def test_ca_table(self):
+        student1 = Student()
+        student1.register()
+        student1.login()
+        student1.ask_question()
+
+        #check that it shows in active
+        table = self.ca.get_active_questions()
+        found_q = False 
+        for row in table:
+            desc = row[1]
+            if ("woo" in desc):
+                found_q = True
+        assert(found_q)
+
+        #delete and make sure it is not in active
+        student1.delete_question()
+        table = self.ca.get_active_questions()
+        found_q = False 
+        for row in table:
+            desc = row[1]
+            if ("woo" in desc):
+                found_q = True
+        assert(not(found_q))
+
+        #should be in recent
+        table = self.ca.get_recent_questions()
+        found_q = False 
+        for row in table:
+            desc = row[1]
+            if ("woo" in desc):
+                found_q = True
+        assert(found_q)
 
     def test_minute_rule(self):
         #test minute rule
@@ -170,7 +174,10 @@ class TestCA(unittest.TestCase):
         ca2.login()
         self.ca.update_minute_rule(10)
         min_rule = self.ca.get_minute_rule().split(" ")[0];
+        print(min_rule)
         min_rule2 = ca2.get_minute_rule().split(" ")[0];
+        print(min_rule)
+        print(min_rule2)
         assert(min_rule == "10")
         assert(min_rule2 == "10")
         self.ca.update_minute_rule(5)
@@ -203,7 +210,7 @@ class TestCA(unittest.TestCase):
                 pass
         assert(one_worked)
         closed = other_student.driver.find_element_by_id("closed")
-        assert(closed.text == "The queue is closed.")
+        assert("closed" in closed.text)
         other_ca.open_queue()
         other_ca.logout()
         other_student.logout()
@@ -229,9 +236,11 @@ class TestCA(unittest.TestCase):
 
     def test_n_questions(self):
         n_questions = self.ca.get_n_questions().split(" ");
-        if (n_questions[0] == "No"):
+        if (n_questions[0] != "No"):
             assert(n_questions[0].isdigit())
             n = int(n_questions[0])
+        else:
+            n = 0
         self.student.ask_question()
         n_questions = self.ca.get_n_questions().split(" ")[0]
         assert(n_questions.isdigit())
@@ -246,34 +255,30 @@ class TestCA(unittest.TestCase):
         assert(n == n2)
         assert(n + 1 == n1)
 
-    # def test_answer_question(self):
-    #     return #currently broken
-    #     self.student.ask_question()
-    #     self.ca.answer_question()
-    #     self.student.check_toast("A Course Assistant is on the way!")
-    #     student.driver.execute_script("$('.toast').remove()")
-    #     self.ca.finish_question()
-    #     self.student.check_toast("Your question was marked as closed.")
-    #     self.student.logout()
-    #     self.student.login()
-    #     time.sleep(1)
-    #     self.student.ask_question()
-    #     self.ca.answer_question()
-    #     student.driver.execute_script("$('.toast').remove()")
-    #     self.ca.kick_question()
-    #     self.student.check_toast("Your question was kicked from the queue.")
-    #     self.student.logout()
-    #     self.student.login()
-    #     time.sleep(1)
-    #     self.student.ask_question()
-    #     self.ca.answer_question()
-    #     student.driver.execute_script("$('.toast').remove()")
-    #     self.ca.freeze_question()
-    #     self.student.check_toast("Your question was frozen.")
-    #     self.student.logout()
-    #     self.student.login()
-    #     time.sleep(1)
-    #     self.student.delete_question()
+    def test_answer_question(self):
+        self.student.ask_question()
+        self.ca.answer_question()
+        self.student.check_ta_alert_text("A TA is")
+        self.ca.finish_question()
+        assert(self.student.can_ask_question())
+        self.student.logout()
+        self.student.login()
+        time.sleep(1)
+        self.student.ask_question()
+        self.ca.answer_question()
+        self.ca.kick_question()
+        assert(self.student.can_ask_question())
+        self.student.logout()
+        self.student.login()
+        time.sleep(1)
+        self.student.ask_question()
+        self.ca.answer_question()
+        self.ca.freeze_question()
+        self.student.check_freeze_text("frozen") 
+        self.student.logout()
+        self.student.login()
+        time.sleep(1)
+        self.student.delete_question()
 
 
 if __name__ == '__main__':

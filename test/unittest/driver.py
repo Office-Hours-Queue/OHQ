@@ -198,12 +198,6 @@ class Student(User):
 
     def ask_question(self,check_fn=None):
         """Ask a question."""
-        #open question modal
-        time.sleep(1)
-        ask_q_modal = self.driver.find_element_by_id("new_q")
-        ask_q_modal.click()
-        time.sleep(1)
-
         #check topics exist
         topics = self.driver.find_elements_by_name("topic_option")
         assert(len(topics) > 0)
@@ -217,40 +211,30 @@ class Student(User):
         desc.send_keys("woo")
 
         #ask question
-        ask = self.driver.find_element_by_name("submit_new_q")
+        ask = self.driver.find_element_by_id("submit_new_q")
         ask.click()
         time.sleep(1)
 
         #check that it showed up
-        table_rows = self.driver.find_elements_by_name("q_row")
-        assert(len(table_rows) == 1)
+        self.driver.find_elements_by_id("your_question_student")
 
         #check the help text
-        desc_text = self.driver.find_element_by_id("help_text_table").text
+        desc_text = self.driver.find_element_by_id("help_text").text
         assert(desc_text == "woo")
-
-        #Try to ask question (hopefully can't)
-        ask_q_modal = self.driver.find_element_by_id("new_q")
-        ask_q_modal.click()
-        time.sleep(1)
-        have_q = self.driver.find_element_by_id("have_q").text
-        assert(have_q == "You already have a question.")
-        ask = self.driver.find_element_by_name("submit_new_q")
-        ask.click()
 
         if (check_fn != None): check_fn(self)
 
     def edit_question(self,check_fn=None):
         """Edit the student's current question (assumed to exist)."""
         time.sleep(1)
-        pencil = self.driver.find_element_by_id("pencil_edit")
+        pencil = self.driver.find_element_by_id("edit_question")
         pencil.click()
         time.sleep(1)
-        desc = self.driver.find_element_by_id("q_desc_update")
+        desc = self.driver.find_element_by_id("edit_question_help_text")
         desc.send_keys("secondwoo")
-        submit_edit = self.driver.find_element_by_name("submit_edit_q")
+        submit_edit = self.driver.find_element_by_id("edit_question_submit")
         submit_edit.click()
-        desc_text = self.driver.find_element_by_id("help_text_table").text
+        desc_text = self.driver.find_element_by_id("help_text").text
         assert(desc_text == "woosecondwoo")
 
         if (check_fn != None): check_fn(self)
@@ -258,7 +242,7 @@ class Student(User):
     def delete_question(self,check_fn=None):
         """Delete the student's current question."""
         time.sleep(1)
-        delete = self.driver.find_element_by_id("trash_delete")
+        delete = self.driver.find_element_by_id("delete_question")
         delete.click()
         time.sleep(1)
         do_delete = self.driver.find_element_by_name("do_delete")
@@ -273,8 +257,8 @@ class Student(User):
         toggle_freeze = self.driver.find_element_by_id("toggle_freeze")
         toggle_freeze.click()
         time.sleep(1)
-        freeze_text = self.driver.find_element_by_id("freeze_text").text
-        assert(freeze_text == "Unfreeze")
+        freeze_text = self.driver.find_element_by_id("question_status").text
+        assert(freeze_text == "frozen")
 
         if (check_fn != None): check_fn(self)
 
@@ -284,16 +268,37 @@ class Student(User):
         toggle_freeze = self.driver.find_element_by_id("toggle_freeze")
         toggle_freeze.click()
         time.sleep(1)
-        freeze_text = self.driver.find_element_by_id("freeze_text").text
-        assert(freeze_text == "Freeze")
+        freeze_text = self.driver.find_element_by_id("question_status").text
+        assert(freeze_text == "on the queue")
         
         if (check_fn != None): check_fn(self)
 
     def get_pos(self):
         """Get the student's position in the queue."""
         time.sleep(1)
-        pos = self.driver.find_element_by_id("pos_card").text
+        pos = self.driver.find_element_by_id("queue_position").text
         return pos
+
+    def check_ta_alert_text(self,text):
+        time.sleep(1)
+        status = self.driver.find_element_by_id("question_status_ta").text
+        assert(text in status)
+
+    def check_freeze_text(self,text):
+        time.sleep(1)
+        status = self.driver.find_element_by_id("question_status").text
+        assert(status == text)
+
+    def can_ask_question(self):
+        time.sleep(1)
+        return self.driver.find_element_by_id("can_ask_question").text == "Ask a question"
+
+    def check_toast(self,expected_text):
+        """Check if there was a toast on the page."""
+        toast = self.driver.find_element_by_class_name("toast")
+        text = toast.text
+        assert(text == expected_text)
+
 
 class CA(User):
     """Represents a User with role 'ca'."""
@@ -340,6 +345,10 @@ class CA(User):
     def update_minute_rule(self,n,check_fn=None):
         """Have the CA update the minute rule."""
         self.driver.get(User.Config["queue_url"]+"/#/admin")
+        time.sleep(1)
+        min_rule_li = self.driver.find_element_by_id("update_minute_rule_li")
+        min_rule_li.click()
+        time.sleep(1)
         min_rule_input = self.driver.find_element_by_id("minuteRule")
         min_rule_input.clear()
         min_rule_input.send_keys(str(n))
@@ -459,7 +468,7 @@ class CMULoginCA(User):
         self.driver.get(User.Config["queue_url"])
         lets_begin = self.driver.find_element_by_id('lets_begin')
         lets_begin.click()
-        time.sleep(1)
+        time.sleep(2)
         user_field = self.driver.find_element_by_id("j_username")
         pass_field = self.driver.find_element_by_id("j_password")
         user_field.send_keys(User.Config["cmu_login_andrew"])
