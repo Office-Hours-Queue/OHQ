@@ -1,6 +1,7 @@
 var queue = require('./queue');
 var auth = require('../../auth');
 var debug = require('debug')('app:io');
+var Promise = require('bluebird');
 
 //
 // Main queue update stream.
@@ -200,11 +201,8 @@ module.exports.queue = function(io) {
     // emit the current data on connect
     //
 
-    queue.meta.getCurrent().then(function(meta) {
-      socket.emit('queue_meta', makeMessage('data', [{
-        id: 0,
-        open: meta.open
-      }]));
+    getStudentMeta().then(function(meta) {
+      socket.emit('queue_meta', makeMessage('data', [meta]));
     });
 
     queue.locations.getEnabled().then(function(locations) {
@@ -244,22 +242,37 @@ module.exports.queue = function(io) {
       emitStudentQuestion(question);
     });
 
-    // queue.questions.emitter.on('question_closed', function(question) {
-    //   student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
-    // });
-
-    queue.questions.emitter.on('question_closed',emitStudentQuestion);
-
-
-    // listen for updates on queue_meta
-    queue.meta.emitter.on('update', function(meta) {
-      students().emit('queue_meta', makeMessage('data', [{
-        id: 0,
-        open: meta.open
-      }]));
+    queue.questions.emitter.on('question_closed', function(question) {
+      student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
     });
 
+    // listen for updates on queue_meta
+    // all of the events below potentially affect the queue length, so send updates
+    queue.meta.emitter.on('update', emitStudentMeta);
+    queue.questions.emitter.on('question_answered', emitStudentMeta);
+    queue.questions.emitter.on('new_question', emitStudentMeta);
+    queue.questions.emitter.on('question_frozen', emitStudentMeta);
+
   })();
+
+  function getStudentMeta() {
+    return Promise.join(
+        queue.meta.getCurrent(),
+        queue.questions.getOpenCount(),
+        function(meta, count) {
+          return Promise.resolve({
+            id: 0,
+            open: meta.open,
+            num_questions: count
+          });
+        });
+  }
+
+  function emitStudentMeta(meta) {
+    getStudentMeta().then(function(meta) {
+      students().emit('queue_meta', makeMessage('data', [meta]));
+    });
+  }
 
   function emitCaQuestion(question) {
     cas().emit('questions', makeCaQuestion(question));  
@@ -331,7 +344,7 @@ module.exports.history = function(io) {
     socket.on('get_last_n', function(n) {
       if (Number.isInteger(n)) {
         queue.questions.getLatestClosedUserId(n, userid).then(function(questions) {
-          questions.forEach(emitCaQuestion);  
+          questions.forEach(emitStudentQuestion);
         });
       }
     });
@@ -396,11 +409,14 @@ function makeStudentQuestion(question) {
   return makeMessage('data', [{
     id: question.id,
     topic_id: question.topic_id,
+    topic: question.topic,
     location_id: question.location_id,
+    location: question.location,
     help_text: question.help_text,
     queue_ps: parseInt(question.queue_position),
     is_frozen: question.is_frozen,
     can_freeze: question.can_freeze,
     state: getQuestionState(question),
+    off_time: question.off_time
   }]);
 };
