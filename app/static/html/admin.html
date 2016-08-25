@@ -4,6 +4,7 @@
 	<ul data-block-append="menu_links">
 		<li><a href="/api/login/endauth">Log Out</a></li>
     	<li><a href="/#/admin">Administration</a></li>
+        <li><a href="/#/ca">Home</a></li>
 	</ul>
 
 	<!-- Content --> 
@@ -15,16 +16,30 @@
 
 
 	<ul class="collapsible" data-collapsible="accordion">
-		<li>
-			<div class="collapsible-header">Valid Andrew IDs</div>
+		<li id="update_minute_rule_li">
+			<div class="collapsible-header">Update Minute Rule</div>
 			<div class="collapsible-body">
 			<p>
-				Marking an Andrew ID as valid allows the student to register for the course. 
+				The minute rule denotes the maximum amount of time a CA should spend with a student. 
+				<br/>
+				<br/>
+          		<label for="minuteRule">Minute Rule</label>
+				<input id="minuteRule" value="{{ $db.model['queue_meta'][0].time_limit }}" type="text">
+				<button id="update_rule_btn" ng-click="update_minute_rule()" class="btn blue">Change</button>
+
+			</p>
+			</div>
+		</li>
+		<li>
+			<div class="collapsible-header">Grant Queue Access</div>
+			<div class="collapsible-body">
+			<p>
+				Enter a student's andrew id below to let them login to the queue. 
 				<br/>
 				<br/>
           		<label for="new_andrew_id">New Andrew ID</label>
 				<input id="new_andrew_id" type="text">
-				<button ng-click="add_andrew_id()" class="btn blue">Submit</button>
+				<button ng-click="add_andrew_id()" class="btn blue">Add Student</button>
 
 			</p>
 			</div>

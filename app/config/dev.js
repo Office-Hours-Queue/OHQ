@@ -13,4 +13,9 @@ config.KNEX = {
   connection: 'postgres://queue:supersecret@127.0.0.1:5432/queue'
 };
 
+// Google Spreadsheet backup ID
+config.GOOGLE_SHEETS = {
+	"id": "15_vlyPc1LJ8J2i6a_zEK1D3cbjnIyxN9XcY14RcpclQ"
+};
+
 module.exports = config;
