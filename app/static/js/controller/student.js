@@ -4,11 +4,33 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	$rootScope.current_page = "student";
 	$scope.name = "student";
 
-  $scope.selected = {
-    "topic": "",
-    "location":"",
-    "help_text":""
-  };
+
+
+	$rootScope.check_login();
+
+	var example_questions = [
+	'What do break, continue, and pass do?',
+	'How do I determine the big-O of a nested loop?',
+	'Help me go over the code tracing from quiz 3.',
+	'What\s does the f parameter in the integral function do?',
+	'Why is the big-O of binary search O(log n)?',
+	'What does \'type affects semantics\' mean?',
+	'Why do I need to use almostEquals?',
+	'Should I use almostEquals in this function?',
+	];
+
+	function set_random_question() {
+	var random_idx = Math.floor(Math.random()*example_questions.length);
+	$scope.example_question = example_questions[random_idx];
+	}
+
+	set_random_question();
+
+	$scope.selected = {
+	"topic": "",
+	"location":"",
+	"help_text":""
+	};
 
 	$scope.toggle_freeze = function() {
 		if ($db.is_frozen()) {
@@ -91,4 +113,5 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 		});
 		$('#modaleditquestion').closeModal();
 	}
+
 }];
