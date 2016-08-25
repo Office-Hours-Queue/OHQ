@@ -174,10 +174,7 @@ class TestCA(unittest.TestCase):
         ca2.login()
         self.ca.update_minute_rule(10)
         min_rule = self.ca.get_minute_rule().split(" ")[0];
-        print(min_rule)
         min_rule2 = ca2.get_minute_rule().split(" ")[0];
-        print(min_rule)
-        print(min_rule2)
         assert(min_rule == "10")
         assert(min_rule2 == "10")
         self.ca.update_minute_rule(5)
