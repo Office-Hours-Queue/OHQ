@@ -86,7 +86,7 @@ docker-compose up --build -d
 # get a certificate
 yum install epel-release
 yum install certbot
-certbot certonly --webroot -w /home/queue/15-112-Queue/app/static -d queue.edwarddryer.om
+certbot certonly --webroot -w /home/queue/15-112-Queue/app/static -d queue.edwarddryer.com
 
 # at this point, also install a systemd timer / cron task that auto-renews
 # the certificates twice daily by running certbot renew --quiet
