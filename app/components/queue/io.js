@@ -399,6 +399,7 @@ function makeCaQuestion(question) {
     location: question.location,
     help_text: question.help_text,
     state: getQuestionState(question),
+    can_freeze: question.can_freeze,
     queue_ps: parseInt(question.queue_position),
     on_time: question.on_time,
     off_time: question.off_time

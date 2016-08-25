@@ -142,7 +142,7 @@
           		</div>
           		<div class="right">
 	          		<a id="finish_q" ng-click="$db.finish_question()" class="waves-effect waves-light btn lightblue">Finish</a>
-	          		<a id="freeze_q" ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue">Freeze</a>
+	          		<a id="freeze_q" ng-click="$db.freeze_question()" style="margin-right: 5px" class="waves-effect waves-light btn blue {{ $db.model.current_question[0].can_freeze ? '' : 'disabled' }}">Freeze</a>
           		</div>
           </div>
       </div>
