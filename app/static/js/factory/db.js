@@ -12,6 +12,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		$http.get('/api/user', {}).then(function (data) {
 			if (data["data"]["first_name"] != undefined) {
 				$rootScope.user = data["data"];
+				$rootScope.$broadcast("user_ready");
 				if ($rootScope.current_page != "login") { return ;}
 				if ($rootScope.user["role"] == "ca" && $rootScope.current_page == "admin") { return; }
 				window.location = "/#/" + $rootScope.user["role"]
@@ -25,31 +26,38 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 
 	/* Connect to socketio when the user exists */
 	/* Initialize SocketIO */
-	d.qsio = io('/queue');
-	d.usio = io('/user');
-	d.hsio = io('/history');
-	d.n_history = 5;
-	d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
-	d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
-	d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
-	d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
-	d.qsio.on("current_question",function (payload) { handle_db_update("current_question",payload); });
-	d.qsio.on("message", function (payload) { Materialize.toast(payload); });
-	d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
-	d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
-	d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
-	d.qsio.on("connect", function() {
-		setEmptyModel();
-		d.io_connected = true;
+	$rootScope.$on("user_ready", function () {
+		var sio_opts = {
+			"reconnection":true,
+			"reconnectionDelay":1,
+			"reconnectionDelayMax": 1,
+			"timeout": 1000,
+		};
+		d.qsio = io('/queue',sio_opts);
+		d.usio = io('/user',sio_opts);
+		d.hsio = io('/history',sio_opts);
+		d.n_history = 5;
+		d.io_connected = false
+		d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
+		d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
+		d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
+		d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
+		d.qsio.on("current_question",function (payload) { handle_db_update("current_question",payload); });
+		d.qsio.on("message", function (payload) { Materialize.toast(payload); });
+		d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
+		d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
+		d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
+		d.qsio.on("connect", function() {
+			setEmptyModel();
+			d.io_connected = true;
+		});
+		d.qsio.on("disconnect", function () {
+			d.io_connected = false;
+		})
+		d.hsio.on("connect", function() {
+			d.hsio.emit('get_last_n', d.n_history);
+		});
 	});
-	d.qsio.on("disconnect", function () {
-		d.io_connected = false;
-	})
-	d.hsio.on("connect", function() {
-		d.hsio.emit('get_last_n', d.n_history);
-	});
-
-	d.io_connected = false
 
 	/* Initialize Model of the database */
   var setEmptyModel = function() {
