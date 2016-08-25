@@ -14,12 +14,11 @@ RUN chown -R app:app .
 USER app
 RUN npm install
 
-#Wanted for docker exec knex seed:run 
-RUN npm install knex
-
 # Copy over our app
-USER root
+#USER root
 COPY . .
+VOLUME "/home/app/queue/www"
+RUN cp -fr ./static /home/app/queue/www
 RUN chown -R app:app .
 
 # Run our app
