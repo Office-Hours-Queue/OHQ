@@ -35,7 +35,7 @@
       </div>
 
       <!-- Ask a question -->
-      <div class="row" ng-if="$db.model.questions.length === 0">
+      <div class="row" ng-if="$db.model.questions.length === 0 && $db.model.queue_meta[0].open">
         <div class="col s12">
           <div class="card">
             <div class="card-content">
