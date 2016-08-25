@@ -7,8 +7,9 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
-var debug = require('debug')('app:gsheets')
-var path = require('path')
+var debug = require('debug')('app:gsheets');
+var path = require('path');
+var config = require('../../config');
 
 //Information needed for google apis
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
@@ -16,7 +17,7 @@ var TOKEN_DIR = path.join(__dirname, '../../credentials/');
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 var CREDENTIALS = undefined;
 var sheets = google.sheets('v4');
-var sheet_id = "15_vlyPc1LJ8J2i6a_zEK1D3cbjnIyxN9XcY14RcpclQ";
+var sheet_id = config.GOOGLE_SHEETS.id; 
 
 // Load client secrets from a local file.
 var cred_path = path.join(__dirname, '../../credentials/client_secret.json');
