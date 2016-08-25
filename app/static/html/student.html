@@ -202,14 +202,21 @@
       </div>
 
       <!-- Confirm Delete  -->
-      <div class="modal" id="modaldelete">
-          <div  class="modal-content">
-              <h4 class="center">Are you sure you want to delete your question?</h4>
+      <div class="modal bottom-sheet" id="modaldelete">
+        <div class="modal-content">
+          <div class="container">
+            <div class="row row-tight valign-wrapper">
+              <div class="col s8 valign">
+                <h5>Delete question?</h5>
+                <p>You will lose your position on the queue.</p>
+              </div>
+              <div class="col s4 valign right">
+                <a id="prefbtn" ng-click="$db.delete_question()" name="do_delete" class="modal-action modal-close waves-effect waves-light btn-flat red-text">Delete</a>
+                <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+              </div>
+            </div>
           </div>
-          <div class="modal-footer">
-              <div  ng-click="$db.delete_question()"><a id="prefbtn"  name="do_delete" class="modal-action modal-close waves-effect btn-flat">Delete</a></div>
-              <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Cancel</a>
-          </div>
+        </div>
       </div>
 
     </div>
