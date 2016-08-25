@@ -61,7 +61,7 @@
                 <div class="row row-tight">
                   <div class="input-field col s12">
                     <textarea placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
-                    <label>Question</label>
+                    <label class="active">Question</label>
                   </div>
                 </div>
                 <div class="row row-tight">
@@ -170,8 +170,9 @@
             </div>
             <div class="row row-tight">
               <div class="input-field col s12">
-                <textarea id="edit_question_help_text" placeholder="{{ example_question }}" class="materialize-textarea" ng-model="selected.help_text"></textarea>
-                <label>Question</label>
+
+                <textarea id="edit_question_help_text" placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                <label class="active">Question</label>
               </div>
             </div>
             <div class="row row-tight">
