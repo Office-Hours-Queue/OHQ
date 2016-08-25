@@ -187,6 +187,10 @@ module.exports.queue = function(io) {
 
     socket.on('delete_question', function() {
       queue.questions.closeStudent(userid);
+      //update other student positions
+      queue.questions.getOpen().then(function(questions) {
+        questions.forEach(emitStudentQuestion);
+      });
     });
 
     socket.on('freeze_question', function() {
