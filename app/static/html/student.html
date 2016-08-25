@@ -180,25 +180,28 @@
 
       <!-- FAQ Modal -->
       <div class="modal modal-fixed-footer" id="modalhelp">
-          <div class="center modal-content container">
-              <h4 class="center">FAQ</h4>
-              <ul>
-                  <li><h5> How does freezing work?</h5>
-                  <br />
-                  Freezing a question freezes you on the queue for a certain time length. This is useful if you want to go get food, or go to the bathroom. Each question can be frozen once.  CA's will not see you on the queue if you are frozen, but you'll retain your position. 
-                  </li>
-                  <br />
-
-                  <li><h5>Why did I get helped when there were people ahead of me?</h5>
-                  Some other students who are higher on the queue than you may have frozen
-                  their place on the queue. When they do this, they are still counted as
-                  ahead of you, but you will be helped first.
-                  </li>
-              </ul>
+        <div class="modal-content container">
+          <h4>FAQ</h4>
+          <div class="divider"></div>
+          <div class="section">
+            <h5>How does freezing work?</h5>
+            <p>When you freeze your question, you'll keep your position on the queue, but a CA won't answer your question until you're unfrozen.</p>
+            <p>It's useful when you're near the front of the queue, but need to go to the bathroom or get some food.</p>
+            <div class="divider"></div>
+            <h5>How many times can I freeze my question?</h5>
+            <p>Up to once per question.</p>
+            <div class="divider"></div>
+            <h5>How do I freeze my question?</h5>
+            <p>Hit the freeze button: <i class="tiny material-icons grey-text lighten-1">pause</i></p>
+            <div class="divider"></div>
+            <h5>How can I unfreeze my question?</h5>
+            <p>Hit the unfreeze button: <i class="tiny material-icons grey-text lighten-1">play_arrow</i></p>
+            <p>Otherwise, you'll be automatically unfrozen after FREEZE_TIME minutes.</p>
           </div>
-          <div class="modal-footer">
-              <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
-          </div>
+        </div>
+        <div class="modal-footer">
+            <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+        </div>
       </div>
 
       <!-- Confirm Delete  -->
