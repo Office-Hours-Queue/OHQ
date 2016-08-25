@@ -154,7 +154,7 @@
               <a id="kick_q" ng-click="$db.kick_question()" class="btn btn-full waves-effect waves-light red lighten-1 z-depth-0">Kick</a>
             </div>
             <div class="col s6">
-              <a id="freeze_q" ng-click="$db.freeze_question()" class="btn btn-full waves-effect waves-light  blue-text {{ $db.model.current_question[0].can_freeze ? '' : 'disabled' }}">Freeze</a>
+              <a id="freeze_q" ng-click="$db.freeze_question()" class="btn btn-full waves-effect waves-light blue {{ $db.model.current_question[0].can_freeze ? '' : 'disabled' }}">Freeze</a>
             </div>
             <div class="col s12">
               <a id="finish_q" ng-click="$db.finish_question()" class="btn btn-full btn-large waves-effect waves-light z-depth-0">Finish</a>
