@@ -17,9 +17,7 @@ RUN npm install
 # Copy over our app
 USER root
 COPY . .
-VOLUME "/home/app/queue/www"
 RUN chown -R app:app .
-RUN cp -fr ./static /home/app/queue/www
 
 # Run our app
 USER app
