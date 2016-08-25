@@ -79,15 +79,15 @@ module.exports.queue = function(io) {
     });
     
     socket.on('close_queue', function() {
-      queue.meta.close();
+      queue.meta.close(userid);
     });
 
     socket.on('open_queue', function() {
-      queue.meta.open();
+      queue.meta.open(userid);
     });
 
     socket.on('update_minute_rule', function(minutes) {
-      queue.meta.setTimeLimit(minutes);
+      queue.meta.setTimeLimit(minutes, userid);
     });
 
     //
