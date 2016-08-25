@@ -25,3 +25,5 @@ nodeapp:
         - "127.0.0.1:3000:3000"
     environment:
         - NODE_ENV=production
+    volume:
+        - "/root/www:/home/app/queue/static"
