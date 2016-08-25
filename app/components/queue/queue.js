@@ -351,9 +351,7 @@ function addQuestion(question) {
   };
 
   // insert the question if the queue is open
-  db.select('open')
-    .from('queue_meta')
-    .first().then(function (meta) {
+  selectCurrentMeta().then(function(meta) {
       if (meta.open) {
         db.count('*')
           .from('questions AS q')
@@ -541,53 +539,57 @@ var meta = (function() {
     setTimeLimit: setTimeLimit,
     emitter: new EventEmitter()
   };
-  dbEvents.queue_meta.on('update', function(newMeta, oldMeta) {
+  dbEvents.queue_meta.on('insert', function(newMeta) {
     result.emitter.emit('update', cleanMeta(newMeta));
   });
   return result;
 })();
 
-function setTimeLimit(minutes) {
+function setTimeLimit(minutes, userid) {
   if (Number.isInteger(parseInt(minutes)) && minutes > 0) {
-    db('queue_meta')
-      .update({ time_limit: minutes })
-      .return(null);
+    selectCurrentMeta().then(function(meta) {
+      meta.time_limit = parseInt(minutes);
+      meta.user_id = userid;
+      meta.time = db.fn.now();
+      delete meta.id;
+      return db('queue_meta')
+        .insert(meta);
+    });
   }
 }
 
 function cleanMeta(meta) {
   delete meta.registration_code;
+  delete meta.user_id;
+  delete meta.time;
   delete meta.id;
   return meta;
 }
 
 function setQueueState(state) {
-  return function() {
-    db('queue_meta')
-      .update({ open: state })
-      .return(null);
+  return function(userid) {
+    selectCurrentMeta().then(function(meta) {
+      meta.open = state;
+      meta.user_id = userid;
+      meta.time = db.fn.now();
+      delete meta.id;
+      return db('queue_meta')
+        .insert(meta);
+    });
   };
 }
 
 function selectMeta(id) {
-  return db.select(
-      'open',
-      'max_freeze',
-      'time_limit'
-    )
+  return db.select('*')
     .from('queue_meta')
     .where('id', id)
     .first();
 }
 
 function selectCurrentMeta() {
-  return db.select(
-      'open',
-      'max_freeze',
-      'time_limit'
-    )
+  return db.select('*')
     .from('queue_meta')
-    .orderBy('id', 'asc')
+    .orderBy('id', 'desc')
     .first();
 }
 
