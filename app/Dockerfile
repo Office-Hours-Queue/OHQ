@@ -15,7 +15,7 @@ USER app
 RUN npm install
 
 #Wanted for docker exec knex seed:run 
-RUN npm install -g knex
+RUN npm install knex
 
 # Copy over our app
 USER root
