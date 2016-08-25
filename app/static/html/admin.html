@@ -16,7 +16,7 @@
 
 
 	<ul class="collapsible" data-collapsible="accordion">
-		<li>
+		<li id="update_minute_rule_li">
 			<div class="collapsible-header">Update Minute Rule</div>
 			<div class="collapsible-body">
 			<p>
@@ -24,7 +24,7 @@
 				<br/>
 				<br/>
           		<label for="minuteRule">Minute Rule</label>
-				<input id="minuteRule" value="{{ $db.model['queue_meta'][0].time_limit }}" type="number">
+				<input id="minuteRule" value="{{ $db.model['queue_meta'][0].time_limit }}" type="text">
 				<button id="update_rule_btn" ng-click="update_minute_rule()" class="btn blue">Change</button>
 
 			</p>

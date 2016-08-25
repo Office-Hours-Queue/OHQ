@@ -5,6 +5,10 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 	$("#sidenav-overlay").remove();
 	$scope.update_minute_rule = function () {
 		var min_rule =  $("#minuteRule").val();
+		if (isNaN(min_rule)) {
+			Materialize.toast("Invalid minute rule!")
+			return
+		}
 		$db.update_minute_rule(min_rule);
 		Materialize.toast("Minute rule updated!",2000);
 	}
