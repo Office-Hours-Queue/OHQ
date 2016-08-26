@@ -31,7 +31,6 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			"reconnection":true,
 			"reconnectionDelay":200,
 			"reconnectionDelayMax": 200,
-			"timeout": 500,
 		};
 		d.qsio = io('/queue',sio_opts);
 		d.usio = io('/user',sio_opts);
