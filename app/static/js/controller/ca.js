@@ -6,9 +6,7 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 	$scope.name = "ca";
 	$("#sidenav-overlay").remove();
 
-	$scope.$watch(function () {
-		return $db.model['current_question'].length
-	},function () {
+	function check_open_modal() {
 		if ($db.model['current_question'].length == 1) {
 			$('#modalanswerquestion').openModal({
 				dismissible: false
@@ -16,6 +14,18 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 		} else {
 			$('#modalanswerquestion').closeModal();
 		}
+	}
+
+	$scope.$watch(function () {
+		return $db.model['current_question'].length
+	},function () {
+		check_open_modal();
+	});
+
+	$scope.$watch(function () {
+		return $db.io_connected;
+	}, function () {
+		check_open_modal();
 	});
 
 
