@@ -47,11 +47,15 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
 		d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
 		d.qsio.on("connect", function() {
-			setEmptyModel();
-			d.io_connected = true;
+      $rootScope.$apply(function() {
+			  setEmptyModel();
+			  d.io_connected = true;
+      });
 		});
 		d.qsio.on("disconnect", function () {
-			d.io_connected = false;
+      $rootScope.$apply(function() {
+			  d.io_connected = false;
+      });
 		})
 		d.hsio.on("connect", function() {
 			d.hsio.emit('get_last_n', d.n_history);
