@@ -785,6 +785,7 @@ if ($) {
 
       // Define Bottom Sheet animation
       if ($modal.hasClass('bottom-sheet')) {
+        $modal.velocity('stop');
         $modal.velocity({bottom: "0", opacity: 1}, {
           duration: options.in_duration,
           queue: false,
@@ -862,13 +863,12 @@ if ($) {
         });
       }
       else {
+        $modal.velocity('stop');
         $modal.velocity(
           { top: options.starting_top, opacity: 0, scaleX: 0.7}, {
           duration: options.out_duration,
           complete:
             function() {
-
-              $(this).css('display', 'none');
               // Call complete callback
               if (typeof(options.complete) === "function") {
                 options.complete();
