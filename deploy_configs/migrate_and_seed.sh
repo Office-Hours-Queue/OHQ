@@ -1,2 +1,2 @@
-docker exec 112_queue_nodeapp npm migrate 
-docker exec 112_queue_nodeapp npm seed 
+docker exec 112_queue_nodeapp bash -c 'npm run-script migrate' 
+docker exec 112_queue_nodeapp bash -c 'npm run-script seed'
