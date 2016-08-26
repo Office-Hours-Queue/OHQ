@@ -6,30 +6,20 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 	$scope.name = "ca";
 	$("#sidenav-overlay").remove();
 
-	function check_open_modal() {
-		if ($db.model['current_question'].length == 1) {
-			$("#lean-overlay").remove();
+	function check_open_modal(new_val,old_val) {
+		if (old_val == 0 && new_val == 1) {
 			$('#modalanswerquestion').openModal({
 				dismissible: false
 			});
-		} else {
+		}
+		if (new_val == 0 && old_val == 1) {
 			$('#modalanswerquestion').closeModal();
-			$("#lean-overlay").remove();
 		}
 	}
 
 	$scope.$watch(function () {
 		return $db.model['current_question'].length
-	},function () {
-		check_open_modal();
-	});
-
-	$scope.$watch(function () {
-		return $db.io_connected;
-	}, function () {
-		check_open_modal();
-	});
-
+	},check_open_modal);	
 
 	$scope.toggle_history = function () {
 		$rootScope.show_history = !($rootScope.show_history);
