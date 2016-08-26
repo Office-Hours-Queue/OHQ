@@ -28,7 +28,6 @@ for andrew_id in info:
 	}
 	print("Register: ", s.post(url + "/api/user/createlocal", json=reg_payload))
 
-	time.sleep(1)
 
 
 
