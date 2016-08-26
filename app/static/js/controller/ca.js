@@ -8,11 +8,13 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 
 	function check_open_modal() {
 		if ($db.model['current_question'].length == 1) {
+			$("#lean-overlay").remove();
 			$('#modalanswerquestion').openModal({
 				dismissible: false
 			});
 		} else {
 			$('#modalanswerquestion').closeModal();
+			$("#lean-overlay").remove();
 		}
 	}
 
