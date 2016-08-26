@@ -599,9 +599,16 @@ function selectCurrentMeta() {
 var locations = (function() {
   return {
     getAll: selectAllLocations,
-    getEnabled: selectEnabledLocations
+    getEnabled: selectEnabledLocations,
+    addLocation: addLocation
   };
 })();
+
+function addLocation(loc) {
+  db.insert({ "location": loc })
+                .into('locations')
+                .return(null);
+}
 
 function selectAllLocations() {
   return db.select(
@@ -622,9 +629,16 @@ function selectEnabledLocations() {
 var topics = (function() {
   return {
     getAll: selectAllTopics,
-    getEnabled: selectEnabledTopics
+    getEnabled: selectEnabledTopics,
+    addTopic: addTopic
   };
 })();
+
+function addTopic(topic) {
+   db.insert({ "topic": topic })
+                .into('topics')
+                .return(null);
+}
 
 function selectAllTopics() {
   return db.select(

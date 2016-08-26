@@ -30,8 +30,29 @@
 			</p>
 			</div>
 		</li>
+		<li id="update_minute_rule_li">
+			<div class="collapsible-header">Add Topic</div>
+			<div class="collapsible-body">
+			<p>
+          		<label for="new_topic">Topic</label>
+				<input id="new_topic" type="text">
+				<button id="new_topic_button" ng-click="$db.add_new_topic()" class="btn blue">Add Topic</button>
+			</p>
+			</div>
+		</li>
+		<li id="update_minute_rule_li">
+			<div class="collapsible-header">Add Location</div>
+			<div class="collapsible-body">
+			<p>
+          		<label for="new_location">Location</label>
+				<input id="new_location" type="text">
+				<button id="new_location_button" ng-click="$db.add_new_location()" class="btn blue">Add</button>
+			</p>
+			</div>
+		</li>
+
 		<li>
-			<div class="collapsible-header">Grant Queue Access</div>
+			<div class="collapsible-header">Grant Non-Google Queue Access</div>
 			<div class="collapsible-body">
 			<p>
 				Enter a student's andrew id below to let them login to the queue. 

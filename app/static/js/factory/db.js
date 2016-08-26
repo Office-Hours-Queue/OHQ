@@ -161,6 +161,18 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
     	d.n_history = d.n_history + 5;
     	d.hsio.emit('get_last_n', d.n_history);
 	}
+	d.add_new_topic = function () {
+		var topic = $("#new_topic").val()
+		if (topic == "") { return }
+		d.qsio.emit("add_topic",topic);
+		Materialize.toast("Topic added!")
+	}
+	d.add_new_location = function () {
+		var loc = $("#new_location").val()
+		if (loc == "") { return }
+		d.qsio.emit("add_location",loc);
+		Materialize.toast("Location added!");
+	}
 
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {

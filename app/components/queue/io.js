@@ -90,6 +90,14 @@ module.exports.queue = function(io) {
       queue.meta.setTimeLimit(minutes, userid);
     });
 
+    socket.on('add_topic', function (topic) {
+      queue.topics.addTopic(topic);
+    });
+
+    socket.on('add_location', function (location) {
+      queue.locations.addLocation(location);
+    });
+
     //
     // emit current ca data
     //
