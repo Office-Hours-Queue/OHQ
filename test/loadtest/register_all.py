@@ -21,7 +21,7 @@ for andrew_id in info:
 	reg_payload =  {
 		"andrew_id" : andrew_id, 
 		"email" : andrew_id + "@cmu.edu",
-		"password" : password, 
+		"password" : "passwords",
 		"first_name" : "woo",
 		"last_name" : "haa", 
 		"registration_code" : "private"
