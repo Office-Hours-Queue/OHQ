@@ -12,7 +12,7 @@ postgresql:
         - POSTGRES_USER=queue
 
 nodeapp:
-    image: edryer/112queue:alpha1.0
+    build: app
     container_name: 112_queue_nodeapp
     restart: always
     links:
