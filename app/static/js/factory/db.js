@@ -29,9 +29,9 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	$rootScope.$on("user_ready", function () {
 		var sio_opts = {
 			"reconnection":true,
-			"reconnectionDelay":1,
-			"reconnectionDelayMax": 1,
-			"timeout": 1000,
+			"reconnectionDelay":200,
+			"reconnectionDelayMax": 200,
+			"timeout": 500,
 		};
 		d.qsio = io('/queue',sio_opts);
 		d.usio = io('/user',sio_opts);
