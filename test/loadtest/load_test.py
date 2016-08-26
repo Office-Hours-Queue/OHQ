@@ -10,17 +10,6 @@ def login_as_student_and_wait(andrew_id,password):
 	#start session
 	s = requests.Session()
 
-	#register account
-	reg_payload =  {
-		"andrew_id" : andrew_id, 
-		"email" : andrew_id + "@cmu.edu",
-		"password" : password, 
-		"first_name" : "woo",
-		"last_name" : "haa", 
-		"registration_code" : "private"
-	}
-	print("Register: ", s.post(url + "/api/user/createlocal", json=reg_payload))
-
 	#login
 	user_info = {
 		"username": andrew_id,
@@ -53,8 +42,8 @@ def login_as_student_and_wait(andrew_id,password):
 	print("logout:",s.get(logout_route))
 
 #Server location
-base_url = "http://localhost"
-url = base_url + ":3000"
+url = "https://queue.edwarddryer.com"
+
 
 #Add accounts to valid_andrew_ids 
 p = open( "andrew_ids.p", "rb" )
