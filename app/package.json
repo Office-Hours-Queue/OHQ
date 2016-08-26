@@ -6,7 +6,9 @@
   "scripts": {
     "prestart": "NODE_ENV=development ./bin/prestart_checks",
     "start": "DEBUG=app:* NODE_ENV=development supervisor ./bin/www",
-    "start-docker": "knex migrate:latest && knex seed:run && ./bin/prestart_checks && ./bin/www",
+    "seed": "knex seed:run",
+    "migrate": "knex migrate:latest",
+    "start-docker": "./bin/prestart_checks && ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
