@@ -869,6 +869,11 @@ if ($) {
           duration: options.out_duration,
           complete:
             function() {
+
+              if (!$modal.hasClass('open')) {
+                $(this).css('display', 'none');
+              }
+
               // Call complete callback
               if (typeof(options.complete) === "function") {
                 options.complete();
