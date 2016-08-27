@@ -41,7 +41,7 @@ router.post('/edit', isAuthenticated.errorJson, validate({body: UserEditSchema})
       } else {
         if (body.hasOwnProperty('password')) {
           // TODO: use async
-          body.pw_bcrypt = bcrypt.hashSync(body.password, 12);
+          body.pw_bcrypt = bcrypt.hashSync(body.password, 2);
           delete body.password;
         }
         return db('users')
