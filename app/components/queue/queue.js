@@ -350,31 +350,45 @@ function addQuestion(question) {
     on_time: db.fn.now()
   };
 
-  // insert the question if the queue is open
-  selectCurrentMeta().then(function(meta) {
-      if (meta.open) {
-        db.count('*')
-          .from('questions AS q')
-          .where('q.student_user_id', insertQuestion.student_user_id)
-          .where(questionOpen())
-          .first()
-          .then(function(activeQuestions) {
-            if (parseInt(activeQuestions.count) !== 0) {
-              throw new Error('Student has question already');
-            } else {
-              return db.insert(insertQuestion)
-                .into('questions')
-                .return(null);
-            }
-          })
-          .catch(function(error) {
-            debug(error);
-          });
-      } else {
-            throw new Error('Queue closed');
-      }
-  });
+  db.transaction(function(trx) {
+      selectCurrentMeta()
+        .transacting(trx)
+        .then(function(meta) {
+          if (!meta.open) {
+            throw { name: 'QueueClosedError', message: 'The queue is closed' };
+          }
+          return db.select('*')
+                   .from('user_question_locks')
+                   .transacting(trx)
+                   .forUpdate();
+        })
+        .then(function() {
+          return db.count('*')
+                   .from('questions AS q')
+                   .transacting(trx)
+                   .where('q.student_user_id', insertQuestion.student_user_id)
+                   .where(questionOpen())
+                   .first();
+        })
+        .then(function(activeQuestions) {
+          if (parseInt(activeQuestions.count) !== 0) {
+            throw { name: 'DoubleAddError', message: 'Student already has question' };
+          }
+          return db.insert(insertQuestion)
+                   .into('questions');
+        })
+        .then(trx.commit)
+        .catch(trx.rollback);
+      })
+      .catch(function(err) {
+        if (err.name === 'QueueClosedError') {
 
+        } else if (err.name === 'DoubleAddError') {
+          debug({ error: err, question: insertQuestion });
+        } else {
+          throw(err);
+        }
+      });
   
 }
 
