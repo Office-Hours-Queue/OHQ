@@ -7,7 +7,7 @@ file_text = """exports.seed = function(knex, Promise) {
   return Promise.all([
 
     knex.insert([\n"""
-n = 5000
+n = 2000
 ids = []
 for i in range(n):
 	andrew_id = str(uuid.uuid4())
