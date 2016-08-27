@@ -384,21 +384,33 @@ function addQuestion(question) {
 
 // answer a question
 function answerQuestion(caUserId) {
-  db('questions')
-    .update({
-      help_time: db.fn.now(),
-      ca_user_id: caUserId
+  db.count('*')
+    .from('questions AS q')
+    .where(questionNotFrozen())
+    .andWhere(questionOpen())
+    .andWhere('ca_user_id', caUserId)
+    .first()
+    .then(function(question) {
+      return Promise.resolve(parseInt(question.count));
     })
-    .whereIn('id', function() {
-      this.select('id')
-          .from('questions AS q')
-          .where(questionNotFrozen())
-          .andWhere(questionOpen())
-          .andWhere(questionNotAnswering())
-          .orderBy('on_time', 'asc')
-          .first();
-    })
-    .then();
+    .then(function(count) {
+      if (count === 0) {
+        return db('questions')
+          .update({
+            help_time: db.fn.now(),
+            ca_user_id: caUserId
+          })
+          .whereIn('id', function() {
+            this.select('id')
+                .from('questions AS q')
+                .where(questionNotFrozen())
+                .andWhere(questionOpen())
+                .andWhere(questionNotAnswering())
+                .orderBy('on_time', 'asc')
+                .first();
+          });
+      }
+    });
 }
 
 // update a question's details
