@@ -1,12 +1,47 @@
 <nav>
 	<div class="nav-wrapper light-blue darken-3">
-		<a href="" id="name_brand" class="brand-logo center">{{ user.first_name }}</a>
-		<a data-activates="mobile-menu" class="button-collapse" data-sidenav="left"><i class="material-icons">menu</i></a>
-		<ul class="left hide-on-med-and-down" data-block="menu_links"></ul>
+		<div id="name_brand" class="brand-logo center">{{ user.first_name }}</div>
+		<a href="#!" data-activates="mobile-menu" class="button-collapse" sidenav closeonclick="true" menuwidth="175">
+      <i class="material-icons">menu</i>
+    </a>
 		<ul class="right">
-			<a style="{{ $db.io_connected ? 'color: white' : 'color: #8B0000;' }}">{{ $db.io_connected ? 'Connected' : 'Disconnected' }}</a>
+			<a class="{{ $db.io_connected ? 'white-text' : 'red-text text-darken-1' }}">{{ $db.io_connected ? 'Connected' : 'Disconnected' }}</a>
 		</ul>
-		<ul class="side-nav" id="mobile-menu" data-block="menu_links"></ul>
+		<ul class="left hide-on-med-and-down">
+      <li>
+        <a href="/api/login/endauth">Log out</a>
+      </li>
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca">Home</a>
+      </li>
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/admin">Administration</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="/#/student">Home</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="#modalhelp" modal>FAQ</a>
+      </li>
+    </ul>
+		<ul class="side-nav" id="mobile-menu">
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca">Home</a>
+      </li>
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/admin">Administration</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="/#/student">Home</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="#modalhelp" modal>FAQ</a>
+      </li>
+      <div class="divider"></div>
+      <li>
+        <a href="/api/login/endauth">Log out</a>
+      </li>
+    </ul>
 	</div>
 </nav>
 

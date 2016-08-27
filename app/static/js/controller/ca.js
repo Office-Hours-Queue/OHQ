@@ -4,7 +4,6 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 	$rootScope.check_login();
 	$rootScope.current_page = "ca";
 	$scope.name = "ca";
-	$("#sidenav-overlay").remove();
 
 	$scope.answering = false;
 

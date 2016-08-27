@@ -2,7 +2,6 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 	$rootScope.$db = $db;
 	$rootScope.check_login();
 	$rootScope.current_page = "admin";
-	$("#sidenav-overlay").remove();
 	$scope.update_minute_rule = function () {
 		var min_rule =  $("#minuteRule").val();
 		if (isNaN(min_rule)) {
