@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker exec 112_queue_postgres pg_dump -U queue queue > /home/queue-dev/15-112-Queue/backup/data/$(date)
+docker exec 112_queue_postgres pg_dump -U queue queue > "/home/queue-dev/15-112-Queue/backup/data/$(date)"

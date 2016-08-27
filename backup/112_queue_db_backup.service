@@ -1,0 +1,6 @@
+[Unit]
+Description=15-112 Queue DB Backup
+
+[Service]
+Type=simple
+ExecStart=/home/queue-dev/15-112-Queue/backup/manual_backup
