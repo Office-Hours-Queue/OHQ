@@ -359,6 +359,7 @@ function addQuestion(question) {
           }
           return db.select('*')
                    .from('user_question_locks')
+                   .where('user_id', question.student_user_id)
                    .transacting(trx)
                    .forUpdate();
         })
@@ -375,7 +376,8 @@ function addQuestion(question) {
             throw { name: 'DoubleAddError', message: 'Student already has question' };
           }
           return db.insert(insertQuestion)
-                   .into('questions');
+                   .into('questions')
+                   .transacting(trx);
         })
         .then(trx.commit)
         .catch(trx.rollback);
