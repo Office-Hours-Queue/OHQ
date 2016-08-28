@@ -10,7 +10,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	$rootScope.check_login = function () {
 		//Get login user object
 		$http.get('/api/user', {}).then(function (data) {
-			if (data["data"]["first_name"] != undefined) {
+			if (data["data"]["first_name"] != undefined && $rootScope.user == undefined) {
 				$rootScope.user = data["data"];
 				$rootScope.$broadcast("user_ready");
 				if ($rootScope.current_page != "login") { return ;}
@@ -27,6 +27,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	/* Connect to socketio when the user exists */
 	/* Initialize SocketIO */
 	$rootScope.$on("user_ready", function () {
+		console.log("CONNECTING TO SIO")
 		var sio_opts = {
 			"reconnection":true,
 			"reconnectionDelay":200,

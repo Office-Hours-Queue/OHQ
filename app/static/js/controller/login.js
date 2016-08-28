@@ -3,6 +3,7 @@ var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope
 	$rootScope.current_page = "login";
 	$scope.name = "login";
 
+	//Forward them to their page if they're already logged in 
 	$rootScope.check_login();
 
 	$scope.login_submit = function () {
