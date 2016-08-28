@@ -3,6 +3,8 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	$rootScope.current_page = "student";
 	$scope.name = "student";
 
+	$rootScope.check_login();
+
 	var example_questions = [
 	'What do break, continue, and pass do?',
 	'How do I determine the big-O of a nested loop?',

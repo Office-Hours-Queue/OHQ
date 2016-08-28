@@ -4,6 +4,9 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 	$rootScope.current_page = "ca";
 	$scope.name = "ca";
 
+	$rootScope.check_login();
+	
+
 	$scope.answering = false;
 
 	$scope.$watch(function () {
