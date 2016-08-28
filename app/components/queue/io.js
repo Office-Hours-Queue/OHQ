@@ -195,10 +195,6 @@ module.exports.queue = function(io) {
 
     socket.on('delete_question', function() {
       queue.questions.closeStudent(userid);
-      //update other student positions
-      queue.questions.getOpen().then(function(questions) {
-        questions.forEach(emitStudentQuestion);
-      });
     });
 
     socket.on('freeze_question', function() {
@@ -255,6 +251,11 @@ module.exports.queue = function(io) {
     });
 
     queue.questions.emitter.on('question_closed', function(question) {
+      // tell everyone their new position on the queue
+      queue.questions.getOpen().then(function(questions) {
+        questions.forEach(emitStudentQuestion);
+      });
+      // notify student their question was closed
       student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
     });
 
@@ -264,6 +265,7 @@ module.exports.queue = function(io) {
     queue.questions.emitter.on('question_answered', emitStudentMeta);
     queue.questions.emitter.on('new_question', emitStudentMeta);
     queue.questions.emitter.on('question_frozen', emitStudentMeta);
+    queue.questions.emitter.on('question_closed', emitStudentMeta);
 
   })();
 

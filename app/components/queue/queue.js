@@ -359,6 +359,7 @@ function addQuestion(question) {
           }
           return db.select('*')
                    .from('user_question_locks')
+                   .where('user_id', question.student_user_id)
                    .transacting(trx)
                    .forUpdate();
         })
@@ -375,7 +376,8 @@ function addQuestion(question) {
             throw { name: 'DoubleAddError', message: 'Student already has question' };
           }
           return db.insert(insertQuestion)
-                   .into('questions');
+                   .into('questions')
+                   .transacting(trx);
         })
         .then(trx.commit)
         .catch(trx.rollback);
@@ -398,31 +400,57 @@ function addQuestion(question) {
 
 // answer a question
 function answerQuestion(caUserId) {
-  db.count('*')
-    .from('questions AS q')
-    .where(questionNotFrozen())
-    .andWhere(questionOpen())
-    .andWhere('ca_user_id', caUserId)
-    .first()
-    .then(function(question) {
-      return Promise.resolve(parseInt(question.count));
+  db.transaction(function(trx) {
+      db.select('*')
+        .from('user_question_locks')
+        .where('user_id', caUserId)
+        .transacting(trx)
+        .forUpdate()
+        .then(function() {
+          return db.count('*')
+                   .from('questions AS q')
+                   .where(questionNotFrozen())
+                   .andWhere(questionOpen())
+                   .andWhere('ca_user_id', caUserId)
+                   .transacting(trx)
+                   .first();
+        })
+        .then(function(question) {
+          return Promise.resolve(parseInt(question.count));
+        })
+        .then(function(count) {
+          if (count > 0) {
+            throw { name: 'DoubleAnswerError',
+                    message: 'CA ' + caUserId + ' is already answering a question' };
+          }
+
+          else {
+            return db.table('questions')
+                     .update({
+                       help_time: db.fn.now(),
+                       ca_user_id: caUserId
+                     })
+                     .whereIn('id', function() {
+                       this.select('id')
+                           .from('questions AS q')
+                           .where(questionNotFrozen())
+                           .andWhere(questionOpen())
+                           .andWhere(questionNotAnswering())
+                           .orderBy('on_time', 'asc')
+                           .transacting(trx)
+                           .first();
+                     })
+                     .transacting(trx);
+          }
+        })
+        .then(trx.commit)
+        .catch(trx.rollback);
     })
-    .then(function(count) {
-      if (count === 0) {
-        return db('questions')
-          .update({
-            help_time: db.fn.now(),
-            ca_user_id: caUserId
-          })
-          .whereIn('id', function() {
-            this.select('id')
-                .from('questions AS q')
-                .where(questionNotFrozen())
-                .andWhere(questionOpen())
-                .andWhere(questionNotAnswering())
-                .orderBy('on_time', 'asc')
-                .first();
-          });
+    .catch(function(err) {
+      if (err.name === 'DoubleAnswerError') {
+        debug({ error: err, ca: caUserId });
+      } else {
+        throw err;
       }
     });
 }
