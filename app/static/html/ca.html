@@ -51,7 +51,7 @@
               <span class="grey-text"><small> {{ $db.n_open_questions() === 1 ? 'is' : 'are' }} waiting.</small></span>
             </h5>
             <h5>
-              <span id="numCAs">{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} CA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
+              <span id="numCAs">{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} TA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
               <span class="grey-text"><small> {{ $db.model.ca_count[0].count === 1 ? 'is' : 'are' }} at OH.</small></span>
             </h5>
             <h5>

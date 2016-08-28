@@ -223,7 +223,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	d.get_pretty_state = function(state) {
 		switch (state) {
 			case "answering":
-				return "CA answering"
+				return "TA answering"
 			case "frozen":
 				return "Frozen"
 			case "on_queue": 
@@ -231,7 +231,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 			case "closed: self_kick":
 				return "Self closed"
 			case "closed: ca_kick":
-				return "CA kicked"
+				return "TA kicked"
 			case "closed: normal":
 				return "Answered"
 			default:
