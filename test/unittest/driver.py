@@ -163,7 +163,7 @@ class User(object):
         time.sleep(1)
 
         #check login
-        name = self.driver.find_element_by_partial_link_text(self.info["first_name"])
+        name = self.driver.find_element_by_id("name_brand")
         assert(self.info["first_name"] in name.text)
 
         if (check_fn != None): check_fn(self)
@@ -180,10 +180,12 @@ class User(object):
 
     def on_ca_page(self):
         """Checks if the user is on the CA page."""
+        time.sleep(1)
         min_rule = self.driver.find_element_by_id("answer-btn")
 
     def on_student_page(self):
         """Checks if the user is on the Student page."""
+        time.sleep(1)
         q = self.driver.find_element_by_id("your_question")
         assert(q.text == "Your Question")
 
@@ -339,6 +341,7 @@ class CA(User):
 
     def get_minute_rule(self):
         """Get the minute rule displayed on the CA's page."""
+        time.sleep(1)
         min_rule_text = self.driver.find_element_by_id("min_rule_text")
         return min_rule_text.text
 
