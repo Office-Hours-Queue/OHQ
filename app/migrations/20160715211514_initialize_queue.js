@@ -81,7 +81,7 @@ exports.up = function(knex, Promise) {
 
     knex('queue_meta').insert({
       open: true,
-      max_freeze: 10,
+      max_freeze: 600, //10 minutes
       time_limit: 5,
       registration_code: 'private'
     }),
