@@ -3,6 +3,8 @@ var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope
 	$rootScope.current_page = "login";
 	$scope.name = "login";
 
+	$rootScope.check_login();
+
 	$scope.login_submit = function () {
 		var username = $("#username").val();
 		var pass = $("#password").val();
