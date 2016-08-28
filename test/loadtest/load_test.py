@@ -40,6 +40,7 @@ def login_as_student_and_wait(andrew_id,password):
 			"location_id": 1,
 			"topic_id": 3, 
 		})
+		print("question asked")
 
 		#keep connection open
 		print("Socketio waiting")
