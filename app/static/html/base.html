@@ -20,7 +20,7 @@
       <li ng-if="user.role === 'student'">
         <a href="/#/student">Home</a>
       </li>
-      <li ng-if="user.role === 'student'">
+      <li>
         <a href="#modalhelp" modal>FAQ</a>
       </li>
     </ul>
@@ -34,7 +34,7 @@
       <li ng-if="user.role === 'student'">
         <a href="/#/student">Home</a>
       </li>
-      <li ng-if="user.role === 'student'">
+      <li>
         <a href="#modalhelp" modal>FAQ</a>
       </li>
       <div class="divider"></div>
@@ -48,6 +48,38 @@
 <div data-block="content">
 
 	
+</div>
+
+
+
+ <!-- FAQ Modal -->
+<div ng-if="user.role === 'ca'" class="modal modal-fixed-footer container" id="modalhelp">
+  <div class="modal-content">
+    <h4>FAQ</h4>
+    <div class="divider"></div>
+    <div class="section">
+    <h5>What does it mean to “go online”?</h5>
+    <p>If you go online, you are counted as at office hours. You are then part of the TA count listed under "Happening now". Only go online if you are actually at office hours helping students. </p>
+    <div class="divider"></div>
+    <h5>What happens when I close the queue?</h5>
+    <p> Closing the queue prevents students from asking questions. It does not delete existing questions. </p>
+    <div class="divider"></div>
+    <h5>What does it mean to freeze a question?</h5>
+    <p> Freezing a question takes it off the queue for 10 minutes. After 10 minutes is up (or a student chooses to be unfrozen), the question is put back onto the queue in the same position. This is useful if students need to go to the bathroom or get a snack. It can also be used the first time you can't find a student. </p>
+    <div class="divider"></div>
+    <h5>Should I kick,freeze, or finish the question I am answering?</h5>
+    <p>If you find the student and answer their question, click finish. If you can't find them, try to freeze their question. If you can't (the button is grey, meaning they were already frozen once), then kick them from the queue. </p>  
+    <div class="divider"></div>
+    <h5>What if the queue goes down?</h5>
+    <p>There is a queue backup spreadsheet in the shared Google Drive folder. It has every question asked, with the most recent ones at the bottom.  </p>
+    <div class="divider"></div>
+    <h5>A student got an error saying “Your login attempt was denied. This is likely because you are not marked as in 15-112.” What do I do?</h5>
+    <p>We don’t let anyone login to the queue unless they are in 15-112. This student was probably added to the class after the roster was entered into the queue.  Go to Administration -> Grant Queue Access, and add the student. They should now be able to login. </p> 
+    </div>
+  </div>
+  <div class="modal-footer">
+      <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+  </div>
 </div>
 
 
