@@ -170,7 +170,7 @@ class User(object):
 
     def logout(self,check_fn=None):
         """Log the user out"""
-        logout = self.driver.find_element_by_partial_link_text('Log Out')
+        logout = self.driver.find_element_by_partial_link_text('Log out')
         time.sleep(1)
         logout.click()
         time.sleep(1)
