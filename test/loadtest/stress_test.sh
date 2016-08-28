@@ -1,0 +1,9 @@
+python3 load_test.py --start=0 --end=100 &
+python3 load_test.py --start=100 --end=200 & 
+python3 load_test.py --start=200 --end=300 & 
+python3 load_test.py --start=300 --end=400 & 
+python3 load_test.py --start=400 --end=500 & 
+python3 load_test.py --start=500 --end=600 & 
+python3 load_test.py --start=600 --end=700 & 
+python3 load_test.py --start=700 --end=800 & 
+python3 load_test.py --start=800 --end=900 & 
