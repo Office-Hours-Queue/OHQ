@@ -83,7 +83,7 @@ exports.up = function(knex, Promise) {
       open: true,
       max_freeze: 600, //10 minutes
       time_limit: 5,
-      registration_code: 'private'
+      registration_code: '112rocks'
     }),
 
   ]);
