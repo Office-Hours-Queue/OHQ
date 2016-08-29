@@ -6,11 +6,7 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	$rootScope.check_login();
 
 	var example_questions = [
-	'What do break, continue, and pass do?',
-	'How do I determine the big-O of a nested loop?',
-	'Help me go over the code tracing from quiz 3.',
-	'What\s does the f parameter in the integral function do?',
-	'Why is the big-O of binary search O(log n)?',
+	'Help me go over the code tracing from quiz 1.',
 	'What does \'type affects semantics\' mean?',
 	'Why do I need to use almostEquals?',
 	'Should I use almostEquals in this function?',
