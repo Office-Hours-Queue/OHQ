@@ -32,8 +32,13 @@ var sessionMiddleware = session({
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+if (process.env.NODE_ENV === 'development') {
+  app.use(logger('dev'));
+} else {
+  app.use(logger('combined'));
+  app.set('trust proxy', true);
+}
 app.use(helmet());
-app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
