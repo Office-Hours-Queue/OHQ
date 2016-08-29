@@ -1,21 +1,47 @@
-.mainpg {
-  display: flex;
-  -webkit-box-pack: center;
-  -webkit-box-align: center;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh;
+.light-font {
+  font-weight: 300;
 }
 
-body {
-    background: url(../images/bluebg3.jpg) no-repeat center center fixed #000;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-  }
+.fullscreen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
 
-h1 {
-  font-family: Ostrich Sans, Trebuchet, sans-serif;
-  font-size: 80px;
+@media only screen and (max-width: 600px) {
+  .landing-col {
+    width: 80%;
+    margin-bottom: 5em;
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .landing-col {
+    width: 80%;
+    margin-bottom: 15em;
+  }
+}
+
+.all-caps {
+  text-transform: uppercase;
+  font-size: smaller;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+#landing-main {
+  background-image: url("/images/landing-background.svg");
+  background-color: #0277bd;
+  background-attachment: fixed;
+  background-position: center bottom;
+  background-size: calc(100% + 25vh);
+  background-repeat: no-repeat;
+}
+
+footer {
+  display: none;
 }

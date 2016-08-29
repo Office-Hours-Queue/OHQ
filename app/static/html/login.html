@@ -1,24 +1,36 @@
-<!-- Landing Style -->
-<link href="../style/css/landingStyle.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+<link href="/style/css/landingStyle.css" rel="stylesheet">
 
-<!-- Login landing page -->
-<div class="mainpg">
-  <div class="center container">
-    <div class="row">
-      <h1 class="white-text">15-112 Office Hours</h1>
+<!-- Main content -->
+<div class="fullscreen valign-wrapper" id="landing-main">
+  <div class="row valign">
+    <div class="center col s12 landing-col">
+      <h1 class="hide-on-small-only light-font grey-text text-lighten-3">
+        <span class="nowrap valign-wrapper">
+          <i class="valign large material-icons">clear_all</i>
+          <span>&nbsp;</span>
+          <span>15-112 Office Hours</span>
+        </span>
+      </h1>
+      <h2 class="hide-on-med-and-up light-font grey-text text-lighten-3">
+        <span>&nbsp;</span>
+        <i class="large material-icons">clear_all</i>
+        <span><br/></span>
+        <span>15-112</span>
+        <span class="nowrap">Office Hours</span>
+      </h2>
+      <p>
+        <a id="lets_begin" href="/api/login/googleauth" class="btn btn-large btn-flat waves-effect waves-light green darken-1 white-text">Log in</a>
+      </p>
+      <div class="section">
+        <p>
+          <a href="#non-google-modal" class="all-caps grey-text text-lighten-1" modal>Don't have CMU Google Apps?</a>
+        </p>
+      </div>
     </div>
-    &nbsp;
-    <div class="row">
-      <a href="/api/login/googleauth" id="lets_begin" class="waves-effect waves-light btn-large light-blue darken-3" style="font-size: 30px; font-family: Ostrich Sans, Trebuchet, sans-serif;">Log in</a>
-    </div>
-    &nbsp;
-   <div class="row">
-    <a class="black-text" style="font-size:20px; font-weight:bold; font-family:Ostrich Sans,Trebuchet, sans-serif;" href='#non-google-modal' modal>Don't have Google Apps? Click here.</a>
-  </div>
   </div>
 </div>
 
-<!-- Modal for non-google login (currently not being used) -->
+<!-- Modal for non-google login -->
 <div id="non-google-modal" class="modal">
     <div class="modal-content container">
       <h4 class="center">Log In</h4>
