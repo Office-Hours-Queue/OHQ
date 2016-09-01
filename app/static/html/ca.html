@@ -79,7 +79,7 @@
             </div>
           </div>
           <ul class="collection" ng-if="$db.get_question_list().length > 0">
-            <li name="active-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.get_question_list()">
+            <li name="active-question" class="collection-item {{ q.state === 'frozen' ? 'grey-text' : '' }}" ng-repeat="q in $db.get_question_list() | orderBy : 'on_time'">
               <h5 name="active-question-field">
                 {{ q.first_name }} {{ q.last_name }}&nbsp;&nbsp;<small>{{ q.location }}</small>
                 <span class="badge">{{ q.state === 'frozen' ? 'Frozen' : '' }}</span>
