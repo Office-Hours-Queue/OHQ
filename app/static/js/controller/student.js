@@ -107,4 +107,12 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 		$('#modaleditquestion').closeModal();
 	}
 
+  $scope.getOffTime = function(question) {
+    return new Date(question.off_time);
+  };
+
+  $scope.getOnTime = function(question) {
+    return new Date(question.on_time);
+  };
+
 }];

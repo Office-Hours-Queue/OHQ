@@ -132,7 +132,7 @@
               </span>
             </div>
             <ul class="collection">
-              <li class="collection-item" ng-repeat="q in $db.model.closed_questions | orderBy: '-off_time' | limitTo: 5">
+              <li class="collection-item" ng-repeat="q in $db.model.closed_questions | orderBy : getOffTime : true | limitTo: 5">
                 <h5>{{ q.topic }} <small>{{ q.location }}</small></h5>
                 <p ng-if="q.help_text">{{ q.help_text }}</p>
                 <p ng-if="!q.help_text"><em>No additional details</em></p>

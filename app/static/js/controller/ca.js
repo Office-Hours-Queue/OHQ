@@ -15,4 +15,12 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 		$scope.answering = newLength > 0;
 	});
 
+  $scope.getOffTime = function(question) {
+    return new Date(question.off_time);
+  };
+
+  $scope.getOnTime = function(question) {
+    return new Date(question.on_time);
+  };
+
 }];

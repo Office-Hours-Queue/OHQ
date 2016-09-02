@@ -249,7 +249,7 @@ function selectLatestClosed(n) {
   return selectDefaultQuestionFields()
     .limit(n)
     .where(questionClosed())
-    .orderBy('q.on_time', 'desc');
+    .orderBy('q.off_time', 'desc');
 }
 
 function selectLatestClosedUserId(n, studentId) {
