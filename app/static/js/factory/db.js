@@ -6,6 +6,11 @@
 var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	var d = {};
 
+	/* Go offline on unload */
+	$(window).unload(function () {
+		d.go_offline();
+	});
+
 	/* Access to user object */
 	$rootScope.check_login = function () {
 		//Get login user object
