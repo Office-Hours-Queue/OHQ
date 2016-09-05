@@ -77,6 +77,10 @@ module.exports.queue = function(io) {
     socket.on('answer_question', function() {
       queue.questions.answer(userid);
     });
+
+    socket.on("return_question", function () {
+      queue.questions.return(userid);
+    });
     
     socket.on('close_queue', function() {
       queue.meta.close(userid);
@@ -150,6 +154,10 @@ module.exports.queue = function(io) {
     queue.questions.emitter.on('question_closed', function(question) {
       ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
       cas().emit('questions', makeMessage('delete', [question.id]));
+    });
+
+    queue.questions.emitter.on("question_returned", function (ca_user_id,question_id) {
+      ca(ca_user_id).emit('current_question', makeMessage('delete', [question_id]));
     });
 
     queue.meta.emitter.on('update', function(meta) {

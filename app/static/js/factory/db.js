@@ -154,6 +154,10 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		console.log("db finish")
 		d.qsio.emit("finish_question",{});
 	}
+	d.return_question = function () {
+		console.log("db return")
+		d.qsio.emit("return_question",{});
+	}
 	d.answer_question = function () {
 		console.log("Answer!")
 		d.qsio.emit("answer_question",{})

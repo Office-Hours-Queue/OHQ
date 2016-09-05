@@ -22,6 +22,7 @@ var questions = (function() {
     getLatestClosedUserId: selectLatestClosedUserId,
     add: addQuestion,
     answer: answerQuestion,
+    return: returnQuestion,
     freezeStudent: freezeStudentQuestion,
     unfreezeStudent: unfreezeStudentQuestion,
     freezeCa: freezeCaQuestion,
@@ -86,6 +87,7 @@ var questions = (function() {
         });
       };
 
+
       // check which field was updated, and emit an event
       var field = change.path[0];
       switch (field) {
@@ -110,6 +112,16 @@ var questions = (function() {
           debug('question_closed');
           emitEvent('question_closed');
           break;
+        case 'ca_user_id':
+          if ((was_changed("help_time",changes))) { 
+            if (newQuestion.ca_user_id == null) {
+               //emit event releases ca_used_id as null
+               selectQuestionId(oldQuestion.id).then(function(question) {
+                result.emitter.emit("question_returned", oldQuestion.ca_user_id,question.id);
+               });
+              break;
+            }
+          }
         case "topic_id":
         case "location_id":
         case "help_text":
@@ -455,6 +467,14 @@ function answerQuestion(caUserId) {
     });
 }
 
+//return question
+function returnQuestion(caUserId) {
+    db.table('questions')
+      .select("question AS q")
+      .where("ca_user_id",caUserId)
+      .update({help_time: null, ca_user_id: null}).return(null);
+}
+
 // update a question's details
 function updateQuestionMeta(userId, question) {
   var questionUpdateSchema = {
@@ -711,6 +731,8 @@ function selectEnabledTopics() {
 //
 // utility functions 
 //
+
+
 function was_changed(field_string, changes) {
   for (var i = 0; i < changes.length; i++) {
     if (field_string == changes[i].path) {
