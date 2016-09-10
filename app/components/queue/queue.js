@@ -469,10 +469,14 @@ function answerQuestion(caUserId) {
 
 //return question
 function returnQuestion(caUserId) {
-    db.table('questions')
-      .select("question AS q")
-      .where("ca_user_id",caUserId)
-      .update({help_time: null, ca_user_id: null}).return(null);
+    db.table('questions AS q')
+      .update({
+        help_time: null,
+        ca_user_id: null
+      })
+      .where('ca_user_id', caUserId)
+      .andWhere(questionAnswering())
+      .then();
 }
 
 // update a question's details
