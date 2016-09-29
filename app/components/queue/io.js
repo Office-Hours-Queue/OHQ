@@ -356,7 +356,9 @@ module.exports.history = function(io) {
     socket.on('get_last_n', function(n) {
       if (Number.isInteger(n)) {
         queue.questions.getLatestClosed(n).then(function(questions) {
-          questions.forEach(emitCaQuestion(socket));
+          questions.forEach(function(question) {
+            socket.emit('questions', makeCaQuestion(question));
+          });
         });
       }
     });
@@ -366,7 +368,9 @@ module.exports.history = function(io) {
     socket.on('get_last_n', function(n) {
       if (Number.isInteger(n)) {
         queue.questions.getLatestClosedUserId(n, userid).then(function(questions) {
-          questions.forEach(emitStudentQuestion(socket));
+          questions.forEach(function(question) {
+            socket.emit('questions', makeStudentQuestion(question));
+          });
         });
       }
     });
@@ -374,27 +378,16 @@ module.exports.history = function(io) {
 
   // listen for new closed questions, and send them to cas + student
   (function () {
-    queue.questions.emitter.on('question_closed', emitCaQuestion());
-    queue.questions.emitter.on('question_closed', emitStudentQuestion());
+    queue.questions.emitter.on('question_closed', function(question) {
+      cas().emit('questions', makeCaQuestion(question));
+    });
+    queue.questions.emitter.on('question_closed', function(question) {
+      student(question.student_user_id).emit('questions', makeStudentQuestion(question));
+    });
   })();
 
-  function emitCaQuestion(destination) {
-    return function(question) {
-      if (typeof destination === 'undefined') {
-        destination = cas();
-      }
-      destination.emit('questions', makeCaQuestion(question));
-    };
-  };
+};
 
-  function emitStudentQuestion(destination) {
-    return function(question) {
-      if (typeof destination === 'undefined') {
-        destination = student(question.student_user_id);
-      }
-      destination.emit('questions', makeStudentQuestion(question));
-    };
-  };
 
 };
 
