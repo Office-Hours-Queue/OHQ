@@ -345,7 +345,28 @@ function selectWaitTime(startTime, endTime) {
                .orWhere(questionAnswering())
            })
            .groupBy('time_period')
-           .orderBy('time_period');
+           .orderBy('time_period')
+           .then(function(waitTimes) {
+             var result = [];
+             // fill in the gaps with 0s
+             for (var time = startTime.getTime(); time < endTime.getTime(); time += 1000 * 60 * 10) {
+               var found = false;
+               for (var i = 0; !found && i < waitTimes.length; i++) {
+                 if (Math.abs(waitTimes[i].time_period.getTime() - time) < 100) {
+                   result.push(waitTimes[i]);
+                   found = true;
+                   break;
+                 }
+               }
+               if (!found) {
+                 result.push({
+                   time_period: new Date(time),
+                   wait_time: 0
+                 });
+               }
+             }
+             return Promise.resolve(result);
+           });
 }
 
 
