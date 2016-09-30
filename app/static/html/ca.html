@@ -33,31 +33,38 @@
               Happening now
             </span>
             <div class="divider"></div>
-            <h5>
-              <span class="grey-text"><small>The queue is </small></span>
-              <span class="green-text" ng-if="$db.model.queue_meta[0].open">open</span>
-              <span class="red-text" ng-if="!$db.model.queue_meta[0].open">closed</span>
-              <span class="grey-text"><small>.</small></span>
-            </h5>
-            <h5>
-              <span class="grey-text"><small>You are </small></span>
-              <span class="green-text" ng-if="user.is_online">online</span>
-              <span class="red-text" ng-if="!user.is_online">offline</span>
-              <span class="grey-text"><small>.</small></span>
-            </h5>
-            <div class="divider"></div>
-            <h5>
-              <span id="numQuestions">{{ $db.n_open_questions() === 0 ? 'No' : $db.n_open_questions() }} student{{ $db.n_open_questions() === 1 ? '' : 's' }}</span>
-              <span class="grey-text"><small> {{ $db.n_open_questions() === 1 ? 'is' : 'are' }} waiting.</small></span>
-            </h5>
-            <h5>
-              <span id="numCAs">{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} TA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
-              <span class="grey-text"><small> {{ $db.model.ca_count[0].count === 1 ? 'is' : 'are' }} at OH.</small></span>
-            </h5>
-            <h5>
-              <span id="min_rule_text">{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
-              <span class="grey-text"><small> per student.</small></span>
-            </h5>
+            <div class="row row-tight">
+              <div class="col s12 m6">
+                <h5>
+                  <span class="grey-text"><small>The queue is </small></span>
+                  <span class="green-text" ng-if="$db.model.queue_meta[0].open">open</span>
+                  <span class="red-text" ng-if="!$db.model.queue_meta[0].open">closed</span>
+                  <span class="grey-text"><small>.</small></span>
+                </h5>
+                <h5>
+                  <span class="grey-text"><small>You are </small></span>
+                  <span class="green-text" ng-if="user.is_online">online</span>
+                  <span class="red-text" ng-if="!user.is_online">offline</span>
+                  <span class="grey-text"><small>.</small></span>
+                </h5>
+                <div class="divider"></div>
+                <h5>
+                  <span id="numQuestions">{{ $db.n_open_questions() === 0 ? 'No' : $db.n_open_questions() }} student{{ $db.n_open_questions() === 1 ? '' : 's' }}</span>
+                  <span class="grey-text"><small> {{ $db.n_open_questions() === 1 ? 'is' : 'are' }} waiting.</small></span>
+                </h5>
+                <h5>
+                  <span id="numCAs">{{ $db.model.ca_count[0].count == 0 ? 'No' : $db.model.ca_count[0].count }} TA{{ $db.model.ca_count[0].count === 1 ? '' : 's' }}</span>
+                  <span class="grey-text"><small> {{ $db.model.ca_count[0].count === 1 ? 'is' : 'are' }} at OH.</small></span>
+                </h5>
+                <h5>
+                  <span id="min_rule_text">{{ $db.model.queue_meta[0].time_limit }} min{{ $db.model.queue_meta[0].time_limit === 1 ? '' : 's' }}</span>
+                  <span class="grey-text"><small> per student.</small></span>
+                </h5>
+              </div>
+              <div style="min-height: 211px; padding-top: 15px;" class="col s12 m6">
+                <canvas id="wait-time" class="chart chart-line" chart-data="waitTimeData" chart-labels="waitTimeLabels" chart-series="waitTimeSeries" chart-options="waitTimeOptions"></canvas>
+              </div>
+            </div>
           </div>
         </div>
       </div>
