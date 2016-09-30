@@ -389,6 +389,38 @@ module.exports.history = function(io) {
 };
 
 
+// Queue history endpoint
+//
+// This endpoint emits the average wait time data for the past hour. Every
+// 10 minutes, it sends the new average wait time data.
+//
+module.exports.waittime = function(io) {
+
+  // make sure that this endpoint is protected
+  io.use(auth.ioIsAuthenticated);
+
+  // on client connection, join appropriate room, and
+  // handle subsequent client -> server communications
+  io.on('connection', function(socket) {
+    var userid = socket.request.user.id;
+    if (socket.request.user.role === 'ca') {
+      socket.join('ca');
+      oncajoin(socket, userid);
+    } else if (socket.request.user.role === 'student') {
+      socket.emit('Not authorized');
+    } else {
+      throw new Error('Not authorized');
+    }
+  });
+
+  var oncajoin = function(socket, userid) {
+    var now = new Date();
+    var tminus60 = new Date(now - 1000 * 60 * 60);
+    queue.questions.getWaitTime(tminus60, now).then(function(waitTimes) {
+      socket.emit('wait_time', makeMessage('data', waitTimes));
+    });
+  };
+
 };
 
 //
