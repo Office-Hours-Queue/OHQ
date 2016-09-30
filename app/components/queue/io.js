@@ -417,7 +417,10 @@ module.exports.waittime = function(io) {
     var now = new Date();
     var tminus60 = new Date(now - 1000 * 60 * 60);
     queue.questions.getWaitTime(tminus60, now).then(function(waitTimes) {
-      socket.emit('wait_time', makeMessage('data', waitTimes));
+      waitTimes.forEach(function(waitTime) {
+        waitTime.id = waitTime.time_period.getTime();
+        socket.emit('wait_time', makeMessage('data', [waitTime]));
+      });
     });
   };
 
