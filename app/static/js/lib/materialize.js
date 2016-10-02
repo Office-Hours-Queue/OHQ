@@ -780,12 +780,14 @@ if ($) {
         opacity: 0
       });
 
+      $overlay.velocity('stop');
+      $modal.velocity('stop');
+
       $overlay.velocity({opacity: options.opacity}, {duration: options.in_duration, queue: false, ease: "easeOutCubic"});
       $modal.data('associated-overlay', $overlay[0]);
 
       // Define Bottom Sheet animation
       if ($modal.hasClass('bottom-sheet')) {
-        $modal.velocity('stop');
         $modal.velocity({bottom: "0", opacity: 1}, {
           duration: options.in_duration,
           queue: false,
@@ -840,8 +842,15 @@ if ($) {
       $modal.find('.modal-close').off('click.close');
       $(document).off('keyup.leanModal' + overlayID);
 
+      $overlay.velocity('stop');
+      $modal.velocity('stop');
+
       $overlay.velocity( { opacity: 0}, {duration: options.out_duration, queue: false, ease: "easeOutQuart"});
 
+      setTimeout(function() {
+        $overlay.remove();
+        _stack--;
+      }, options.out_duration);
 
       // Define Bottom Sheet animation
       if ($modal.hasClass('bottom-sheet')) {
@@ -857,13 +866,10 @@ if ($) {
             if (typeof(options.complete) === "function") {
               options.complete();
             }
-            $overlay.remove();
-            _stack--;
           }
         });
       }
       else {
-        $modal.velocity('stop');
         $modal.velocity(
           { top: options.starting_top, opacity: 0, scaleX: 0.7}, {
           duration: options.out_duration,
@@ -878,8 +884,6 @@ if ($) {
               if (typeof(options.complete) === "function") {
                 options.complete();
               }
-              $overlay.remove();
-              _stack--;
             }
           }
         );
