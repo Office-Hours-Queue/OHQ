@@ -418,7 +418,8 @@ module.exports.waittime = function(io) {
     var tminus10 = new Date(now - 1000 * 60 * 10);
     var tminus60 = new Date(now - 1000 * 60 * 60);
 
-    Promise.join(queue.questions.getWaitTime(tminus60, now),
+    socket.on('get_latest', function() {
+      Promise.join(queue.questions.getWaitTime(tminus60, now),
                 queue.questions.getAverageWaitTime(tminus10, now),
                 function(historic, current) {
                   for (var i = 0; i < historic.length; i++) {
@@ -429,6 +430,7 @@ module.exports.waittime = function(io) {
                   }
                   socket.emit('wait_time', makeMessage('data', historic));
                 });
+    });
 
   };
 

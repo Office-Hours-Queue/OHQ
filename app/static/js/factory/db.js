@@ -68,6 +68,13 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		d.hsio.on("connect", function() {
 			d.hsio.emit('get_last_n', d.n_history);
 		});
+    d.wsio.on("connect", function() {
+      var req = function() {
+        d.wsio.emit('get_latest');
+      };
+      req();
+      setInterval(req, 1000 * 60 * 10);
+    });
 	});
 
 	/* Initialize Model of the database */
