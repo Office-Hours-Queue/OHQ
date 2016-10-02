@@ -21,6 +21,7 @@ var questions = (function() {
     getLatestClosed: selectLatestClosed,
     getLatestClosedUserId: selectLatestClosedUserId,
     getWaitTime: selectWaitTime,
+    getAverageWaitTime: selectAverageWaitTime,
     add: addQuestion,
     answer: answerQuestion,
     return: returnQuestion,
@@ -366,6 +367,37 @@ function selectWaitTime(startTime, endTime) {
                }
              }
              return Promise.resolve(result);
+           });
+}
+
+// get the average wait time for all questions with start < help_time < end.
+function selectAverageWaitTime(start, end) {
+  var waitTime = 'AVG(' +
+    'CASE WHEN frozen_time IS NOT NULL THEN ' +
+    '  EXTRACT(EPOCH FROM (q.help_time - q.frozen_end_time + q.frozen_time - q.on_time)) ' +
+    'ELSE ' +
+    '  EXTRACT(EPOCH FROM (q.help_time - q.on_time)) ' +
+    'END) AS wait_time';
+  return db.select(
+              db.raw(waitTime))
+           .from('questions AS q')
+           .where('q.help_time', '>', start)
+           .andWhere('q.help_time', '<', end)
+           .andWhere(function() {
+             db.where(questionClosed())
+               .orWhere(questionAnswering());
+           })
+           .first()
+           .then(function(waitTime) {
+             waitTime = waitTime.wait_time;
+             timePeriod = start;
+             if (waitTime === null) {
+               waitTime = 0;
+             }
+             return Promise.resolve({
+               wait_time: waitTime,
+               time_period: timePeriod,
+             });
            });
 }
 

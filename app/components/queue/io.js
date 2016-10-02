@@ -389,7 +389,7 @@ module.exports.history = function(io) {
 };
 
 
-// Queue history endpoint
+// Queue wait time endpoint
 //
 // This endpoint emits the average wait time data for the past hour. Every
 // 10 minutes, it sends the new average wait time data.
@@ -415,13 +415,21 @@ module.exports.waittime = function(io) {
 
   var oncajoin = function(socket, userid) {
     var now = new Date();
+    var tminus10 = new Date(now - 1000 * 60 * 10);
     var tminus60 = new Date(now - 1000 * 60 * 60);
-    queue.questions.getWaitTime(tminus60, now).then(function(waitTimes) {
-      waitTimes.forEach(function(waitTime) {
-        waitTime.id = waitTime.time_period.getTime();
-        socket.emit('wait_time', makeMessage('data', [waitTime]));
-      });
-    });
+
+    Promise.join(queue.questions.getWaitTime(tminus60, now),
+                queue.questions.getAverageWaitTime(tminus10, now),
+                function(historic, current) {
+                  for (var i = 0; i < historic.length; i++) {
+                    historic[i].id = historic[i].time_period.getTime();
+                    if (i == historic.length-1) {
+                      historic[i].wait_time = current.wait_time;
+                    }
+                  }
+                  socket.emit('wait_time', makeMessage('data', historic));
+                });
+
   };
 
 };
