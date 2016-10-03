@@ -41,6 +41,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		d.qsio = io('/queue',sio_opts);
 		d.usio = io('/user',sio_opts);
 		d.hsio = io('/history',sio_opts);
+    d.wsio = io('/waittime',sio_opts);
 		d.n_history = 5;
 		d.io_connected = false
 		d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
@@ -52,6 +53,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
 		d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
 		d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
+    d.wsio.on("wait_time", function(payload) { handle_db_update("wait_time", payload); });
 		d.qsio.on("connect", function() {
       $rootScope.$apply(function() {
 			  setEmptyModel();
@@ -66,6 +68,13 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		d.hsio.on("connect", function() {
 			d.hsio.emit('get_last_n', d.n_history);
 		});
+    d.wsio.on("connect", function() {
+      var req = function() {
+        d.wsio.emit('get_latest');
+      };
+      req();
+      setInterval(req, 1000 * 60 * 10);
+    });
 	});
 
 	/* Initialize Model of the database */
@@ -77,7 +86,8 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       "queue_meta": [],
       "current_question": [],
       "ca_count": [],
-      "closed_questions": []
+      "closed_questions": [],
+      "wait_time": []
     };
   };
   setEmptyModel();

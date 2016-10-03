@@ -20,6 +20,8 @@ var questions = (function() {
     getAnsweringUserId: selectAnsweringQuestionCaUserId,
     getLatestClosed: selectLatestClosed,
     getLatestClosedUserId: selectLatestClosedUserId,
+    getWaitTime: selectWaitTime,
+    getAverageWaitTime: selectAverageWaitTime,
     add: addQuestion,
     answer: answerQuestion,
     return: returnQuestion,
@@ -313,6 +315,90 @@ function questionCanFreeze() {
   return db.raw(
         '(q.frozen_time IS NULL AND ' +
         ' q.off_time IS NULL)');
+}
+
+// Wait time
+function selectWaitTime(startTime, endTime) {
+  // round down to nearest 10 mins
+  startTime = new Date(Math.floor(startTime.getTime() / (1000 * 60 * 10)) * (1000 * 60 * 10));
+
+  // average question wait time
+  var waitTime = 'AVG(' +
+    'CASE WHEN frozen_time IS NOT NULL THEN ' +
+    '  EXTRACT(EPOCH FROM (q.help_time - q.frozen_end_time + q.frozen_time - q.on_time)) ' +
+    'ELSE ' +
+    '  EXTRACT(EPOCH FROM (q.help_time - q.on_time)) ' +
+    'END) AS wait_time';
+
+  // round down the question's help time to a 10 minute interval
+  var timePeriod = '' +
+    'date_trunc(\'hour\', q.help_time) + ' +
+    '((floor(extract(minute FROM q.help_time) / 10) * 10) || \' minutes\')::interval as time_period ';
+
+  return db.select(
+             db.raw(waitTime),
+             db.raw(timePeriod))
+           .from('questions AS q')
+           .where('q.help_time', '>', startTime)
+           .andWhere('q.help_time', '<', endTime)
+           .andWhere(function() {
+             db.where(questionClosed())
+               .orWhere(questionAnswering())
+           })
+           .groupBy('time_period')
+           .orderBy('time_period')
+           .then(function(waitTimes) {
+             var result = [];
+             // fill in the gaps with 0s
+             for (var time = startTime.getTime(); time < endTime.getTime(); time += 1000 * 60 * 10) {
+               var found = false;
+               for (var i = 0; !found && i < waitTimes.length; i++) {
+                 if (Math.abs(waitTimes[i].time_period.getTime() - time) < 100) {
+                   result.push(waitTimes[i]);
+                   found = true;
+                   break;
+                 }
+               }
+               if (!found) {
+                 result.push({
+                   time_period: new Date(time),
+                   wait_time: 0
+                 });
+               }
+             }
+             return Promise.resolve(result);
+           });
+}
+
+// get the average wait time for all questions with start < help_time < end.
+function selectAverageWaitTime(start, end) {
+  var waitTime = 'AVG(' +
+    'CASE WHEN frozen_time IS NOT NULL THEN ' +
+    '  EXTRACT(EPOCH FROM (q.help_time - q.frozen_end_time + q.frozen_time - q.on_time)) ' +
+    'ELSE ' +
+    '  EXTRACT(EPOCH FROM (q.help_time - q.on_time)) ' +
+    'END) AS wait_time';
+  return db.select(
+              db.raw(waitTime))
+           .from('questions AS q')
+           .where('q.help_time', '>', start)
+           .andWhere('q.help_time', '<', end)
+           .andWhere(function() {
+             db.where(questionClosed())
+               .orWhere(questionAnswering());
+           })
+           .first()
+           .then(function(waitTime) {
+             waitTime = waitTime.wait_time;
+             timePeriod = start;
+             if (waitTime === null) {
+               waitTime = 0;
+             }
+             return Promise.resolve({
+               wait_time: waitTime,
+               time_period: timePeriod,
+             });
+           });
 }
 
 
