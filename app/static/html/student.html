@@ -210,6 +210,31 @@
         </div>
       </div>
 
+      <!-- Debugging Tips Modal -->
+      <div class="modal modal-fixed-footer container" id="modaltips">
+        <div class="modal-content">
+          <h4>Debugging Tips</h4>
+          <div class="divider"></div>
+          <div class="section">
+            <h5>Identify a test case that triggers the problem</h5>
+            <p>
+                  The first thing you need to do is identify the smallest possible test-case that triggers a bug or error. This will allow you to isolate the issue and really focus on the issue in the context of a concrete example. Comment out all other things, run your code, and then trace through your code on the single test case to figure out where your code is diverging from what you expect it to do.
+            </p>
+
+            <div class="divider"></div>
+            <h5>Use print statements</h5>
+            <p>
+Almost every TA will ask you if you've added print statements to your code. Put print statements all over your code to (a) figure out the value of variables and see if they are what you expect or (b) see if your code executes far enough to get to the print statement or (c) etc. </p>
+            <div class="divider"></div>
+            <h5>Explain the logic of your code to a friend or a duck</h5>
+Have you ever explained your code to a TA and then instantly realized what the issue was? This is called rubber-ducky debugging (coined term). Basically, explain to yourself or your friend or a rubber duck what your code is doing and while doing that you will realize issues you hadn’t thought of when you were staring at you code. 
+          </div>
+        </div>
+        <div class="modal-footer">
+            <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+        </div>
+      </div>
+
       <!-- Confirm Delete  -->
       <div class="modal bottom-sheet" id="modaldelete">
         <div class="modal-content">

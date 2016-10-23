@@ -23,6 +23,9 @@
       <li>
         <a href="#modalhelp" modal>FAQ</a>
       </li>
+      <li ng-if="user.role === 'student'">
+        <a href="#modaltips" modal>Debugging Tips</a>
+      </li>
     </ul>
 		<ul class="side-nav" id="mobile-menu">
       <li ng-if="user.role === 'ca'">
@@ -36,6 +39,9 @@
       </li>
       <li>
         <a href="#modalhelp" modal>FAQ</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="#modaltips" modal>Debugging Tips</a>
       </li>
       <div class="divider"></div>
       <li>
