@@ -784,7 +784,7 @@ function selectAllLocations() {
 }
 
 function selectEnabledLocations() {
-  return selectAllLocations().where('enabled', true);
+  return selectAllLocations().where('enabled', true).orderByRaw('id DESC');
 }
 
 //
