@@ -29,6 +29,13 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		});
 	};
 
+	var notify_questions = function(n_old, payload) {
+		if (payload.is_new_question && n_old == 0) {
+			var options = { icon : "/images/112-dragon.png"}
+			new Notification("The office hours queue is no longer empty!",options);
+		}
+	};
+
 	/* Connect to socketio when the user exists */
 	/* Initialize SocketIO */
 	$rootScope.$on("user_ready", function () {
@@ -44,7 +51,11 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
     d.wsio = io('/waittime',sio_opts);
 		d.n_history = 5;
 		d.io_connected = false
-		d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
+		d.qsio.on("questions",function (payload) { 
+			var old_n_questions = d.model["questions"].length; 
+			handle_db_update("questions",payload); 
+			notify_questions(old_n_questions,payload);
+		});
 		d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
 		d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
 		d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
