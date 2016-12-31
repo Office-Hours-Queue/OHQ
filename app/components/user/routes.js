@@ -23,9 +23,31 @@ var UserEditSchema = {
       type: 'string',
       minLength: 8,
       required: false
+    },
+  }
+};
+
+var NameEditSchema = {
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    first_name : {
+      type: 'string',
+      minLength: 1
     }
   }
 };
+
+router.post("/edit_first_name", isAuthenticated.errorJson, validate({ body : NameEditSchema }), function (req,res,next) {
+  var body = req.body;
+  return db('users').where('id',req.user.id).update(body).then(function(success) {
+    res.send({"success": true});
+    next();
+  }).catch(function(err) {
+        res.status(400).send(err);
+        next(err);
+    });
+});
 
 router.post('/edit', isAuthenticated.errorJson, validate({body: UserEditSchema}), function(req, res, next) {
   var newFields = { };
