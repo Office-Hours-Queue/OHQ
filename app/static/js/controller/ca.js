@@ -9,11 +9,9 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 
 	$scope.answering = false;
 
-      if (Notification.permission != "granted") {
+      if (("Notification" in window) && Notification.permission != "granted") {
         Notification.requestPermission();
       }
-
-
 
 	$scope.$watch(function () {
 		return $db.model['current_question'].length
