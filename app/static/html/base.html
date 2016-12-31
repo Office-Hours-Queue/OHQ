@@ -21,10 +21,10 @@
         <a href="/#/student">Home</a>
       </li>
       <li>
-        <a href="#modalhelp" modal>FAQ</a>
+        <a href="#modalhelp" ng-click="clicked_faq()"   modal>FAQ</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="#modaltips" modal>Debugging Tips</a>
+        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging Tips</a>
       </li>
     </ul>
 		<ul class="side-nav" id="mobile-menu">
@@ -38,10 +38,10 @@
         <a href="/#/student">Home</a>
       </li>
       <li>
-        <a href="#modalhelp" modal>FAQ</a>
+        <a ng-click="clicked_faq()"  href="#modalhelp" modal>FAQ</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="#modaltips" modal>Debugging Tips</a>
+        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging Tips</a>
       </li>
       <div class="divider"></div>
       <li>

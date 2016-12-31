@@ -5,6 +5,10 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 	$scope.name = "ca";
 
 	$rootScope.check_login();
+
+      $scope.clicked_faq = function () {
+        ga('send', 'event','FAQ','TA clicked',$rootScope.user["andrew_id"])
+      };
 	
 
 	$scope.answering = false;
