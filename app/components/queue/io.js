@@ -487,6 +487,7 @@ function makeStudentQuestion(question) {
     help_text: question.help_text,
     queue_ps: parseInt(question.queue_position),
     is_frozen: question.is_frozen,
+    frozen_end_time: question.frozen_end_time,
     can_freeze: question.can_freeze,
     state: getQuestionState(question),
     off_time: question.off_time

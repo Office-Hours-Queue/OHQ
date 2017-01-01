@@ -101,7 +101,8 @@
                     <span class="grey-text"><small>of {{ $db.model.queue_meta[0].num_questions }}</small></span>
                   </h5>
                   <p>
-                    <span id="question_status" class="grey-text">{{ q.is_frozen ? 'frozen' : 'on the queue' }}</span>
+                    <span id="question_status" class="grey-text" ng-if="q.is_frozen">unfreezing <span am-time-ago="q.frozen_end_time"></span>.</span>
+                    <span id="question_status" class="grey-text" ng-if="!q.is_frozen">on the queue</span>
                   </p>
                 </div>
                 <div class="col s8 m10">
