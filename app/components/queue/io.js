@@ -116,7 +116,7 @@ module.exports.queue = function(io) {
 
     queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
-        socket.emit('questions', makeCaQuestion(question));
+        socket.emit('questions_initial', makeCaQuestion(question));
       });
     });
 
@@ -135,7 +135,7 @@ module.exports.queue = function(io) {
 
   (function() {
 
-    queue.questions.emitter.on('new_question', emitFlaggedCaQuestion);
+    queue.questions.emitter.on('new_question', emitCaQuestion);
     queue.questions.emitter.on('question_frozen', emitCaQuestion);
     queue.questions.emitter.on('question_unfrozen', emitCaQuestion);
     queue.questions.emitter.on('question_answered', emitCaQuestion);
@@ -294,12 +294,6 @@ module.exports.queue = function(io) {
     getStudentMeta().then(function(meta) {
       students().emit('queue_meta', makeMessage('data', [meta]));
     });
-  }
-
-  function emitFlaggedCaQuestion(question) {
-    var q = makeCaQuestion(question);
-    q.is_new_question = true;
-    cas().emit('questions', q);
   }
 
   function emitCaQuestion(question) {

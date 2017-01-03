@@ -53,10 +53,17 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
     d.wsio = io('/waittime',sio_opts);
 		d.n_history = 5;
 		d.io_connected = false
-		d.qsio.on("questions",function (payload) { 
-			var old_n_questions = d.model["questions"].length; 
-			handle_db_update("questions",payload); 
-			notify_questions(old_n_questions,payload);
+		d.qsio.on("questions",function (payload) {
+			for (var i = 0; i < payload.payload.length; i++) {
+				payload.payload[i].is_new = true;
+			}
+			handle_db_update("questions",payload);
+		});
+		d.qsio.on("questions_initial",function (payload) {
+			for (var i = 0; i < payload.payload.length; i++) {
+				payload.payload[i].is_new = false;
+			}
+			handle_db_update("questions",payload);
 		});
 		d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
 		d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
