@@ -7,11 +7,39 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 	$rootScope.check_login();
 	
 
-	$scope.answering = false;
+  if (("Notification" in window) && Notification.permission != "granted") {
+    Notification.requestPermission();
+  }
 
-      if (("Notification" in window) && Notification.permission != "granted") {
-        Notification.requestPermission();
+  $scope.$watchCollection(function() {
+    return $db.model.questions;
+  }, function(new_questions, old_questions) {
+    var get_open_count = function(questions) {
+      var count = 0;
+      for (var i = 0; i < questions.length; i++) {
+        if (questions[i].state !== 'frozen') {
+          count++;
+        }
       }
+      return count;
+    };
+
+    var old_open_count = get_open_count(old_questions);
+    var new_open_count = get_open_count(new_questions);
+
+    // if total # questions went from 0 -> 1, or if all questions were
+    // previously frozen, and a question just got unfrozen, emit the
+    // notification.
+    if (old_open_count === 0 && new_open_count > 0 &&
+            (new_questions[0].is_new || old_questions.length > 0)) {
+      var options = { icon : "/style/images/scs-logo.gif"}
+      if ("Notification" in window) {
+        new Notification("The office hours queue is no longer empty!",options);
+      }
+    }
+  });
+
+	$scope.answering = false;
 
 	$scope.$watch(function () {
 		return $db.model['current_question'].length

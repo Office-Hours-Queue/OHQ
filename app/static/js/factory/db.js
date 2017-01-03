@@ -29,15 +29,6 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		});
 	};
 
-	var notify_questions = function(n_old, payload) {
-		if (payload.is_new_question && n_old == 0) {
-			var options = { icon : "/style/images/scs-logo.gif"}
-			if ("Notification" in window) {
-				new Notification("The office hours queue is no longer empty!",options);				
-			}
-		}
-	};
-
 	/* Connect to socketio when the user exists */
 	/* Initialize SocketIO */
 	$rootScope.$on("user_ready", function () {
@@ -122,11 +113,11 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
 					if (db_index == -1) {
 						//Insert
-						d.model[db_name].unshift(payload[i])
-						continue
+						d.model[db_name].unshift(payload[i]);
+					} else {
+						//Update
+						d.model[db_name][db_index] = payload[i];
 					}
-					//Update
-					d.model[db_name][db_index] = Object.assign(d.model[db_name][db_index],payload[i]);
 				}
 				break;
 			case "delete": 
