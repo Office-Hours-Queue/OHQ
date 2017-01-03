@@ -31,7 +31,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 
 	var notify_questions = function(n_old, payload) {
 		if (payload.is_new_question && n_old == 0) {
-			var options = { icon : "/images/112-dragon.png"}
+			var options = { icon : "/style/images/scs-logo.gif"}
 			if ("Notification" in window) {
 				new Notification("The office hours queue is no longer empty!",options);				
 			}
