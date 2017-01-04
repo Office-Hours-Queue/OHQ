@@ -15,11 +15,8 @@
     </div>
 
     <div class="row">
-      <div class="col s6">
-        <a class="waves-effect waves-light btn btn-full btn-small-shrink-text {{ user.is_online ? 'orange' : 'green' }}" id="{{ user.is_online ? 'go_offline_btn' : 'go_online_btn' }}" ng-click="user.is_online ? $db.go_offline() : $db.go_online()">Go {{ user.is_online ? 'offline' : 'online' }}</a>
-      </div>
-      <div class="col s6">
-        <a class="waves-effect waves-light btn btn-full btn-small-shrink-text {{ $db.model.queue_meta[0].open ? 'red' : 'blue' }}" id="{{ $db.model.queue_meta[0].open ? 'close_queue_btn' : 'open_queue_btn' }}" ng-click="$db.model.queue_meta[0].open ? $db.close_queue() : $db.open_queue()">{{ $db.model.queue_meta[0].open ? 'Close' : 'open' }} queue</a>
+      <div class="col s12">
+        <a class="waves-effect waves-light btn btn-full {{ $db.model.queue_meta[0].open ? 'red' : 'blue' }}" id="{{ $db.model.queue_meta[0].open ? 'close_queue_btn' : 'open_queue_btn' }}" ng-click="$db.model.queue_meta[0].open ? $db.close_queue() : $db.open_queue()">{{ $db.model.queue_meta[0].open ? 'Close' : 'open' }} queue</a>
       </div>
     </div>
 
@@ -39,12 +36,6 @@
                   <span class="grey-text"><small>The queue is </small></span>
                   <span class="green-text" ng-if="$db.model.queue_meta[0].open">open</span>
                   <span class="red-text" ng-if="!$db.model.queue_meta[0].open">closed</span>
-                  <span class="grey-text"><small>.</small></span>
-                </h5>
-                <h5>
-                  <span class="grey-text"><small>You are </small></span>
-                  <span class="green-text" ng-if="user.is_online">online</span>
-                  <span class="red-text" ng-if="!user.is_online">offline</span>
                   <span class="grey-text"><small>.</small></span>
                 </h5>
                 <div class="divider"></div>

@@ -37,10 +37,6 @@ module.exports = function(io) {
       socket.emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
     
-    users.users.getUser(userid).then(function(user) {
-      socket.emit('ca_status', makeMessage('data', [{ id: 0, is_online: user.is_online }]));
-    });
-
   };
 
   //
@@ -49,10 +45,6 @@ module.exports = function(io) {
 
   (function() {
     
-    users.users.emitter.on('ca_status', function(newStatus) {
-      ca(newStatus.id).emit('ca_status', makeMessage('data', [{ id: 0, is_online: newStatus.is_online }]));
-    });
-
     users.users.emitter.on('cas_active', function(activeCas) {
       cas().emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
