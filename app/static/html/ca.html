@@ -46,7 +46,7 @@
                   <span id="numCAs">{{ $db.model.cas_active[0].cas.length == 0 ? 'No' : $db.model.cas_active[0].cas.length}} TA{{ $db.model.cas_active[0].cas.length === 1 ? '' : 's' }}</span>
                   <span class="grey-text"><small>{{ $db.model.cas_active[0].cas.length === 1 ? 'is' : 'are' }} active.</small></span>
                   <span class="grey-text clickable" ng-if="$db.model.cas_active[0].cas.length > 0" tooltipped-dynamic data-position="top" data-delay="0" data-html="true" data-tooltip="">
-                    <i class="tiny material-icons">info_outline</i>
+                    <i class="tiny material-icons">{{ $db.model.cas_active[0].cas.length > 1 ? 'people' : 'person' }}</i>
                     <ul class="hide">
                       <li ng-repeat="ca in $db.model.cas_active[0].cas | orderBy:'first_name'">{{ ca.first_name }} {{ ca.last_name }}</li>
                     </ul>
