@@ -52,9 +52,11 @@ function selectQuestionCount() {
     )
     .count('q AS question_count')
     .from('users AS u')
-    .leftJoin('questions AS q', 'u.id', 'q.ca_user_id')
+    .leftJoin('questions AS q', function() {
+      this.on('u.id', 'q.ca_user_id')
+          .andOn(db.raw('q.off_reason = \'normal\''));
+    })
     .where('u.role', 'ca')
-    .andWhere('q.off_reason', 'normal')
     .groupBy('u.id');
 }
 
