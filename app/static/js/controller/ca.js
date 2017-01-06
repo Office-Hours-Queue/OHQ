@@ -10,6 +10,47 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
         ga('send', 'event','FAQ','TA clicked',$rootScope.user["andrew_id"])
       };
 	
+  var Notify = window.Notify.default;
+
+  // Attach a listener to fire notifications
+  var register_notifications = function() {
+    $scope.$watchCollection(function() {
+      return $db.model.questions;
+    }, function(new_questions, old_questions) {
+      var get_open_count = function(questions) {
+        var count = 0;
+        for (var i = 0; i < questions.length; i++) {
+          if (questions[i].state !== 'frozen') {
+            count++;
+          }
+        }
+        return count;
+      };
+
+      var old_open_count = get_open_count(old_questions);
+      var new_open_count = get_open_count(new_questions);
+
+      // if total # questions went from 0 -> 1, or if all questions were
+      // previously frozen, and a question just got unfrozen, emit the
+      // notification.
+      if (old_open_count === 0 && new_open_count > 0 &&
+              (new_questions[0].is_new || old_questions.length > 0)) {
+        (new Notify('15-112 Office Hours', {
+          icon: '/style/images/scs-logo.gif',
+          body: 'A new student is on the queue.',
+          notifyClick: function() { window.focus(); },
+          closeOnClick: true,
+        })).show();
+      }
+    });
+  };
+
+  // set up the notifications
+  if (!Notify.needsPermission) {
+    register_notifications();
+  } else if (Notify.isSupported()) {
+    Notify.requestPermission(register_notifications);
+  }
 
 	$scope.answering = false;
 
