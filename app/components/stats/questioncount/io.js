@@ -47,7 +47,6 @@ module.exports = function(io) {
   (function() {
     qcount.emitter.on('ca_question_count', function(user) {
       user.question_count = parseInt(user.question_count);
-      console.log(user);
       cas().emit('question_count', user);
     });
   })();
