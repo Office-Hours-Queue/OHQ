@@ -69,6 +69,7 @@ require('./components/queue').io.queue(io.of('/queue'));
 require('./components/queue').io.history(io.of('/history'));
 require('./components/queue').io.waittime(io.of('/waittime'));
 require('./components/user').io(io.of('/user'));
+require('./components/stats/questioncount').io(io.of('/stats/questioncount'));
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 
