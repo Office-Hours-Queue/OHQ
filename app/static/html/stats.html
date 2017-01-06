@@ -55,7 +55,6 @@
                   <tbody>
                     <tr ng-repeat="ca in ca_counts | orderBy:['-question_count', 'first_name'] track by $index">
                       <td style="padding: 7px 7px" class="left-align">
-                        <span class="grey-text"><small>{{ $index+1 }}</small>&nbsp;&nbsp;</span>
                         {{ ca.first_name }} {{ ca.last_name }}
                       </td>
                       <td style="padding: 7px 7px" class="right-align">{{ ca.question_count }}</td>
