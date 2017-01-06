@@ -44,7 +44,18 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
     d.wsio = io('/waittime',sio_opts);
 		d.n_history = 5;
 		d.io_connected = false
-		d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
+		d.qsio.on("questions",function (payload) {
+			for (var i = 0; i < payload.payload.length; i++) {
+				payload.payload[i].is_new = true;
+			}
+			handle_db_update("questions",payload);
+		});
+		d.qsio.on("questions_initial",function (payload) {
+			for (var i = 0; i < payload.payload.length; i++) {
+				payload.payload[i].is_new = false;
+			}
+			handle_db_update("questions",payload);
+		});
 		d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
 		d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
 		d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
@@ -102,11 +113,11 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
 					if (db_index == -1) {
 						//Insert
-						d.model[db_name].unshift(payload[i])
-						continue
+						d.model[db_name].unshift(payload[i]);
+					} else {
+						//Update
+						d.model[db_name][db_index] = payload[i];
 					}
-					//Update
-					d.model[db_name][db_index] = Object.assign(d.model[db_name][db_index],payload[i]);
 				}
 				break;
 			case "delete": 
