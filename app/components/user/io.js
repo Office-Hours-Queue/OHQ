@@ -28,28 +28,15 @@ module.exports = function(io) {
     return io.to('cas');
   };
 
-  // when a ca joins, we need to listen for messages they send, and
-  // send down the current data
+  // when a ca joins, send down the current data.
+  // there is nothing to listen for.
   var oncajoin = function(socket, userid) {
 
-    // listen for online/offline updates
-    socket.on('go_online', function() {
-      users.users.setCaOnline(userid);
-    });
-
-    socket.on('go_offline', function() {
-      users.users.setCaOffline(userid);
-    });
-
     // emit the current data
-    users.users.getOnlineCas().then(function(onlineCas) {
-      socket.emit('ca_count', makeMessage('data', [{ id: 0, count: onlineCas.length }]));
+    users.users.getActiveCas().then(function(activeCas) {
+      socket.emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
     
-    users.users.getUser(userid).then(function(user) {
-      socket.emit('ca_status', makeMessage('data', [{ id: 0, is_online: user.is_online }]));
-    });
-
   };
 
   //
@@ -58,12 +45,8 @@ module.exports = function(io) {
 
   (function() {
     
-    users.users.emitter.on('ca_status', function(newStatus) {
-      ca(newStatus.id).emit('ca_status', makeMessage('data', [{ id: 0, is_online: newStatus.is_online }]));
-    });
-
-    users.users.emitter.on('ca_count', function(count) {
-      cas().emit('ca_count', makeMessage('data', [{ id: 0, count: count }])); 
+    users.users.emitter.on('cas_active', function(activeCas) {
+      cas().emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
 
   })();
@@ -74,6 +57,18 @@ module.exports = function(io) {
       type: type,
       payload: payload
     };
+  };
+
+  function makeActiveCas(cas) {
+    return [{
+      id: 0,
+      cas: cas.map(function(ca) {
+        return {
+          first_name: ca.first_name,
+          last_name: ca.last_name,
+        };
+      }),
+    }];
   };
 
 };

@@ -6,11 +6,6 @@
 var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	var d = {};
 
-	/* Go offline on unload */
-	$(window).unload(function () {
-		d.go_offline();
-	});
-
 	/* Access to user object */
 	$rootScope.check_login = function () {
 		//Get login user object
@@ -61,8 +56,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
 		d.qsio.on("current_question",function (payload) { handle_db_update("current_question",payload); });
 		d.qsio.on("message", function (payload) { Materialize.toast(payload); });
-		d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
-		d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
+		d.usio.on("cas_active", function (payload) { handle_db_update("cas_active",payload); });
 		d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
     d.wsio.on("wait_time", function(payload) { handle_db_update("wait_time", payload); });
 		d.qsio.on("connect", function() {
@@ -96,7 +90,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       "locations":[],
       "queue_meta": [],
       "current_question": [],
-      "ca_count": [],
+      "cas_active": [],
       "closed_questions": [],
       "wait_time": []
     };
@@ -182,14 +176,6 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	d.answer_question = function () {
 		console.log("Answer!")
 		d.qsio.emit("answer_question",{})
-	}
-	d.go_online = function () {
-		console.log("go online")
-		d.usio.emit("go_online")
-	}
-	d.go_offline = function () {
-		console.log("go offline")
-		d.usio.emit("go_offline")
 	}
 	d.add_n_history = function(n) {
     	d.n_history = d.n_history + 5;

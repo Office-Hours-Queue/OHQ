@@ -28,24 +28,19 @@ For example,
 //event follows the schema explained above. 
 //payload is this format: 
 // [{
-// 		"id": 0,
-//    "count": 2
+// 		"id": 123,          // this is the unique user id
+// 		"first_name": 'Bob',
+//		... rest of the user fields
 // 	}] 
-.on("ca_count", event)
+.on("cas_active", event)
 ```
 
 ```javascript
 //event follows the schema explained above. 
 //payload is this format: 
 // [{
-// 		"id": 0,
-//    "is_online": 2
+// 		"id": 0,            // fixed at 0
+// 		"is_online": true
 // 	}] 
 .on("ca_status", event)
-```
-
-##CA Methods (Sent to the Server)
-```javascript
-.emit('go_online')
-.emit('go_offline')
 ```
