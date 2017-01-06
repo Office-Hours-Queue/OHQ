@@ -1,0 +1,64 @@
+<div data-extend-template="/html/base.html">
+
+  <!-- Content --> 
+  <div data-block-append="content">
+  <div class="container">
+    <br />
+
+    <div class="row">
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title black-text">
+              This semester
+            </span>
+            <div class="divider"></div>
+            <!-- Empty row for spacing -->
+            <div class="row"></div>
+            <div class="row row-tight">
+              <div class="col s12">
+                <h5>
+                  <span>{{ questions_answered | number }}</span>
+                  <br />
+                  <span class="grey-text"><small>questions answered</small></span>
+                </h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title black-text">
+              Questions answered
+            </span>
+            <div class="divider"></div>
+            <div class="row"></div>
+            <div class="row">
+              <div class="col s12">
+                <table class="striped">
+                  <tbody>
+                    <tr ng-repeat="ca in ca_counts | orderBy:['-question_count', 'first_name'] track by $index">
+                      <td style="padding: 7px 7px" class="left-align">
+                        <span class="grey-text"><small>{{ $index+1 }}</small>&nbsp;&nbsp;</span>
+                        {{ ca.first_name }} {{ ca.last_name }}
+                      </td>
+                      <td style="padding: 7px 7px" class="right-align">{{ ca.question_count }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+</div>
