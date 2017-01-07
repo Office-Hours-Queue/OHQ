@@ -18,7 +18,7 @@
             <div class="row row-tight center-align">
               <div class="col s6">
                 <h4>{{ questions_answered | number }}</h4>
-                <h5 class="grey-text"><small>questions answered</small></h5>
+                <h5 class="grey-text"><small>question{{ questions_answered === 1 ? '' : 's' }} answered</small></h5>
               </div>
               <div class="col s6">
                 <h4>{{ time_spent_answering / 60 / 60 | number:1 }}</h4>
