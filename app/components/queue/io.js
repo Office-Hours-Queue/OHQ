@@ -317,6 +317,30 @@ module.exports.queue = function(io) {
     queue.questions.emitter.on('question_frozen', emitStudentMeta);
     queue.questions.emitter.on('question_closed', emitStudentMeta);
 
+    queue.locations.emitter.on("new_location", function (loc) {
+    students().emit("locations", makeMessage('data',loc));
+    });
+
+    queue.locations.emitter.on("update_location", function (loc) {
+      if (!(loc[0].enabled)) {
+        students().emit("locations",makeMessage('delete', [loc[0].id] ));
+      } else {
+        students().emit("locations", makeMessage('data',loc));
+      }
+    });
+
+   queue.topics.emitter.on("new_topic", function (topic) {
+      students().emit("topics", makeMessage('data',topic));
+    });
+
+    queue.topics.emitter.on("update_topic", function (topic) {
+      if (!(topic[0].enabled)){
+        students().emit('topics', makeMessage('delete', [topic[0].id] ));
+      } else {
+        students().emit("topics", makeMessage('data',topic));
+      }
+    });
+
   })();
 
   function getStudentMeta() {
