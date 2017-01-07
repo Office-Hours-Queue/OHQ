@@ -53,7 +53,7 @@
               <div class="col s12">
                 <table class="striped">
                   <tbody>
-                    <tr ng-repeat="ca in ca_counts | orderBy:['-question_count', 'first_name'] track by $index">
+                    <tr ng-repeat="ca in ca_counts | orderBy:['-question_count', 'first_name'] track by $index" ng-class="{true: 'light-blue-text text-darken-4'}[ca.user_id === user.id]">
                       <td style="padding: 7px 7px" class="left-align">
                         {{ ca.first_name }} {{ ca.last_name }}
                       </td>
