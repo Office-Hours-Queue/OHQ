@@ -8,7 +8,6 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
 		var payload = { first_name: new_first_name }
 		$http.post("/api/user/edit_first_name",payload).then(
 			function(successData) {
-				$rootScope.user["first_name"] = new_first_name;
 				$('#modaleditname').closeModal();
 			}, function(failData) {
 				Materialize.toast("Edit failed!");
