@@ -14,7 +14,7 @@ var EventEmitter = require('events');
 //     count,
 //   })
 //
-var questioncount = (function() {
+var counts = (function() {
   var result = {
     getQuestionCountAllCas: selectQuestionCountAllCas,
     getQuestionCountCa: selectQuestionCountCa,
@@ -63,4 +63,4 @@ function selectQuestionCount() {
     .groupBy('u.id');
 }
 
-module.exports.questioncount = questioncount;
+module.exports.counts = counts;

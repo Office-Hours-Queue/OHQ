@@ -1,5 +1,5 @@
 var auth = require('../../../auth');
-var qcount = require('./questioncount').questioncount;
+var counts = require('./counts').counts;
 
 module.exports = function(io) {
 
@@ -31,7 +31,7 @@ module.exports = function(io) {
   // when a ca joins, send down the current data.
   // there is nothing to listen for.
   var oncajoin = function(socket, userid) {
-    qcount.getQuestionCountAllCas().then(function(users) {
+    counts.getQuestionCountAllCas().then(function(users) {
       users.forEach(function(user) {
         user.question_count = parseInt(user.question_count);
         socket.emit('question_count', user);
@@ -45,7 +45,7 @@ module.exports = function(io) {
   //
 
   (function() {
-    qcount.emitter.on('ca_question_count', function(user) {
+    counts.emitter.on('ca_question_count', function(user) {
       user.question_count = parseInt(user.question_count);
       cas().emit('question_count', user);
     });

@@ -5,7 +5,7 @@ var stats_ctl = ['$scope', '$rootScope', '$db', '$http', function($scope, $rootS
 
   // handle the question count stats
   (function() {
-    var socket = io('/stats/questioncount');
+    var socket = io('/stats/counts');
 
     $scope.ca_counts = [];
     $scope.questions_answered = 0;
