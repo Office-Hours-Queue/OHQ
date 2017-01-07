@@ -185,15 +185,18 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		var topic = $("#new_topic").val()
 		if (topic == "") { return }
 		d.qsio.emit("add_topic",topic);
-		Materialize.toast("Topic added!")
 	}
 	d.add_new_location = function () {
 		var loc = $("#new_location").val()
 		if (loc == "") { return }
 		d.qsio.emit("add_location",loc);
-		Materialize.toast("Location added!");
 	}
-
+	d.delete_topic = function (topic) {
+		d.qsio.emit("delete_topic", topic);
+	}
+	d.delete_loc = function (loc) {
+		d.qsio.emit('delete_location', loc)
+	}
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {
 		for (var i = 0; i < fields.length; i++) {

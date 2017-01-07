@@ -764,9 +764,16 @@ var locations = (function() {
   return {
     getAll: selectAllLocations,
     getEnabled: selectEnabledLocations,
-    addLocation: addLocation
+    addLocation: addLocation,
+    deleteLocation: deleteLocation
   };
 })();
+
+function deleteLocation(loc) {
+  return db("locations").where("id",loc).update({
+    "enabled": false
+  }).return(null);
+}
 
 function addLocation(loc) {
   db.insert({ "location": loc })
@@ -794,9 +801,16 @@ var topics = (function() {
   return {
     getAll: selectAllTopics,
     getEnabled: selectEnabledTopics,
-    addTopic: addTopic
+    addTopic: addTopic,
+    deleteTopic: deleteTopic
   };
 })();
+
+function deleteTopic(topic) {
+  return db("topics").where("id",topic).update({
+    "enabled": false
+  }).return(null);
+}
 
 function addTopic(topic) {
    db.insert({ "topic": topic })

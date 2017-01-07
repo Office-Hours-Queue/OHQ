@@ -94,6 +94,14 @@ module.exports.queue = function(io) {
       queue.meta.setTimeLimit(minutes, userid);
     });
 
+    socket.on('delete_topic', function (topic) {
+      queue.topics.deleteTopic(topic);
+    });
+
+    socket.on("delete_location", function (location) {
+      queue.locations.deleteLocation(location);
+    });
+
     socket.on('add_topic', function (topic) {
       queue.topics.addTopic(topic);
     });
@@ -125,7 +133,7 @@ module.exports.queue = function(io) {
         socket.emit('current_question', makeCaQuestion(question));
       }
     });
-    
+
     queue.locations.getEnabled().then(function(locations) {
       socket.emit('locations', makeMessage('data', locations));
     });
