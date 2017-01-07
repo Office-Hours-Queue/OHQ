@@ -41,9 +41,9 @@ var NameEditSchema = {
 router.post("/edit_first_name", isAuthenticated.errorJson, validate({ body : NameEditSchema }), function (req,res,next) {
   var body = req.body;
   db('users').where('id',req.user.id).update(body).then(function(success) {
-        res.send({"success": true});
+        return res.send({"success": true});
   }).catch(function(err) {
-        res.status(400).send(err);
+        return res.status(400).send(err);
     });
 });
 
