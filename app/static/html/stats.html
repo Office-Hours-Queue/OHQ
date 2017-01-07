@@ -44,6 +44,43 @@
       <div class="col s12">
         <div class="card">
           <div class="card-content">
+            <span class="card-title">
+              Your contributions
+            </span>
+            <div class="divider"></div>
+            <!-- Empty row for spacing -->
+            <div class="row"></div>
+            <div class="row {{ ca_counts_map[user.id].question_count === 0 ? 'row-tight' : '' }}">
+              <div class="col s12">
+                <h5 ng-if="ca_counts_map[user.id].question_count === 0">
+                  <span class="grey-text"><small>You haven't answered any questions yet.</small></span>
+                </h5>
+                <h5 ng-if="ca_counts_map[user.id].question_count > 0">
+                  <span class="grey-text"><small>You've answered</small></span>
+                  <span>{{ ca_counts_map[user.id].question_count | number }}</span>
+                  <span class="grey-text"><small>question{{ ca_counts_map[user.id].question_count === 1 ? '' : 's' }} from</small></span>
+                  <span>{{ unique_student_count }}</span>
+                  <span class="grey-text"><small>{{ unique_student_count === 1 ? 'student.' : 'different students.' }}</small></span>
+                </h5>
+              </div>
+            </div>
+            <div class="row row-tight">
+              <div class="col s12 m6">
+                <i ng-repeat="i in range(ca_counts_map[user.id].question_count)" class="tiny material-icons grey-text text-lighten-1">help_outline</i>
+              </div>
+              <div class="col s12 m6">
+                <i ng-repeat="i in range(unique_student_count)" class="tiny material-icons grey-text text-lighten-1">person</i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
             <span class="card-title black-text">
               Questions answered
             </span>

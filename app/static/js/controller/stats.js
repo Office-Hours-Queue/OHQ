@@ -3,27 +3,45 @@ var stats_ctl = ['$scope', '$rootScope', '$db', '$http', function($scope, $rootS
 	$rootScope.$db = $db;
 	$rootScope.check_login();
 
+  // helper we need here
+  $scope.range = function(n) {
+    var result = [];
+    for (var i = 0; i < n; i++) {
+      result.push(i);
+    }
+    return result;
+  };
+
   // handle the question count stats
   (function() {
     var socket = io('/stats/counts');
 
     $scope.ca_counts = [];
     $scope.questions_answered = 0;
+    $scope.unique_student_count = 0;
+    $scope.questions_answered_self = 0;
 
-    var ca_counts = {};
+    $scope.ca_counts_map = {};
 
     socket.on('question_count', function(user) {
-      ca_counts[user.user_id] = user;
+      $scope.ca_counts_map[user.user_id] = user;
       $scope.$apply(function() {
         $scope.ca_counts = [];
         $scope.questions_answered = 0;
-        var userids = Object.keys(ca_counts);
+        var userids = Object.keys($scope.ca_counts_map);
         for (var i = 0; i < userids.length; i++) {
-          $scope.ca_counts.push(ca_counts[userids[i]]);
-          $scope.questions_answered += ca_counts[userids[i]].question_count;
+          $scope.ca_counts.push($scope.ca_counts_map[userids[i]]);
+          $scope.questions_answered += $scope.ca_counts_map[userids[i]].question_count;
         }
       });
     });
+
+    socket.on('unique_student_count', function(user) {
+      $scope.$apply(function() {
+        $scope.unique_student_count = user.unique_student_count;
+      });
+    });
+
   })();
 
   // handle the hours stats
