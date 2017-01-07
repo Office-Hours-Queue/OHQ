@@ -29,6 +29,11 @@ var users = (function() {
   dbEvents.users.on('update', function(new_user, old_user) {
     if (new_user.role === 'ca') {
 
+      if (new_user.first_name !== old_user.first_name) {
+        //name change
+        result.emitter.emit('name_change', { id: new_user.id, first_name: new_user.first_name });
+      }
+
       // ca's online status changed
       if (new_user.is_online !== old_user.is_online) {
 

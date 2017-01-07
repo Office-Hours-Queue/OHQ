@@ -66,6 +66,10 @@ module.exports = function(io) {
       cas().emit('ca_count', makeMessage('data', [{ id: 0, count: count }])); 
     });
 
+    users.users.emitter.on('name_change', function (new_user) {
+      ca(new_user.id).emit('name_change', makeMessage('data', [  { id : new_user.id, first_name: new_user.first_name } ]));
+    });
+
   })();
 
 

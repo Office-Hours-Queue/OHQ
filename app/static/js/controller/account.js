@@ -11,6 +11,7 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
 				$('#modaleditname').closeModal();
 			}, function(failData) {
 				Materialize.toast("Edit failed!");
+				$('#modaleditname').closeModal();
 			});
 	};
 }];
