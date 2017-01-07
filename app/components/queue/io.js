@@ -193,6 +193,23 @@ module.exports.queue = function(io) {
       }]));
     });
 
+    queue.locations.emitter.on("new_location", function (loc) {
+      cas().emit("locations", makeMessage('data',loc));
+    });
+
+    queue.locations.emitter.on("update_location", function (loc) {
+      cas().emit("locations", makeMessage('data',loc));
+    });
+
+   queue.topics.emitter.on("new_topic", function (topic) {
+      cas().emit("topics", makeMessage('data',topic));
+    });
+
+    queue.topics.emitter.on("update_topic", function (topic) {
+      cas().emit("topics", makeMessage('data',topic));
+    });
+
+
   })();
 
 
