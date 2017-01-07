@@ -32,6 +32,13 @@ var questioncount = (function() {
   return result;
 })();
 
+function selectDefaultUserFields() {
+  return db.select(
+      'u.id AS user_id',
+      'u.first_name AS first_name',
+      'u.last_name AS last_name'
+    );
+}
 
 // Get the question count for each CA
 function selectQuestionCountAllCas() {
@@ -45,11 +52,7 @@ function selectQuestionCountCa(userid) {
 }
 
 function selectQuestionCount() {
-  return db.select(
-      'u.id AS user_id',
-      'u.first_name AS first_name',
-      'u.last_name AS last_name'
-    )
+  return selectDefaultUserFields()
     .count('q AS question_count')
     .from('users AS u')
     .leftJoin('questions AS q', function() {
@@ -59,6 +62,5 @@ function selectQuestionCount() {
     .where('u.role', 'ca')
     .groupBy('u.id');
 }
-
 
 module.exports.questioncount = questioncount;
