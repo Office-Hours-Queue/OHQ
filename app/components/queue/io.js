@@ -125,6 +125,14 @@ module.exports.queue = function(io) {
         socket.emit('current_question', makeCaQuestion(question));
       }
     });
+    
+    queue.locations.getEnabled().then(function(locations) {
+      socket.emit('locations', makeMessage('data', locations));
+    });
+
+    queue.topics.getEnabled().then(function(topics) {
+      socket.emit('topics', makeMessage('data', topics));
+    });
 
   };
 
