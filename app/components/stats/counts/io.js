@@ -37,6 +37,11 @@ module.exports = function(io) {
         socket.emit('question_count', user);
       });
     });
+
+    counts.getUniqueStudentCountCa(userid).then(function(user) {
+      user.unique_student_count = parseInt(user.unique_student_count);
+      socket.emit('unique_student_count', user);
+    });
   };
 
 

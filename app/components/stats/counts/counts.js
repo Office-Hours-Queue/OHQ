@@ -18,6 +18,7 @@ var counts = (function() {
   var result = {
     getQuestionCountAllCas: selectQuestionCountAllCas,
     getQuestionCountCa: selectQuestionCountCa,
+    getUniqueStudentCountCa: selectUniqueStudentCountCa,
     emitter: new EventEmitter(),
   };
 
@@ -54,6 +55,26 @@ function selectQuestionCountCa(userid) {
 function selectQuestionCount() {
   return selectDefaultUserFields()
     .count('q AS question_count')
+    .from('users AS u')
+    .leftJoin('questions AS q', function() {
+      this.on('u.id', 'q.ca_user_id')
+          .andOn(db.raw('q.off_reason = \'normal\''));
+    })
+    .where('u.role', 'ca')
+    .groupBy('u.id');
+}
+
+// Get the number of unique students helped for a CA
+function selectUniqueStudentCountCa(userid) {
+  return selectUniqueStudentCount()
+    .where('u.id', userid)
+    .first();
+}
+
+// Get the number of unique students helped
+function selectUniqueStudentCount() {
+  return selectDefaultUserFields()
+    .countDistinct('q.student_user_id AS unique_student_count')
     .from('users AS u')
     .leftJoin('questions AS q', function() {
       this.on('u.id', 'q.ca_user_id')
