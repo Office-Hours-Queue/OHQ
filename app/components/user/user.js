@@ -32,6 +32,7 @@ var users = (function() {
       if (new_user.first_name !== old_user.first_name) {
         //name change
         result.emitter.emit('name_change', { id: new_user.id, first_name: new_user.first_name });
+        emitActive();
       }
   });
 
