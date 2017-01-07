@@ -91,15 +91,15 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
         type: 'time',
         time: {
           displayFormats: {
-             'millisecond': 'h:mm',
-             'second': 'h:mm',
-             'minute': 'h:mm',
-             'hour': 'h:mm',
-             'day': 'h:mm',
-             'week': 'h:mm',
-             'month': 'h:mm',
-             'quarter': 'h:mm',
-             'year': 'h:mm',
+             'millisecond': 'h:mm A',
+             'second': 'h:mm A',
+             'minute': 'h:mm A',
+             'hour': 'h:mm A',
+             'day': 'h:mm A',
+             'week': 'h:mm A',
+             'month': 'h:mm A',
+             'quarter': 'h:mm A',
+             'year': 'h:mm A',
           },
           unit: 'minute',
           unitStepSize: 30
@@ -132,7 +132,7 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
       fontFamily: 'Roboto, sans-serif',
       fontColor: '#9e9e9e',
       fontStyle: 'normal',
-      text: 'Wait time, last hour'
+      text: 'Average Wait Time (mins)'
     },
     tooltips: {
       enabled: false
