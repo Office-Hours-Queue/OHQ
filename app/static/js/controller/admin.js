@@ -32,4 +32,13 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 			$db.delete_loc($scope.selected_del_id);
 		}
 	}
+
+	$scope.enable_topic_or_loc = function()  {
+		if ($scope.selected_del == "Topic"){
+			$db.enable_topic($scope.selected_del_id);
+		} 
+		if ($scope.selected_del == "Location") {
+			$db.enable_loc($scope.selected_del_id);
+		}
+	}
 }];

@@ -184,11 +184,21 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	d.add_new_topic = function () {
 		var topic = $("#new_topic").val()
 		if (topic == "") { return }
+		for (var i = 0; i < d.model.topics.length; i++) {
+			if (topic == d.model.topics[i].topic) {
+				return;
+			}
+		}
 		d.qsio.emit("add_topic",topic);
 	}
 	d.add_new_location = function () {
 		var loc = $("#new_location").val()
 		if (loc == "") { return }
+		for (var i = 0; i < d.model.locations.length; i++) {
+			if (loc== d.model.locations[i].location) {
+				return;
+			}
+		}
 		d.qsio.emit("add_location",loc);
 	}
 	d.delete_topic = function (topic) {
@@ -196,6 +206,12 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	}
 	d.delete_loc = function (loc) {
 		d.qsio.emit('delete_location', loc)
+	}
+	d.enable_topic = function(topic) {
+		d.qsio.emit("enable_topic", topic);
+	}
+	d.enable_loc = function (loc) {
+		d.qsio.emit('enable_location', loc);
 	}
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {

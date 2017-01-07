@@ -94,6 +94,15 @@ module.exports.queue = function(io) {
       queue.meta.setTimeLimit(minutes, userid);
     });
 
+    socket.on("enable_topic", function (topic) {
+      debug("HERE",topic)
+      queue.topics.enableTopic(topic);
+    });
+
+    socket.on("enable_location", function(loc) {
+      queue.locations.enableLocation(loc);
+    });
+
     socket.on('delete_topic', function (topic) {
       queue.topics.deleteTopic(topic);
     });
@@ -134,11 +143,11 @@ module.exports.queue = function(io) {
       }
     });
 
-    queue.locations.getEnabled().then(function(locations) {
+    queue.locations.getAll().then(function(locations) {
       socket.emit('locations', makeMessage('data', locations));
     });
 
-    queue.topics.getEnabled().then(function(topics) {
+    queue.topics.getAll().then(function(topics) {
       socket.emit('topics', makeMessage('data', topics));
     });
 

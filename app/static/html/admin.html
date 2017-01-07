@@ -8,9 +8,9 @@
    	<div class="row">
 
 
-	<ul class="collapsible" data-collapsible="accordion">
+	<ul class="collapsible popout" data-collapsible="accordion">
 		<li id="update_minute_rule_li">
-			<div class="collapsible-header">Minute Rule</div>
+			<div class="collapsible-header"><b>Minute Rule</b></div>
 			<div class="collapsible-body">
 			<p>
 				The minute rule denotes the maximum amount of time a TA should spend with a student. 
@@ -24,30 +24,38 @@
 			</div>
 		</li>
 		<li id="update_minute_rule_li">
-			<div class="collapsible-header">Topics</div>
+			<div class="collapsible-header"><b>Topics</b></div>
 			<div class="collapsible-body">
 
-			<ul class="collection" style="padding: 20px"> 
-				<li class="collection-item" ng-repeat="t in $db.model.topics"><span class="badge"><a ng-click="select(t.topic, 'Topic', t.id)" ng-href="#modaldelete" modal><i class="small material-icons">delete</i></a></span>{{ t.topic}}</li>
-				<a ng-href="#modal_add_topic" modal><li class="collection-item"><i class="small material-icons">add</i></li></a>
+			<ul class="collection">  
+				<li class="{{ t.enabled ? '' : 'grey lighten-4' }} collection-item" ng-repeat="t in $db.model.topics | orderBy : '-enabled' ">
+                                                    <span ng-if="t.enabled" class=" new badge red"  data-badge-caption="Disable" ng-click="select(t.topic, 'Topic', t.id)" ng-href="#modaldelete" modal ></span>
+                                                    <span ng-if="!(t.enabled)" class="new badge blue"  data-badge-caption="Enable"  ng-click="select(t.topic, 'Topic', t.id); enable_topic_or_loc()"></span>
+                                                   {{ t.topic}}
+                                                </li>
+				<a ng-href="#modal_add_topic" modal><li class="collection-item"><i class="tiny material-icons">add</i></li></a>
 			</ul>
 
 
 			</div>
 		</li>
 		<li id="update_minute_rule_li">
-			<div class="collapsible-header">Locations</div>
+			<div class="collapsible-header"><b>Locations</b></div>
 			<div class="collapsible-body">
 
-			<ul class="collection" style="padding: 20px"> 
-				<li class="collection-item" ng-repeat="l in $db.model.locations"><span class="badge"><a ng-click="select(l.location, 'Location', l.id)" ng-href="#modaldelete" modal><i class="small material-icons">delete</i></a></span>{{ l.location }}</li>
-				<a ng-href="#modal_add_location" modal><li class="collection-item"><i class="small material-icons">add</i></li></a>
-			</ul>
+                                    <ul class="collection">  
+                                        <li class="{{ l.enabled ? '' : 'grey lighten-4' }} collection-item" ng-repeat="l in $db.model.locations | orderBy : '-enabled' ">
+                                                                            <span ng-if="l.enabled" class=" new badge red"  data-badge-caption="Disable" ng-click="select(l.location, 'Location', l.id)" ng-href="#modaldelete" modal ></span>
+                                                                            <span ng-if="!(l.enabled)" class="new badge blue"  data-badge-caption="Enable"  ng-click="select(l.location, 'Location', l.id); enable_topic_or_loc()"></span>
+                                                                           {{ l.location}}
+                                                                        </li>
+                                        <a ng-href="#modal_add_location" modal><li class="collection-item"><i class="tiny material-icons">add</i></li></a>
+                                    </ul>
 			</div>
 		</li>
 
 		<li>
-			<div class="collapsible-header">Queue Access</div>
+			<div class="collapsible-header"><b>Queue Access</b></div>
 			<div class="collapsible-body">
 			<p>
 				Enter a student's andrew id below to let them login to the queue. 
@@ -72,11 +80,11 @@
           <div class="container">
             <div class="row row-tight valign-wrapper">
               <div class="col s8 valign">
-                <h5>Delete {{ selected_del }}</h5>
-                <p>Are you sure you want to delete the location '{{ selected_del_item }} '?</p>
+                <h5>Disable {{ selected_del }}</h5>
+                <p>Are you sure you want to disable '{{ selected_del_item }} '?</p>
               </div>
               <div class="col s4 valign right">
-                <a id="prefbtn" ng-click="delete_topic_or_loc()" name="do_delete" class="modal-action modal-close waves-effect waves-light btn-flat red-text">Delete</a>
+                <a id="prefbtn" ng-click="delete_topic_or_loc()" name="do_delete" class="modal-action modal-close waves-effect waves-light btn-flat red-text">Disable</a>
                 <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
               </div>
             </div>

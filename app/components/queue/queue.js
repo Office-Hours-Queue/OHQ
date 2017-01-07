@@ -765,9 +765,16 @@ var locations = (function() {
     getAll: selectAllLocations,
     getEnabled: selectEnabledLocations,
     addLocation: addLocation,
-    deleteLocation: deleteLocation
+    deleteLocation: deleteLocation,
+    enableLocation: enableLocation
   };
 })();
+
+function enableLocation(loc) {
+  return db("locations").where("id", loc).update({
+    "enabled": true
+  }).return(null);
+}
 
 function deleteLocation(loc) {
   return db("locations").where("id",loc).update({
@@ -802,9 +809,16 @@ var topics = (function() {
     getAll: selectAllTopics,
     getEnabled: selectEnabledTopics,
     addTopic: addTopic,
-    deleteTopic: deleteTopic
+    deleteTopic: deleteTopic,
+    enableTopic: enableTopic
   };
 })();
+
+function enableTopic(topic) {
+  return db("topics").where("id", topic).update({
+    "enabled": true
+  }).return(null);
+}
 
 function deleteTopic(topic) {
   return db("topics").where("id",topic).update({
