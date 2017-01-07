@@ -12,6 +12,15 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 	'Should I use almostEquals in this function?',
 	];
 
+
+            $scope.clicked_faq = function () {
+                ga('send', 'event','FAQ','student clicked',$rootScope.user["andrew_id"])
+            };
+
+            $scope.clicked_debugging_tips = function () {
+                ga('send', 'event','Debugging Tips','student clicked',$rootScope.user["andrew_id"])
+            };
+
 	function set_random_question() {
 	var random_idx = Math.floor(Math.random()*example_questions.length);
 	$scope.example_question = example_questions[random_idx];

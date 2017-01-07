@@ -116,7 +116,7 @@ module.exports.queue = function(io) {
 
     queue.questions.getOpen().then(function(questions) {
       questions.forEach(function(question) {
-        socket.emit('questions', makeCaQuestion(question));
+        socket.emit('questions_initial', makeCaQuestion(question));
       });
     });
 
@@ -474,7 +474,7 @@ function makeCaQuestion(question) {
     on_time: question.on_time,
     off_time: question.off_time,
     help_time: question.help_time
-  }]);
+  }]); 
 };
 
 function makeStudentQuestion(question) {
@@ -487,6 +487,7 @@ function makeStudentQuestion(question) {
     help_text: question.help_text,
     queue_ps: parseInt(question.queue_position),
     is_frozen: question.is_frozen,
+    frozen_end_time: question.frozen_end_time,
     can_freeze: question.can_freeze,
     state: getQuestionState(question),
     off_time: question.off_time

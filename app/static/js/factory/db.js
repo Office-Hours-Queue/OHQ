@@ -6,11 +6,6 @@
 var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	var d = {};
 
-	/* Go offline on unload */
-	$(window).unload(function () {
-		d.go_offline();
-	});
-
 	/* Access to user object */
 	$rootScope.check_login = function () {
 		//Get login user object
@@ -44,15 +39,25 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
     d.wsio = io('/waittime',sio_opts);
 		d.n_history = 5;
 		d.io_connected = false
-		d.qsio.on("questions",function (payload) { handle_db_update("questions",payload); });
+		d.qsio.on("questions",function (payload) {
+			for (var i = 0; i < payload.payload.length; i++) {
+				payload.payload[i].is_new = true;
+			}
+			handle_db_update("questions",payload);
+		});
+		d.qsio.on("questions_initial",function (payload) {
+			for (var i = 0; i < payload.payload.length; i++) {
+				payload.payload[i].is_new = false;
+			}
+			handle_db_update("questions",payload);
+		});
 		d.qsio.on("locations",function (payload) { handle_db_update("locations",payload); });
 		d.qsio.on("topics",function (payload) { handle_db_update("topics",payload); });
 		d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
 		d.qsio.on("current_question",function (payload) { handle_db_update("current_question",payload); });
 		d.qsio.on("message", function (payload) { Materialize.toast(payload); });
 		d.usio.on("name_change", function (payload) { $rootScope.user.first_name = payload.payload[0].first_name;});
-		d.usio.on("ca_status", function (payload) { $rootScope.user.is_online = payload.payload[0].is_online; });
-		d.usio.on("ca_count", function (payload) { handle_db_update("ca_count",payload); });
+		d.usio.on("cas_active", function (payload) { handle_db_update("cas_active",payload); });
 		d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
     d.wsio.on("wait_time", function(payload) { handle_db_update("wait_time", payload); });
 		d.qsio.on("connect", function() {
@@ -86,7 +91,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       "locations":[],
       "queue_meta": [],
       "current_question": [],
-      "ca_count": [],
+      "cas_active": [],
       "closed_questions": [],
       "wait_time": []
     };
@@ -103,11 +108,11 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
 					if (db_index == -1) {
 						//Insert
-						d.model[db_name].unshift(payload[i])
-						continue
+						d.model[db_name].unshift(payload[i]);
+					} else {
+						//Update
+						d.model[db_name][db_index] = payload[i];
 					}
-					//Update
-					d.model[db_name][db_index] = Object.assign(d.model[db_name][db_index],payload[i]);
 				}
 				break;
 			case "delete": 
@@ -172,14 +177,6 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	d.answer_question = function () {
 		console.log("Answer!")
 		d.qsio.emit("answer_question",{})
-	}
-	d.go_online = function () {
-		console.log("go online")
-		d.usio.emit("go_online")
-	}
-	d.go_offline = function () {
-		console.log("go offline")
-		d.usio.emit("go_offline")
 	}
 	d.add_n_history = function(n) {
     	d.n_history = d.n_history + 5;

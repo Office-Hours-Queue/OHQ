@@ -1,7 +1,7 @@
 /* 
  * Initialize angular app
  */
-var app = angular.module("queue", ["ngRoute","angular-blocks","ui.materialize","angularMoment","chart.js"]);
+var app = angular.module("queue", ["ngRoute","angular-blocks","ui.materialize","materialize-tooltip-enhancement","angularMoment","chart.js"]);
 
 /*
  * Register factories 
