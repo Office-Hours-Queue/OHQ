@@ -7,6 +7,16 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
     first_name: ''
   };
 
+  $scope.fix_caps = function(str) {
+    if (str) {
+      return str.replace(/\w\S*/g, function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1);
+      });
+    } else {
+      return '';
+    }
+  };
+
   if ($rootScope.user && $rootScope.user.first_name) {
     $scope.new_user.first_name = $rootScope.user.first_name;
   } else {
