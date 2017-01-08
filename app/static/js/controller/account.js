@@ -3,15 +3,32 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
 	$rootScope.check_login();
 	$rootScope.current_page = "account";
 
-	$scope.update_name = function() {
-		var new_first_name = $("#new_name").val();
-		var payload = { first_name: new_first_name }
-		$http.post("/api/user/edit_first_name",payload).then(
-			function(successData) {
-				$('#modaleditname').closeModal();
-			}, function(failData) {
-				Materialize.toast("Edit failed!");
-				$('#modaleditname').closeModal();
-			});
-	};
+  $scope.new_user = {
+    first_name: ''
+  };
+
+  if ($rootScope.user && $rootScope.user.first_name) {
+    $scope.new_user.first_name = $rootScope.user.first_name;
+  } else {
+    $rootScope.$on('user_ready', function() {
+      console.log('woo');
+      $scope.new_user.first_name = $rootScope.user.first_name;
+    });
+  }
+
+  $scope.update_first_name = function() {
+    var payload = {
+      first_name: $scope.new_user.first_name
+    };
+    if (payload.first_name) {
+      $http.post("/api/user/edit_first_name", payload)
+           .then(function(success) {
+             Materialize.toast('Saved', 5000);
+             $('#modaleditname').closeModal();
+           }, function(fail) {
+             Materialize.toast('There was an error', 5000);
+             console.log(fail);
+           });
+    }
+  };
 }];
