@@ -56,6 +56,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		d.qsio.on("queue_meta",function (payload) { handle_db_update("queue_meta",payload); });
 		d.qsio.on("current_question",function (payload) { handle_db_update("current_question",payload); });
 		d.qsio.on("message", function (payload) { Materialize.toast(payload); });
+		d.usio.on("name_change", function (payload) { $rootScope.user.first_name = payload.payload[0].first_name;});
 		d.usio.on("cas_active", function (payload) { handle_db_update("cas_active",payload); });
 		d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
     d.wsio.on("wait_time", function(payload) { handle_db_update("wait_time", payload); });

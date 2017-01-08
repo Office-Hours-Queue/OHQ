@@ -3,7 +3,7 @@ var dbEvents = require('../../db-events');
 var EventEmitter = require('events');
 var queueEvents = require('../queue/queue').questions.emitter;
 
-module.exports.cleanUser = function(user) { 
+function cleanUser(user) { 
   user.auth_method = user.google_id === null ? 'local' : 'google';
   delete user.pw_bcrypt;
   delete user.is_temp_pw;
@@ -27,6 +27,13 @@ var users = (function() {
     getActiveCas: selectActiveCas,
     emitter: new EventEmitter()
   };
+
+  dbEvents.users.on("update", function (new_user,old_user) {
+      if (new_user.first_name !== old_user.first_name) {
+        //name change
+        result.emitter.emit('name_change', cleanUser(new_user));
+      }
+  });
 
 
   // active ca event handling.
@@ -137,3 +144,4 @@ function selectActiveCas() {
 }
 
 module.exports.users = users;
+module.exports.cleanUser = cleanUser;

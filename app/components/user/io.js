@@ -4,10 +4,11 @@ var auth = require('../../auth');
 module.exports = function(io) {
 
   // make sure that this endpoint is protected
-  io.use(auth.ioHasRole('ca'));
+  io.use(auth.ioIsAuthenticated);
 
   // on client connection, join appropriate room, and
   // handle subsequent client -> server communications
+  // students join room student_USERID
   // cas join room cas_USERID
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
@@ -15,6 +16,10 @@ module.exports = function(io) {
       socket.join('cas');
       socket.join('ca_' + socket.request.user.id);
       oncajoin(socket, userid);
+    } else if (socket.request.user.role === 'student') {
+      socket.join('students');
+      socket.join('student_' + socket.request.user.id);
+      onstudentjoin(socket, userid);
     } else {
       throw new Error('Not authorized');
     }
@@ -28,6 +33,11 @@ module.exports = function(io) {
     return io.to('cas');
   };
 
+  var student = function(userid) {
+    return io.to('student_' + userid);
+  };
+
+
   // when a ca joins, send down the current data.
   // there is nothing to listen for.
   var oncajoin = function(socket, userid) {
@@ -37,6 +47,11 @@ module.exports = function(io) {
       socket.emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
     
+  };
+
+  // there's nothing to do on student join
+  var onstudentjoin = function(socket, userid) {
+
   };
 
   //
@@ -49,7 +64,25 @@ module.exports = function(io) {
       cas().emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
 
+    users.users.emitter.on('name_change', function(new_user) {
+      switch (new_user.role) {
+        case 'student':
+          student(new_user.id).emit('name_change', makeMessage('data', [{
+            id : new_user.id,
+            first_name: new_user.first_name
+          }]));
+          break;
+        case 'ca':
+          ca(new_user.id).emit('name_change', makeMessage('data', [{
+            id : new_user.id,
+            first_name: new_user.first_name
+          }]));
+          break;
+      }
+    });
+
   })();
+
 
 
   function makeMessage(type, payload) {
