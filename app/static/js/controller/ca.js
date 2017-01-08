@@ -115,6 +115,7 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
       yAxes: [{
         ticks: {
           beginAtZero: true,
+          suggestedMax: 5,
           mirror: true,
           fontFamily: 'Roboto, sans-serif',
           fontColor: '#9e9e9e',
