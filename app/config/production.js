@@ -18,4 +18,14 @@ config.GOOGLE_SHEETS = {
 	"id": "1yMXVOOSyNXrZN05CkabjwVIi3eOwpYZN7rMpXvO51_k"
 };
 
+// Superusers who can access super-secret stuff
+config.ADMIN_USERS = [
+  'edryer',
+  'kevinzhe',
+  'kkleiven',
+  'koz',
+  'rnvarma',
+  'tstentz',
+];
+
 module.exports = config;
