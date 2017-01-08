@@ -21,7 +21,6 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
     $scope.new_user.first_name = $rootScope.user.first_name;
   } else {
     $rootScope.$on('user_ready', function() {
-      console.log('woo');
       $scope.new_user.first_name = $rootScope.user.first_name;
     });
   }
@@ -37,7 +36,6 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
              $('#modaleditname').closeModal();
            }, function(fail) {
              Materialize.toast('There was an error', 5000);
-             console.log(fail);
            });
     }
   };
