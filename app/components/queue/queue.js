@@ -1,6 +1,5 @@
 var db = require('../../db');
 var dbEvents = require('../../db-events');
-var users = require('../user/user');
 var EventEmitter = require('events');
 var validator = require('jsonschema').validate;
 var diff = require('deep-diff').diff;
