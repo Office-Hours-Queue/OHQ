@@ -1,12 +1,14 @@
 <nav>
-	<div class="nav-wrapper light-blue darken-3">
+	<div class="nav-wrapper" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]">
 		<div id="name_brand" class="brand-logo center">{{ user.first_name }}</div>
+    <ul class="right" ng-if="!$db.io_connected">
+      <li>
+        <a class="grey-text text-lighten-2">Connecting...</a>
+      </li>
+    </ul>
 		<a href="#!" data-activates="mobile-menu" class="button-collapse" sidenav closeonclick="true" menuwidth="175">
       <i class="material-icons">menu</i>
     </a>
-		<ul class="right">
-			<a class="{{ $db.io_connected ? 'white-text' : 'red-text text-darken-1' }}">{{ $db.io_connected ? 'Connected' : 'Disconnected' }}</a>
-		</ul>
 		<ul class="left hide-on-med-and-down">
       <li>
         <a href="/api/login/endauth">Log out</a>
@@ -63,12 +65,12 @@
 	</div>
 </nav>
 
-<div data-block="content">
-
-	
+<div class="progress" style="margin: 0; background-color: transparent">
+  <div class="indeterminate" ng-if="!$db.io_connected"></div>
 </div>
 
-
+<div data-block="content">
+</div>
 
  <!-- FAQ Modal -->
 <div ng-if="user.role === 'ca'" class="modal modal-fixed-footer container" id="modalhelp">

@@ -78,7 +78,7 @@
 
 </main>
 
-<footer class="page-footer light-blue darken-3">
+<footer class="page-footer" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]" ng-if="user">
   <div class="footer-copyright">
       <div class="left"></div>
       <div class="center">
