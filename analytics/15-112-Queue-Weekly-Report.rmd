@@ -50,7 +50,7 @@ for (row_index in seq(1,nrow(tas))) {
 formatted_result = data.frame(cbind(final_result[,1], final_result[,2], final_result[,3]))
 formatted_result = formatted_result[-1,]
 colnames(formatted_result) = c("Andrew ID", "Number of Questions", "Avg Answer Time")
-datatable(formatted_result)
+datatable(formatted_result,options=list(order=list(list(2,'desc'))))
 ```
 
 
@@ -71,7 +71,7 @@ for (row_index in seq(1,nrow(students))) {
 formatted_result = data.frame(cbind(final_result[,1], final_result[,2]))
 formatted_result = formatted_result[-1,]
 colnames(formatted_result) = c("Andrew ID", "Questions Asked")
-datatable(formatted_result)
+datatable(formatted_result,options=list(order=list(list(2,'desc'))))
 ```
 
 
