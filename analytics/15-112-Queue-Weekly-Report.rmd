@@ -29,6 +29,14 @@ users_query = dbSendQuery(conn,"select * from users")
 users = fetch(users_query, n=-1)
 ```
 
+```{r,include=FALSE}
+#Filter questions by one week back 
+days_back = 50 #at 50 for demo purposes  
+one_week_ago = Sys.time() - 60 * 60 * 24 * days_back #currently at 50 days back for demo purposes
+this_week_idxs = which(questions["on_time"][,1] > one_week_ago)
+questions_this_week = questions[this_week_idxs,]
+```
+
 ###TA Statistics 
 ```{r,echo=FALSE,warning=FALSE}
 ta_indexs = which(users["role"] == "ca")
@@ -74,108 +82,95 @@ colnames(formatted_result) = c("Andrew ID", "Questions Asked")
 datatable(formatted_result,options=list(order=list(list(2,'desc'))))
 ```
 
-
-
-
-
-
 ###Semester Wait Time 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
-end_time = questions["off_time"]
-start_time = questions["on_time"]
-wait_time_mins = (end_time - start_time) / 60
-wait_times = data.frame(start_time, wait_time_mins)
-colnames(wait_times) = c("start_time", "wait_time")
-ggplot(wait_times,aes(x=start_time,y=wait_time)) + geom_smooth() + xlab("Question Date") + ylab("Wait Time (mins)") + ggtitle("Student Wait Time (Semester) ")
+build_wait_time_graph = function (questions,title) {
+  end_time = questions["off_time"]
+  start_time = questions["on_time"]
+  wait_time_mins = (end_time - start_time) / 60
+  wait_times = data.frame(start_time, wait_time_mins)
+  colnames(wait_times) = c("start_time", "wait_time")
+  ggplot(wait_times,aes(x=start_time,y=wait_time)) + geom_smooth() + xlab("Question Date") + ylab("Wait Time (mins)") + ggtitle(title) 
+}
+build_wait_time_graph(questions,"Student Wait Time (Semester)")
 ```
 
 ###Weekly Wait Times 
 ```{r,echo=FALSE,message=FALSE}
-one_week_ago = Sys.time() - 60 * 60 * 24 * 50
-this_week = which(wait_times["start_time"][,1] > one_week_ago)
-this_week_data = wait_times[this_week,]
-ggplot(this_week_data,aes(x=start_time,y=wait_time)) + geom_smooth() + xlab("Question Date") + ylab("Wait Time (mins)") + ggtitle("Student Wait Time (Current Week)")
+build_wait_time_graph(questions_this_week,"Student Wait Time (This Week)")
 ```
 
 ###Semester Question Load 
 ```{r,echo=FALSE,message=FALSE}
-start_times = questions["on_time"]
-ggplot(start_times,aes(x=on_time)) + geom_density() + xlab("Date") + ylab("Density") + ggtitle("Question Load (Semester)")
+build_question_load_graph = function (questions,title) {
+  start_times = questions["on_time"]
+  ggplot(start_times,aes(x=on_time)) + geom_density() + xlab("Date") + ylab("Density") + ggtitle(title) 
+}
+build_question_load_graph(questions,"Question Load (Semester)")
 ```
 
 ###Weekly Question Load 
 ```{r,echo=FALSE,message=FALSE}
-this_week = which(start_times["on_time"][,1] > one_week_ago)
-this_week_data = data.frame(start_times[this_week,])
-colnames(this_week_data) = c("on_time")
-ggplot(this_week_data,aes(x=on_time)) + geom_density() + xlab("Date") + ylab("Density") + ggtitle("Question Load (Weekly)")
+build_question_load_graph(questions_this_week,"Question Load (This Week)")
 ```
 
 ###Semester Minute Rule 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
-question_length = (questions["off_time"] - questions["help_time"]) / 60
-question_start = questions["on_time"]
-minute_rule = data.frame(question_start,question_length)
-colnames(minute_rule) = c("time","minutes_to_answer")
-ggplot(minute_rule, aes(x=time,y=minutes_to_answer)) + geom_smooth()  + xlab("Date") + ylab("Time to Answer") + ggtitle("Minute Rule (Semester)")
+build_minute_rule_graph = function (questions,title) {
+  question_length = (questions["off_time"] - questions["help_time"]) / 60
+  question_start = questions["on_time"]
+  minute_rule = data.frame(question_start,question_length)
+  colnames(minute_rule) = c("time","minutes_to_answer")
+  ggplot(minute_rule, aes(x=time,y=minutes_to_answer)) + geom_smooth()  + xlab("Date") + ylab("Time to Answer") + ggtitle(title)
+}
+build_minute_rule_graph(questions,"Minute Rule (Semester)")
 ```
 
 ###Weeky Minute Rule 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
-this_week = which(question_start[,1] > one_week_ago)
-this_week_data = minute_rule[this_week,]
-ggplot(this_week_data, aes(x=time,y=minutes_to_answer)) + geom_smooth()  + xlab("Date") + ylab("Time to Answer") + ggtitle("Minute Rule (Weekly)")
+build_minute_rule_graph(questions_this_week, "Minute Rule (This Week)")
 ```
 
 ###Topics (Semester)
 ```{r,echo=FALSE,message=FALSE}
-topic_ids = questions["topic_id"]
-topic_names = apply(topic_ids,1,function(id) {
-  index = which(topics["id"] == id)
-  return(topics[index,][1,2])
-})
-topic_counts= data.frame((topic_names))
-colnames(topic_counts) = c("Topic")
-ggplot(topic_counts,aes(factor(Topic))) + geom_bar() + xlab("Topic") + ylab("Count") + ggtitle("Topic Usage (Semester)") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+build_topic_usage_graph = function (questions,title) {
+  topic_ids = questions["topic_id"]
+  topic_names = apply(topic_ids,1,function(id) {
+    index = which(topics["id"] == id)
+    return(topics[index,][1,2])
+  })
+  topic_counts= data.frame((topic_names))
+  colnames(topic_counts) = c("Topic")
+  ggplot(topic_counts,aes(factor(Topic))) + geom_bar() + xlab("Topic") + ylab("Count") + ggtitle(title) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+}
+build_topic_usage_graph(questions, "Topic Usage (Semester)")
 ```
 
 ###Topics (Weekly)
 ```{r,echo=FALSE,message=FALSE}
-questions_p = questions[this_week,]
-topic_ids = questions_p["topic_id"]
-topic_names = apply(topic_ids,1,function(id) {
-  index = which(topics["id"] == id)
-  return(topics[index,][1,2])
-})
-topic_counts= data.frame((topic_names))
-colnames(topic_counts) = c("Topic")
-ggplot(topic_counts,aes(factor(Topic))) + geom_bar() + xlab("Topic") + ylab("Count") + ggtitle("Topic Usage (Weekly)") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+build_topic_usage_graph(questions_this_week,"Topic Usage (This Week)")
 ```
 
 ###Locations (Semester)
 ```{r,echo=FALSE,message=FALSE}
-location_ids = questions["location_id"]
-location_names = apply(location_ids,1,function(id) {
-  index = which(locations["id"] == id)
-  return(locations[index,][1,2])
-})
-location_counts = data.frame((location_names))
-colnames(location_counts) = c("Location")
-ggplot(location_counts,aes(factor(Location))) + geom_bar() + xlab("Location") + ylab("Count") + ggtitle("Location Usage (Semester)") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+build_location_usage_graph = function (questions,title) {
+  location_ids = questions["location_id"]
+  location_names = apply(location_ids,1,function(id) {
+    index = which(locations["id"] == id)
+    return(locations[index,][1,2])
+  })
+  location_counts = data.frame((location_names))
+  colnames(location_counts) = c("Location")
+  ggplot(location_counts,aes(factor(Location))) + geom_bar() + xlab("Location") + ylab("Count") + ggtitle(title) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+}
+
+build_location_usage_graph(questions, "Location Usage (Semester)")
 ```
 
 
 ###Locations (Weekly)
 ```{r,echo=FALSE,message=FALSE}
-questions_p = questions[this_week,]
-location_ids = questions_p["location_id"]
-location_names = apply(location_ids,1,function(id) {
-  index = which(locations["id"] == id)
-  return(locations[index,][1,2])
-})
-location_counts = data.frame((location_names))
-colnames(location_counts) = c("Location")
-ggplot(location_counts,aes(factor(Location))) + geom_bar() + xlab("Location") + ylab("Count") + ggtitle("Location Usage (Semester)") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+build_location_usage_graph(questions_this_week, "Location Usage (This Week)")
 ```
 
 
