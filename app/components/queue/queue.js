@@ -773,12 +773,38 @@ function selectCurrentMeta() {
 // locations
 //
 var locations = (function() {
-  return {
+  var result = {
     getAll: selectAllLocations,
     getEnabled: selectEnabledLocations,
-    addLocation: addLocation
+    addLocation: addLocation,
+    deleteLocation: deleteLocation,
+    enableLocation: enableLocation,
+    emitter: new EventEmitter() 
   };
+
+  dbEvents.locations.on('insert', function(newLoc) {
+        db("locations").select("*").where({"id": newLoc.id}).then(function (loc){ 
+          result.emitter.emit("new_location", loc)
+        });
+    });
+  dbEvents.locations.on('update', function(new_locs, old_locs) {
+    result.emitter.emit('update_location', [new_locs]);
+  });
+
+  return result;
 })();
+
+function enableLocation(loc) {
+  return db("locations").where("id", loc).update({
+    "enabled": true
+  }).return(null);
+}
+
+function deleteLocation(loc) {
+  return db("locations").where("id",loc).update({
+    "enabled": false
+  }).return(null);
+}
 
 function addLocation(loc) {
   db.insert({ "location": loc })
@@ -803,12 +829,39 @@ function selectEnabledLocations() {
 // topics
 //
 var topics = (function() {
-  return {
+  var result = {
     getAll: selectAllTopics,
     getEnabled: selectEnabledTopics,
-    addTopic: addTopic
+    addTopic: addTopic,
+    deleteTopic: deleteTopic,
+    enableTopic: enableTopic,
+    emitter: new EventEmitter(),
   };
+
+  dbEvents.topics.on('insert', function(newTopic) {
+        db("topics").select("*").where({"id": newTopic.id}).then(function (topic){ 
+          result.emitter.emit("new_topic", topic)
+        });
+    });
+  dbEvents.topics.on('update', function(new_topics, old_topics) {
+    result.emitter.emit('update_topic', [new_topics]);
+  });
+
+  return result;
+
 })();
+
+function enableTopic(topic) {
+  return db("topics").where("id", topic).update({
+    "enabled": true
+  }).return(null);
+}
+
+function deleteTopic(topic) {
+  return db("topics").where("id",topic).update({
+    "enabled": false
+  }).return(null);
+}
 
 function addTopic(topic) {
    db.insert({ "topic": topic })

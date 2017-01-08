@@ -94,6 +94,22 @@ module.exports.queue = function(io) {
       queue.meta.setTimeLimit(minutes, userid);
     });
 
+    socket.on("enable_topic", function (topic) {
+      queue.topics.enableTopic(topic);
+    });
+
+    socket.on("enable_location", function(loc) {
+      queue.locations.enableLocation(loc);
+    });
+
+    socket.on('delete_topic', function (topic) {
+      queue.topics.deleteTopic(topic);
+    });
+
+    socket.on("delete_location", function (location) {
+      queue.locations.deleteLocation(location);
+    });
+
     socket.on('add_topic', function (topic) {
       queue.topics.addTopic(topic);
     });
@@ -124,6 +140,14 @@ module.exports.queue = function(io) {
       if (typeof question !== 'undefined') {
         socket.emit('current_question', makeCaQuestion(question));
       }
+    });
+
+    queue.locations.getAll().then(function(locations) {
+      socket.emit('locations', makeMessage('data', locations));
+    });
+
+    queue.topics.getAll().then(function(topics) {
+      socket.emit('topics', makeMessage('data', topics));
     });
 
   };
@@ -167,6 +191,23 @@ module.exports.queue = function(io) {
         time_limit: meta.time_limit
       }]));
     });
+
+    queue.locations.emitter.on("new_location", function (loc) {
+      cas().emit("locations", makeMessage('data',loc));
+    });
+
+    queue.locations.emitter.on("update_location", function (loc) {
+      cas().emit("locations", makeMessage('data',loc));
+    });
+
+   queue.topics.emitter.on("new_topic", function (topic) {
+      cas().emit("topics", makeMessage('data',topic));
+    });
+
+    queue.topics.emitter.on("update_topic", function (topic) {
+      cas().emit("topics", makeMessage('data',topic));
+    });
+
 
   })();
 
@@ -274,6 +315,30 @@ module.exports.queue = function(io) {
     queue.questions.emitter.on('new_question', emitStudentMeta);
     queue.questions.emitter.on('question_frozen', emitStudentMeta);
     queue.questions.emitter.on('question_closed', emitStudentMeta);
+
+    queue.locations.emitter.on("new_location", function (loc) {
+      students().emit("locations", makeMessage('data',loc));
+    });
+
+    queue.locations.emitter.on("update_location", function (loc) {
+      if (!(loc[0].enabled)) {
+        students().emit("locations",makeMessage('delete', [loc[0].id] ));
+      } else {
+        students().emit("locations", makeMessage('data',loc));
+      }
+    });
+
+   queue.topics.emitter.on("new_topic", function (topic) {
+      students().emit("topics", makeMessage('data',topic));
+    });
+
+    queue.topics.emitter.on("update_topic", function (topic) {
+      if (!(topic[0].enabled)){
+        students().emit('topics', makeMessage('delete', [topic[0].id] ));
+      } else {
+        students().emit("topics", makeMessage('data',topic));
+      }
+    });
 
   })();
 
