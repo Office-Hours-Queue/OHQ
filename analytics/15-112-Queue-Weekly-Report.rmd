@@ -57,7 +57,7 @@ for (row_index in seq(1,nrow(tas))) {
 }
 formatted_result = data.frame(cbind(final_result[,1], final_result[,2], final_result[,3]))
 formatted_result = formatted_result[-1,]
-colnames(formatted_result) = c("Andrew ID", "Number of Questions", "Avg Answer Time")
+colnames(formatted_result) = c("Andrew ID", "Number of Questions", "Avg Answer Time (Mins)")
 datatable(formatted_result,options=list(order=list(list(2,'desc'))))
 ```
 
@@ -85,10 +85,21 @@ datatable(formatted_result,options=list(order=list(list(2,'desc'))))
 ###Semester Wait Time 
 ```{r,echo=FALSE,message=FALSE,warning=FALSE}
 build_wait_time_graph = function (questions,title) {
-  end_time = questions["off_time"]
   start_time = questions["on_time"]
-  wait_time_mins = (end_time - start_time) / 60
-  wait_times = data.frame(start_time, wait_time_mins)
+  wait_time = apply(questions[,c("off_time","on_time", "frozen_end_time", "frozen_time","help_time")],1, function (data) {
+    off_time = data[[1]]
+    on_time = data[[2]]
+    frozen_end_time = data[[3]]
+    frozen_time = data[[4]]
+    help_time = data[[5]]
+    if (!(is.na(frozen_time))) {
+      return((as.numeric(difftime(help_time,frozen_time))) + (as.numeric(difftime(frozen_time,on_time))))
+      
+    } else {
+      return(as.numeric(difftime(help_time,on_time)))
+    }
+  })
+  wait_times = data.frame(cbind(start_time,(wait_time)))
   colnames(wait_times) = c("start_time", "wait_time")
   ggplot(wait_times,aes(x=start_time,y=wait_time)) + geom_smooth() + xlab("Question Date") + ylab("Wait Time (mins)") + ggtitle(title) 
 }
@@ -96,7 +107,7 @@ build_wait_time_graph(questions,"Student Wait Time (Semester)")
 ```
 
 ###Weekly Wait Times 
-```{r,echo=FALSE,message=FALSE}
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
 build_wait_time_graph(questions_this_week,"Student Wait Time (This Week)")
 ```
 
