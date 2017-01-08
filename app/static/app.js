@@ -13,6 +13,7 @@ app.factory("$db",db);
  */
 app.controller("student_ctl",student_ctl);
 app.controller("ca_ctl",ca_ctl);
+app.controller("stats_ctl",stats_ctl);
 app.controller("login_ctl",login_ctl);
 app.controller("register_ctl",register_ctl);
 app.controller("admin_ctl",admin_ctl);
@@ -33,6 +34,10 @@ app.config(function($routeProvider) {
     $routeProvider.when("/ca", {
         templateUrl : "html/ca.html",
         controller: "ca_ctl"
+    });
+    $routeProvider.when("/ca/stats", {
+        templateUrl : "html/stats.html",
+        controller: "stats_ctl"
     });
     $routeProvider.when("/admin", {
         templateUrl : "html/admin.html",

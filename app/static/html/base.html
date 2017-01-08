@@ -17,6 +17,9 @@
     <li ng-if="user.role === 'ca'">
         <a href="/#/admin">Administration</a>
       </li>
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca/stats">Stats</a>
+      </li>
       <li ng-if="user.role === 'student'">
         <a href="/#/student">Home</a>
       </li>
@@ -36,6 +39,9 @@
       </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/admin">Administration</a>
+      </li>
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca/stats">Stats</a>
       </li>
       <li ng-if="user.role === 'student'">
         <a href="/#/student">Home</a>

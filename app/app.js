@@ -63,12 +63,14 @@ app.use('/', express.static('./static'));
 app.use('/api/login', require('./components/login').routes);
 app.use('/api/user', require('./components/user').routes );
 app.use('/api/validusers', require('./components/validusers').routes);
+app.use('/api/stats/timespent', require('./components/stats/timespent').routes);
 
 // hook up socket handlers
 require('./components/queue').io.queue(io.of('/queue'));
 require('./components/queue').io.history(io.of('/history'));
 require('./components/queue').io.waittime(io.of('/waittime'));
 require('./components/user').io(io.of('/user'));
+require('./components/stats/counts').io(io.of('/stats/counts'));
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 
