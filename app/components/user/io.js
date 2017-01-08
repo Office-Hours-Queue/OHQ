@@ -13,11 +13,11 @@ module.exports = function(io) {
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
     if (socket.request.user.role === 'ca') {
-      socket.join('ca');
+      socket.join('cas');
       socket.join('ca_' + socket.request.user.id);
       oncajoin(socket, userid);
     } else if (socket.request.user.role === 'student') {
-      socket.join('student');
+      socket.join('students');
       socket.join('student_' + socket.request.user.id);
       onstudentjoin(socket, userid);
     } else {
