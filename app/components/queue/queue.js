@@ -767,7 +767,7 @@ var locations = (function() {
     addLocation: addLocation,
     deleteLocation: deleteLocation,
     enableLocation: enableLocation,
-    emitter : new EventEmitter() 
+    emitter: new EventEmitter() 
   };
 
   dbEvents.locations.on('insert', function(newLoc) {

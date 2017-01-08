@@ -28,12 +28,12 @@
 			<div class="collapsible-body">
 
 			<ul class="collection">  
-				<li class="{{ t.enabled ? '' : 'grey lighten-4' }} collection-item" ng-repeat="t in $db.model.topics | orderBy : '-enabled' ">
-                                                    <span ng-if="t.enabled" class=" new badge red"  data-badge-caption="Disable" ng-click="select(t.topic, 'Topic', t.id)" ng-href="#modaldelete" modal ></span>
-                                                    <span ng-if="!(t.enabled)" class="new badge blue"  data-badge-caption="Enable"  ng-click="select(t.topic, 'Topic', t.id); enable_topic_or_loc()"></span>
+				<li class="{{ t.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="t in $db.model.topics | orderBy : 'topic'">
+                                                    <span ng-if="t.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(t.topic, 'Topic', t.id)" ng-href="#modaldelete" modal ></span>
+                                                    <span ng-if="!(t.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(t.topic, 'Topic', t.id); enable_topic_or_loc()"></span>
                                                    {{ t.topic}}
                                                 </li>
-				<a ng-href="#modal_add_topic" modal><li class="collection-item"><i class="tiny material-icons">add</i></li></a>
+				<a ng-href="#modal_add_topic" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add topic</li></a>
 			</ul>
 
 
@@ -44,12 +44,12 @@
 			<div class="collapsible-body">
 
                                     <ul class="collection">  
-                                        <li class="{{ l.enabled ? '' : 'grey lighten-4' }} collection-item" ng-repeat="l in $db.model.locations | orderBy : '-enabled' ">
-                                                                            <span ng-if="l.enabled" class=" new badge red"  data-badge-caption="Disable" ng-click="select(l.location, 'Location', l.id)" ng-href="#modaldelete" modal ></span>
-                                                                            <span ng-if="!(l.enabled)" class="new badge blue"  data-badge-caption="Enable"  ng-click="select(l.location, 'Location', l.id); enable_topic_or_loc()"></span>
+                                        <li class="{{ l.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="l in $db.model.locations | orderBy : 'location' ">
+                                                                            <span ng-if="l.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(l.location, 'Location', l.id)" ng-href="#modaldelete" modal ></span>
+                                                                            <span ng-if="!(l.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(l.location, 'Location', l.id); enable_topic_or_loc()"></span>
                                                                            {{ l.location}}
                                                                         </li>
-                                        <a ng-href="#modal_add_location" modal><li class="collection-item"><i class="tiny material-icons">add</i></li></a>
+                                        <a ng-href="#modal_add_location" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add location</li></a>
                                     </ul>
 			</div>
 		</li>

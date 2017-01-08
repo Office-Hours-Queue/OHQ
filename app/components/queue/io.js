@@ -95,7 +95,6 @@ module.exports.queue = function(io) {
     });
 
     socket.on("enable_topic", function (topic) {
-      debug("HERE",topic)
       queue.topics.enableTopic(topic);
     });
 
@@ -318,7 +317,7 @@ module.exports.queue = function(io) {
     queue.questions.emitter.on('question_closed', emitStudentMeta);
 
     queue.locations.emitter.on("new_location", function (loc) {
-    students().emit("locations", makeMessage('data',loc));
+      students().emit("locations", makeMessage('data',loc));
     });
 
     queue.locations.emitter.on("update_location", function (loc) {

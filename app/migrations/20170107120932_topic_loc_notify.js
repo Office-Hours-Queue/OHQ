@@ -2,7 +2,7 @@
 exports.up = function(knex, Promise) {
 
   var new_triggers =
-          '-- listen to the questions,users and queue_meta tables\n' +
+          '-- listen to the topic and location tables\n' +
           'DROP TRIGGER IF EXISTS\n' +
           '  topic_notify\n' +
           'ON\n' +
@@ -23,7 +23,7 @@ exports.up = function(knex, Promise) {
           'AFTER UPDATE OR INSERT OR DELETE ON\n' +
           '  locations\n' +
           'FOR EACH ROW EXECUTE PROCEDURE\n' +
-          '  table_update_notify();';;
+          '  table_update_notify();';
 
   return Promise.all([
     knex.raw(new_triggers)
