@@ -40,6 +40,7 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
           body: 'A new student is on the queue.',
           notifyClick: function() { window.focus(); },
           closeOnClick: true,
+          tag: '112_notification',
         })).show();
       }
     });
