@@ -1,5 +1,6 @@
 var db = require('../../db');
 var dbEvents = require('../../db-events');
+var users = require('../user/user');
 var EventEmitter = require('events');
 var validator = require('jsonschema').validate;
 var diff = require('deep-diff').diff;
@@ -130,7 +131,7 @@ var questions = (function() {
           emitEvent('question_update');
           break;
       }
-    }
+    };
 
   });
 
@@ -146,6 +147,18 @@ var questions = (function() {
     //happens on testing
     debug("Question deleted")
   });
+
+  // When a user is edited, re-send their question
+  dbEvents.users.on("update", function (new_user, old_user) {
+    if (new_user.first_name !== old_user.first_name && new_user.role === 'student') {
+      selectOpenQuestionUserId(new_user.id).then(function(question) {
+        if (question) {
+          result.emitter.emit('question_update', question);
+        }
+      });
+    }
+  });
+
 
   return result;
 })();
