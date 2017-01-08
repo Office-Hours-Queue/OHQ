@@ -77,6 +77,9 @@ module.exports = function(io) {
             id : new_user.id,
             first_name: new_user.first_name
           }]));
+          users.users.getActiveCas().then(function(activeCas) {
+            cas().emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
+          });
           break;
       }
     });
