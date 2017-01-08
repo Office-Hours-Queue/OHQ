@@ -79,6 +79,7 @@ for (row_index in seq(1,nrow(students))) {
 formatted_result = data.frame(cbind(final_result[,1], final_result[,2]))
 formatted_result = formatted_result[-1,]
 colnames(formatted_result) = c("Andrew ID", "Questions Asked")
+questions_per_student = formatted_result
 datatable(formatted_result,options=list(order=list(list(2,'desc'))))
 ```
 
@@ -142,6 +143,13 @@ build_minute_rule_graph(questions,"Minute Rule (Semester)")
 build_minute_rule_graph(questions_this_week, "Minute Rule (This Week)")
 ```
 
+###Questions Per Student 
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+colnames(questions_per_student) = c("Andrew ID", "q_asked")
+questions_per_student[,2] = as.numeric(questions_per_student[,2])
+ggplot(questions_per_student, aes(x=q_asked)) +  geom_histogram() + xlab("Questions Asked Per Student") + ylab("Count") + ggtitle("Questions Per Student")
+```
+
 ###Topics (Semester)
 ```{r,echo=FALSE,message=FALSE}
 build_topic_usage_graph = function (questions,title) {
@@ -183,9 +191,6 @@ build_location_usage_graph(questions, "Location Usage (Semester)")
 ```{r,echo=FALSE,message=FALSE}
 build_location_usage_graph(questions_this_week, "Location Usage (This Week)")
 ```
-
-
-
 
 
 
