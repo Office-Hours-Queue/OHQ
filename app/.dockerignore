@@ -1,0 +1,2 @@
+# ignore installed dependencies on host, if they exist
+node_modules

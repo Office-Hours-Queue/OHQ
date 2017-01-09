@@ -9,7 +9,7 @@ WORKDIR /home/app/queue
 # Copy over the package.json and install dependencies
 # first. As long as package.json doesn't changed, docker
 # will cache the result of npm install.
-COPY package.json npm-shrinkwrap.json .
+COPY package.json npm-shrinkwrap.json ./
 RUN chown -R app:app .
 USER app
 RUN npm install
