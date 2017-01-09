@@ -107,6 +107,11 @@
       "from": "basic-auth@>=1.0.3 <1.1.0",
       "resolved": "https://registry.npmjs.org/basic-auth/-/basic-auth-1.0.4.tgz"
     },
+    "batch": {
+      "version": "0.5.3",
+      "from": "batch@0.5.3",
+      "resolved": "https://registry.npmjs.org/batch/-/batch-0.5.3.tgz"
+    },
     "bcrypt": {
       "version": "0.8.7",
       "from": "bcrypt@>=0.8.7 <0.9.0",
@@ -1431,6 +1436,11 @@
       "version": "2.3.0",
       "from": "serve-favicon@>=2.3.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/serve-favicon/-/serve-favicon-2.3.0.tgz"
+    },
+    "serve-index": {
+      "version": "1.8.0",
+      "from": "serve-index@>=1.8.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/serve-index/-/serve-index-1.8.0.tgz"
     },
     "serve-static": {
       "version": "1.11.1",
