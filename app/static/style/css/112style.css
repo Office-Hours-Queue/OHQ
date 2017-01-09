@@ -232,3 +232,7 @@ footer.page-footer {
 .modal-fullheight {
   max-height: 90%;
 }
+
+.bold-text {
+  font-weight: 600;
+}
