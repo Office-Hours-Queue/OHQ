@@ -1,68 +1,77 @@
 <nav>
-	<div class="nav-wrapper" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]">
-		<div id="name_brand" class="brand-logo center">{{ user.first_name }}</div>
+  <div class="nav-wrapper light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]">
+    <div id="name_brand" class="brand-logo center">{{ user ? user.first_name : 'Connecting...' }}</div>
+
+    <ul class="left hide-on-med-and-down">
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca">Queue</a>
+      </li>
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/admin">Admin</a>
+      </li>
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca/stats">Stats</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="/#/student">Queue</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
+      </li>
+    </ul>
+
+    <ul class="right hide-on-med-and-down">
+      <li ng-if="user.role === 'ca'">
+        <a href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
+      </li>
+      <li>
+        <a href="/#/account">Account</a>
+      </li>
+      <li>
+        <a href="/api/login/endauth">Log out</a>
+      </li>
+    </ul>
     <ul class="right" ng-if="!$db.io_connected">
       <li>
         <a class="grey-text text-lighten-2">Connecting...</a>
       </li>
     </ul>
-		<a href="#!" data-activates="mobile-menu" class="button-collapse" sidenav closeonclick="true" menuwidth="175">
+
+    <a href="#!" data-activates="mobile-menu" class="button-collapse" sidenav closeonclick="true" menuwidth="175">
       <i class="material-icons">menu</i>
     </a>
-		<ul class="left hide-on-med-and-down">
-      <li>
-        <a href="/api/login/endauth">Log out</a>
+
+    <ul class="side-nav" id="mobile-menu">
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca">Queue</a>
       </li>
       <li ng-if="user.role === 'ca'">
-        <a href="/#/ca">Home</a>
-      </li>
-    <li ng-if="user.role === 'ca'">
-        <a href="/#/admin">Administration</a>
+        <a href="/#/admin">Admin</a>
       </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="/#/student">Home</a>
-      </li>
-      <li> 
-        <a href="/#/account">Account</a>
+        <a href="/#/student">Queue</a>
       </li>
       <li>
-        <a href="#modalhelp" ng-click="clicked_faq()"   modal>FAQ</a>
-      </li>
-      <li ng-if="user.role === 'student'">
-        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging Tips</a>
-      </li>
-    </ul>
-		<ul class="side-nav" id="mobile-menu">
-      <li ng-if="user.role === 'ca'">
-        <a href="/#/ca">Home</a>
-      </li>
-      <li ng-if="user.role === 'ca'">
-        <a href="/#/admin">Administration</a>
-      </li>
-      <li ng-if="user.role === 'ca'">
-        <a href="/#/ca/stats">Stats</a>
-      </li>
-      <li ng-if="user.role === 'student'">
-        <a href="/#/student">Home</a>
-      </li>
-      <li> 
         <a href="/#/account">Account</a>
       </li>
       <li>
         <a ng-click="clicked_faq()"  href="#modalhelp" modal>FAQ</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging Tips</a>
+        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
       <div class="divider"></div>
       <li>
         <a href="/api/login/endauth">Log out</a>
       </li>
     </ul>
-	</div>
+  </div>
 </nav>
 
 <div class="progress" style="margin: 0; background-color: transparent">
