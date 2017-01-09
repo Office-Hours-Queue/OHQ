@@ -39,28 +39,29 @@
               <div class="divider"></div>
               <form novalidate class="section">
                 <div class="row row-tight">
-                  <div class="input-field col s6">
-                    <select ng-model="selected.topic" material-select watch>
-                      <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
-                    </select>
-                    <label>Topic</label>
-                  </div>
-                  <div class="input-field col s6">
-                    <select ng-model="selected.location" material-select watch>
-                      <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{ l.location }}</option>
+                  <div class="input-field col s12 m6">
+                    <select ng-model="new_selected.location" material-select watch>
+                      <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model.locations | orderBy: 'location'">{{ l.location }}</option>
                     </select>
                     <label>Location</label>
+                  </div>
+                  <div class="input-field col s12 m6">
+                    <select ng-model="new_selected.topic" material-select watch>
+                      <option value="" disabled>What do you need help with?</option>
+                      <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model.topics | orderBy: 'topic'">{{ t.topic }}</option>
+                    </select>
+                    <label>Topic</label>
                   </div>
                 </div>
                 <div class="row row-tight">
                   <div class="input-field col s12">
-                    <textarea placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                    <textarea placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="new_selected.help_text"></textarea>
                     <label class="active">Question</label>
                   </div>
                 </div>
                 <div class="row row-tight">
                   <div class="col s12 center">
-                    <a id="submit_new_q" class="btn btn-full waves-effect waves-light green" ng-click="ask_question()">Ask</a>
+                    <a id="submit_new_q" class="btn btn-full z-depth-0" ng-class="{true: 'waves-effect waves-light green', false:'disabled'}[new_selected.topic !== '']" ng-click="ask_question()">Ask</a>
                   </div>
                 </div>
               </form>
@@ -150,23 +151,22 @@
           <h5>Edit question</h5>
           <form novalidate class="section">
             <div class="row row-tight">
-              <div class="input-field col s6">
-                <select ng-model="selected.topic" material-select watch>
-                  <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
-                </select>
-                <label>Topic</label>
-              </div>
-              <div class="input-field col s6">
-                <select class="" ng-model="selected.location" material-select watch>
-                  <option value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{l.location}}</option>
+              <div class="input-field col s12 m6">
+                <select class="" ng-model="edit_selected.location" material-select watch>
+                  <option value="{{ l.id }}" ng-repeat="l in $db.model.locations | orderBy:'location'">{{l.location}}</option>
                 </select>
                 <label>Location</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <select ng-model="edit_selected.topic" material-select watch>
+                  <option value="{{ t.id }}" ng-repeat="t in $db.model.topics | orderBy:'topic'">{{t.topic}}</option>
+                </select>
+                <label>Topic</label>
               </div>
             </div>
             <div class="row row-tight">
               <div class="input-field col s12">
-
-                <textarea id="edit_question_help_text" placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                <textarea id="edit_question_help_text" placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="edit_selected.help_text"></textarea>
                 <label class="active">Question</label>
               </div>
             </div>
@@ -197,7 +197,7 @@
             <div class="divider"></div>
             <h5>How can I unfreeze my question?</h5>
             <p>Hit the unfreeze button: <i class="tiny material-icons grey-text lighten-1">play_arrow</i></p>
-            <p>Otherwise, you'll be automatically unfrozen after FREEZE_TIME minutes.</p>
+            <p>Otherwise, you'll be automatically unfrozen after 10 minutes.</p>
             <div class="divider"></div>
             <h5>What does "the queue is closed" mean?</h5>
             <p>If the queue is closed, that means you can't ask a question. If the queue is closed while you have a question on the queue, your question will not be deleted. </p>
