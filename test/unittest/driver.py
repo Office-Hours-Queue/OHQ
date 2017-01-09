@@ -307,22 +307,6 @@ class CA(User):
     def __init__(self):
         super().__init__("ca")
 
-    def go_online(self,check_fn=None):
-        """Mark the CA as online."""
-        go_online_btn = self.driver.find_element_by_id("go_online_btn")
-        go_online_btn.click()
-        time.sleep(1)
-
-        if (check_fn != None): check_fn(self)
-
-    def go_offline(self,check_fn=None):
-        """Mark the CA as offline."""
-        go_offline_btn = self.driver.find_element_by_id("go_offline_btn")
-        go_offline_btn.click()
-        time.sleep(1)
-
-        if (check_fn != None): check_fn(self)
-
     def close_queue(self,check_fn=None):
         """Have the CA close the queue. """
         queue_off = self.driver.find_element_by_id("close_queue_btn")
