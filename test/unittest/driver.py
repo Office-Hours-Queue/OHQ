@@ -122,10 +122,11 @@ class User(object):
     def register(self,check_fn=None):
         """Registers the user."""
         self.driver.get(User.Config["queue_url"])
-        no_apps = self.driver.find_element_by_partial_link_text("Don't have Google Apps? Click here.")
+        no_apps = self.driver.find_element_by_id("no_google_login")
+
         no_apps.click()
         time.sleep(1)
-        register = self.driver.find_element_by_partial_link_text("Register")
+        register = self.driver.find_element_by_partial_link_text("register")
         register.click()
         time.sleep(1)
 
@@ -147,7 +148,7 @@ class User(object):
         self.driver.get(User.Config["queue_url"])
 
         #click no google apps modal
-        no_apps = self.driver.find_element_by_partial_link_text("Don't have Google Apps? Click here.")
+        no_apps = self.driver.find_element_by_id("no_google_login")
         no_apps.click()
         time.sleep(1)
 
@@ -175,7 +176,7 @@ class User(object):
         logout.click()
         time.sleep(1)
         lets_begin = self.driver.find_element_by_id('lets_begin')
-        assert("BEGIN" in lets_begin.text)
+        assert("LOG" in lets_begin.text)
         if (check_fn != None): check_fn(self)
 
     def on_ca_page(self):
