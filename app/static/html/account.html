@@ -21,14 +21,14 @@
             </div>
             <div class="row row-tight center-align">
               <div class="col s12">
-                <h5>
+                <h5 id="user_info" >
                   {{ user.first_name }} {{ user.last_name }}
                   <br />
                   <small>{{ user.email }}</small>
                   <br />
                   <small>15-112 {{ user.role === 'ca' ? 'TA' : 'student' }}</small>
                 </h5>
-                <a href="#modaleditname" modal>Edit nickname</a>
+                <a id="edit_name_link" href="#modaleditname" modal>Edit nickname</a>
               </div>
             </div>
           </div>
@@ -47,7 +47,7 @@
         <div class="row">
           <div class="col s12 m6">
             <div input-field>
-              <input type="text" ng-model="new_user.first_name" ng-change="new_user.first_name = fix_caps(new_user.first_name)" required></input>
+              <input id="edit_nick_name_input" type="text" ng-model="new_user.first_name" ng-change="new_user.first_name = fix_caps(new_user.first_name)" required></input>
               <label>Nickname</label>
             </div>
           </div>
@@ -66,7 +66,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <a class="btn-flat" ng-class="{'waves-effect waves-green': new_user.first_name, 'disabled': !new_user.first_name}" ng-click="update_first_name()">Save</a>
+        <a id="edit_save" class="btn-flat" ng-class="{'waves-effect waves-green': new_user.first_name, 'disabled': !new_user.first_name}" ng-click="update_first_name()">Save</a>
         <a class="modal-action modal-close waves-effect btn-flat">Cancel</a>
       </div>
     </div>

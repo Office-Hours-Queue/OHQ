@@ -18,101 +18,104 @@ from driver import *
 #         ca.logout()
 #         ca.tearDown()
 
-class TestRegister(unittest.TestCase):
-    """Test registration."""
+# class TestRegister(unittest.TestCase):
+#     """Test registration."""
 
-    def test_register_student_then_login(self):
-        student = Student()
-        student.register()
-        student.login()
-        student.logout()
-        student.tearDown()
+#     def test_register_student_then_login(self):
+#         student = Student()
+#         student.register()
+#         student.login()
+#         student.logout()
+#         student.tearDown()
       
-    def test_register_ca_then_login(self):
-        ca = CA()
-        ca.register()
-        ca.login()
-        ca.logout()
-        ca.tearDown()
+#     def test_register_ca_then_login(self):
+#         ca = CA()
+#         ca.register()
+#         ca.login()
+#         ca.logout()
+#         ca.tearDown()
 
-    def test_register_andrew_id_used(self):
-        student = Student()
-        student.register()
-        student.register()
-        student.check_toast("Andrew ID already registered.")
-        student.tearDown()
+#     def test_register_andrew_id_used(self):
+#         student = Student()
+#         student.register()
+#         student.register()
+#         student.check_toast("Andrew ID already registered.")
+#         student.tearDown()
 
-    def test_register_not_in_course(self):
-        student = Student()
-        student.info["andrew_id"] = "notincourse"
-        student.register()
-        student.check_toast("Your Andrew ID is not marked as in 15-112.")
-        student.tearDown()
+#     def test_register_not_in_course(self):
+#         student = Student()
+#         student.info["andrew_id"] = "notincourse"
+#         student.register()
+#         student.check_toast("Your Andrew ID is not marked as in 15-112.")
+#         student.tearDown()
 
-    def test_register_passwords_dont_match(self):
-        student = Student()
-        student.info["conf_password"] = "badpass"
-        student.register()
-        student.check_toast("Passwords did not match!")
-        student.tearDown()
+#     def test_register_passwords_dont_match(self):
+#         student = Student()
+#         student.info["conf_password"] = "badpass"
+#         student.register()
+#         student.check_toast("Passwords did not match!")
+#         student.tearDown()
 
-    def test_register_invalid_email(self):
-        student = Student()
-        student.info["email"] = "bademail"
-        student.register()
-        student.check_toast("Invalid email.")
-        student.tearDown()
+#     def test_register_invalid_email(self):
+#         student = Student()
+#         student.info["email"] = "bademail"
+#         student.register()
+#         student.check_toast("Invalid email.")
+#         student.tearDown()
 
-    def test_register_incorrect_reg_code(self):
-        student = Student()
-        student.info["registration_code"] += "woo" 
-        student.register()
-        student.check_toast("Invalid registration code.")
-        student.tearDown()
+#     def test_register_incorrect_reg_code(self):
+#         student = Student()
+#         student.info["registration_code"] += "woo" 
+#         student.register()
+#         student.check_toast("Invalid registration code.")
+#         student.tearDown()
 
-# class TestStudent(unittest.TestCase):
-#     """Test the student page."""
+class TestStudent(unittest.TestCase):
+    """Test the student page."""
 
-#     def setUp(self):
-#         self.student = Student()
-#         self.student.register()
-#         self.student.login()
-#         self.ca = CA()
-#         self.ca.register()
-#         self.ca.login()
+    def setUp(self):
+        self.student = Student()
+        self.student.register()
+        self.student.login()
+        self.ca = CA()
+        self.ca.register()
+        self.ca.login()
 
-#     def tearDown(self):
-#         self.student.logout()
-#         self.ca.logout()
-#         self.ca.tearDown()
-#         self.student.tearDown()
+    def tearDown(self):
+        self.student.logout()
+        self.ca.logout()
+        self.ca.tearDown()
+        self.student.tearDown()
 
-#     def test_ask_edit_freeze_delete_question(self):
-#         # #ask, edit
-#         self.student.ask_question()
-#         self.student.edit_question()
+    def test_account_page_student(self): 
+        self.student.test_account_page()
 
-#         #freeze
-#         self.student.freeze_question()
-#         self.student.unfreeze_question()
+    def test_ask_edit_freeze_delete_question(self):
+        # #ask, edit
+        self.student.ask_question()
+        self.student.edit_question()
 
-#         #delete
-#         student2 = Student()
-#         student2.register()
-#         student2.login()
-#         student2.ask_question()
-#         pos = student2.get_pos().strip()
-#         assert(pos.isdigit())
-#         n = int(pos)
-#         self.student.delete_question()
-#         time.sleep(1)
-#         pos2 = student2.get_pos().strip()
-#         assert(pos2.isdigit())
+        #freeze
+        self.student.freeze_question()
+        self.student.unfreeze_question()
 
-#         assert(n - 1 == int(pos2))
+        #delete
+        student2 = Student()
+        student2.register()
+        student2.login()
+        student2.ask_question()
+        pos = student2.get_pos().strip()
+        assert(pos.isdigit())
+        n = int(pos)
+        self.student.delete_question()
+        time.sleep(1)
+        pos2 = student2.get_pos().strip()
+        assert(pos2.isdigit())
 
-#         student2.logout()
-#         student2.tearDown()
+        assert(n - 1 == int(pos2))
+
+        student2.logout()
+        student2.tearDown()
 
 # class TestCA(unittest.TestCase):
 #     """Test the CA Page"""

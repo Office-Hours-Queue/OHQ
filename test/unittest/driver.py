@@ -194,6 +194,30 @@ class User(object):
         """Run arbitrary selenium code on the web page."""
         run_fn(self)
 
+    def test_account_page(self):
+        """Test the account information page"""
+        self.driver.get(User.Config["queue_url"]+"/#/account")
+        time.sleep(1)
+
+        user_info = self.driver.find_element_by_id("user_info").text
+        assert(self.info["email"] in user_info)
+        assert(self.info["first_name"] in user_info) 
+        assert(self.info["last_name"] in user_info)
+
+        edit_link = self.driver.find_element_by_id("edit_name_link")
+        edit_link.click()
+        time.sleep(1)
+
+        edit_input = self.driver.find_element_by_id("edit_nick_name_input")
+        edit_input.send_keys("123")
+
+        save_button = self.driver.find_element_by_id("edit_save")
+        save_button.click()
+
+        time.sleep(1)
+        user_info = self.driver.find_element_by_id("user_info").text
+        assert("123" in user_info)
+
 class Student(User): 
     """Represents a User with role 'student'."""
     def __init__(self):
@@ -261,7 +285,7 @@ class Student(User):
         toggle_freeze.click()
         time.sleep(1)
         freeze_text = self.driver.find_element_by_id("question_status").text
-        assert(freeze_text == "frozen")
+        assert("unfreezing" in freeze_text)
 
         if (check_fn != None): check_fn(self)
 
