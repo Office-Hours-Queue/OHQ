@@ -89,7 +89,7 @@
               </h5>
               <p name="active-question-field" ng-if="q.help_text">{{ q.topic }}: {{ q.help_text }}</p>
               <p name="active-question-field" ng-if="!q.help_text">{{ q.topic }}: <em>No additional details.</em></p>
-              <p name="active-question-field" class="grey-text"><em>Waiting since <span am-time-ago="q.on_time"></span></em></p>
+              <p name="active-question-field" class="grey-text"><em>Waiting for <span am-time-ago="q.on_time" am-without-suffix="true"></span></em></p>
             </li>
           </ul>
         </div>
@@ -138,7 +138,7 @@
           <p ng-if="!$db.model.current_question[0].help_text">{{ $db.model.current_question[0].topic }}: <em>No additional details.</em></p>
           <p class="grey-text">
             <em>
-              Waited for {{ $db.model.current_question[0].help_time | amDifference : $db.model.current_question[0].on_time | amDurationFormat }}.
+              Waited for <span am-time-ago="$db.model.current_question[0].on_time" am-from="$db.model.current_question[0].help_time" am-without-suffix="true"></span>
             </em>
             <br />
             <em>
@@ -151,10 +151,10 @@
       <div class="divider"></div>
       <div class="modal-footer">
           <div class="row row-tight" style="margin-left: -6px; margin-right: -6px;">
-            <div class="col m4 s12">
+            <div class="col m4 s6">
               <a id="kick_q" ng-click="$db.kick_question()" class="btn btn-full waves-effect waves-light red lighten-1 z-depth-0">Kick</a>
             </div>
-            <div class="col m4 s12">
+            <div class="col m4 s6">
               <a id="return_q" ng-click="$db.return_question()" class="btn btn-full waves-effect waves-light orange lighten-1 z-depth-0">Return</a>
             </div>
             <div class="col m4 s12">

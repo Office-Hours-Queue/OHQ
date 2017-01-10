@@ -56,3 +56,10 @@ app.config(function($routeProvider) {
     $routeProvider.when("/500", { templateUrl : "html/errors/500.html" });
 });
 
+
+/*
+ * Setup module parameters
+ */
+app.constant('amTimeAgoConfig', {
+  titleFormat: 'ddd, MMM D [at] h:mm a',
+});

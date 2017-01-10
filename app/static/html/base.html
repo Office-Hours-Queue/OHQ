@@ -1,74 +1,85 @@
 <nav>
-	<div class="nav-wrapper light-blue darken-3">
-		<div id="name_brand" class="brand-logo center">{{ user.first_name }}</div>
-		<a href="#!" data-activates="mobile-menu" class="button-collapse" sidenav closeonclick="true" menuwidth="175">
-      <i class="material-icons">menu</i>
-    </a>
-		<ul class="right">
-			<a class="{{ $db.io_connected ? 'white-text' : 'red-text text-darken-1' }}">{{ $db.io_connected ? 'Connected' : 'Disconnected' }}</a>
-		</ul>
-		<ul class="left hide-on-med-and-down">
-      <li>
-        <a href="/api/login/endauth">Log out</a>
+  <div class="nav-wrapper light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]">
+    <div id="name_brand" class="brand-logo center">{{ user ? user.first_name : 'Connecting...' }}</div>
+
+    <ul class="left hide-on-med-and-down">
+      <li ng-if="user.role === 'ca'">
+        <a href="/#/ca">Queue</a>
       </li>
       <li ng-if="user.role === 'ca'">
-        <a href="/#/ca">Home</a>
-      </li>
-    <li ng-if="user.role === 'ca'">
-        <a href="/#/admin">Administration</a>
+        <a href="/#/admin">Admin</a>
       </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="/#/student">Home</a>
+        <a href="/#/student">Queue</a>
       </li>
-      <li> 
+      <li ng-if="user.role === 'student'">
+        <a href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
+      </li>
+      <li ng-if="user.role === 'student'">
+        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
+      </li>
+    </ul>
+
+    <ul class="right hide-on-med-and-down">
+      <li ng-if="user.role === 'ca'">
+        <a href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
+      </li>
+      <li>
         <a href="/#/account">Account</a>
       </li>
       <li>
-        <a href="#modalhelp" ng-click="clicked_faq()"   modal>FAQ</a>
-      </li>
-      <li ng-if="user.role === 'student'">
-        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging Tips</a>
+        <a href="/api/login/endauth">Log out</a>
       </li>
     </ul>
-		<ul class="side-nav" id="mobile-menu">
+    <ul class="right" ng-if="!$db.io_connected">
+      <li>
+        <a class="grey-text text-lighten-2">Connecting...</a>
+      </li>
+    </ul>
+
+    <a href="#!" data-activates="mobile-menu" class="button-collapse" sidenav closeonclick="true" menuwidth="175">
+      <i class="material-icons">menu</i>
+    </a>
+
+    <ul class="side-nav" id="mobile-menu">
       <li ng-if="user.role === 'ca'">
-        <a href="/#/ca">Home</a>
+        <a href="/#/ca">Queue</a>
       </li>
       <li ng-if="user.role === 'ca'">
-        <a href="/#/admin">Administration</a>
+        <a href="/#/admin">Admin</a>
       </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="/#/student">Home</a>
+        <a href="/#/student">Queue</a>
       </li>
-      <li> 
+      <li>
         <a href="/#/account">Account</a>
       </li>
       <li>
         <a ng-click="clicked_faq()"  href="#modalhelp" modal>FAQ</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging Tips</a>
+        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
       <div class="divider"></div>
       <li>
         <a href="/api/login/endauth">Log out</a>
       </li>
     </ul>
-	</div>
+  </div>
 </nav>
 
-<div data-block="content">
-
-	
+<div class="progress" style="margin: 0; background-color: transparent">
+  <div class="indeterminate" ng-if="!$db.io_connected"></div>
 </div>
 
-
+<div data-block="content">
+</div>
 
  <!-- FAQ Modal -->
 <div ng-if="user.role === 'ca'" class="modal modal-fixed-footer container" id="modalhelp">
@@ -97,16 +108,60 @@
   </div>
 </div>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-83288392-1', 'auto');
-  ga('send', 'pageview');
+<!-- FAQ Modal (student) -->
+<div ng-if="user.role === 'student'" class="modal modal-fixed-footer container" id="modalhelp">
+  <div class="modal-content">
+    <h4>FAQ</h4>
+    <div class="divider"></div>
+    <div class="section">
+      <h5>How does freezing work?</h5>
+      <p>When you freeze your question, you'll keep your position on the queue, but a CA won't answer your question until you're unfrozen.</p>
+      <p>It's useful when you're near the front of the queue, but need to go to the bathroom or get some food.</p>
+      <div class="divider"></div>
+      <h5>How many times can I freeze my question?</h5>
+      <p>Up to once per question.</p>
+      <div class="divider"></div>
+      <h5>How do I freeze my question?</h5>
+      <p>Hit the freeze button: <i class="tiny material-icons grey-text lighten-1">pause</i></p>
+      <div class="divider"></div>
+      <h5>How can I unfreeze my question?</h5>
+      <p>Hit the unfreeze button: <i class="tiny material-icons grey-text lighten-1">play_arrow</i></p>
+      <p>Otherwise, you'll be automatically unfrozen after 10 minutes.</p>
+      <div class="divider"></div>
+      <h5>What does "the queue is closed" mean?</h5>
+      <p>If the queue is closed, that means you can't ask a question. If the queue is closed while you have a question on the queue, your question will not be deleted. </p>
+      <div class="divider"></div>
+      <h5>Why was my question kicked?</h5>
+      This means that a TA could not find you. When a TA tries to find you and fails, they will first freeze your question if it hasn't been frozen once already. The second time (or if you already used a freeze), your question gets removed from the queue. If you think you were kicked by accident, please see a TA.  
+    </div>
+  </div>
+  <div class="modal-footer">
+      <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+  </div>
+</div>
 
-</script>
+<!-- Debugging Tips Modal -->
+<div ng-if="user.role === 'student'" class="modal modal-fixed-footer container" id="modaltips">
+  <div class="modal-content">
+    <h4>Debugging Tips</h4>
+    <div class="divider"></div>
+    <div class="section">
+      <h5>Identify a test case that triggers the problem</h5>
+      <p>
+            The first thing you need to do is identify the smallest possible test-case that triggers a bug or error. This will allow you to isolate the issue and really focus on the issue in the context of a concrete example. Comment out all other things, run your code, and then trace through your code on the single test case to figure out where your code is diverging from what you expect it to do.
+      </p>
 
-
-
+      <div class="divider"></div>
+      <h5>Use print statements</h5>
+      <p>
+Almost every TA will ask you if you've added print statements to your code. Put print statements all over your code to (a) figure out the value of variables and see if they are what you expect or (b) see if your code executes far enough to get to the print statement or (c) etc. </p>
+      <div class="divider"></div>
+      <h5>Explain the logic of your code to a friend or a duck</h5>
+Have you ever explained your code to a TA and then instantly realized what the issue was? This is called rubber-ducky debugging (coined term). Basically, explain to yourself or your friend or a rubber duck what your code is doing and while doing that you will realize issues you hadn’t thought of when you were staring at you code. 
+    </div>
+  </div>
+  <div class="modal-footer">
+      <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
+  </div>
+</div>

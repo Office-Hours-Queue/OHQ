@@ -39,28 +39,29 @@
               <div class="divider"></div>
               <form novalidate class="section">
                 <div class="row row-tight">
-                  <div class="input-field col s6">
-                    <select ng-model="selected.topic" material-select watch>
-                      <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
-                    </select>
-                    <label>Topic</label>
-                  </div>
-                  <div class="input-field col s6">
-                    <select ng-model="selected.location" material-select watch>
-                      <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{ l.location }}</option>
+                  <div class="input-field col s12 m6">
+                    <select ng-model="new_selected.location" material-select watch>
+                      <option name="location_option" value="{{ l.id }}" ng-repeat="l in $db.model.locations | orderBy: 'location'">{{ l.location }}</option>
                     </select>
                     <label>Location</label>
+                  </div>
+                  <div class="input-field col s12 m6">
+                    <select ng-model="new_selected.topic" material-select watch>
+                      <option value="" disabled>What do you need help with?</option>
+                      <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model.topics | orderBy: 'topic'">{{ t.topic }}</option>
+                    </select>
+                    <label>Topic</label>
                   </div>
                 </div>
                 <div class="row row-tight">
                   <div class="input-field col s12">
-                    <textarea placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                    <textarea placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="new_selected.help_text"></textarea>
                     <label class="active">Question</label>
                   </div>
                 </div>
                 <div class="row row-tight">
                   <div class="col s12 center">
-                    <a id="submit_new_q" class="btn btn-full waves-effect waves-light green" ng-click="ask_question()">Ask</a>
+                    <a id="submit_new_q" class="btn btn-full z-depth-0" ng-class="{true: 'waves-effect waves-light green', false:'disabled'}[new_selected.topic !== '']" ng-click="ask_question()">Ask</a>
                   </div>
                 </div>
               </form>
@@ -150,23 +151,22 @@
           <h5>Edit question</h5>
           <form novalidate class="section">
             <div class="row row-tight">
-              <div class="input-field col s6">
-                <select ng-model="selected.topic" material-select watch>
-                  <option value="{{ t.id }}" ng-repeat="t in $db.model.topics">{{t.topic}}</option>
-                </select>
-                <label>Topic</label>
-              </div>
-              <div class="input-field col s6">
-                <select class="" ng-model="selected.location" material-select watch>
-                  <option value="{{ l.id }}" ng-repeat="l in $db.model.locations">{{l.location}}</option>
+              <div class="input-field col s12 m6">
+                <select class="" ng-model="edit_selected.location" material-select watch>
+                  <option value="{{ l.id }}" ng-repeat="l in $db.model.locations | orderBy:'location'">{{l.location}}</option>
                 </select>
                 <label>Location</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <select ng-model="edit_selected.topic" material-select watch>
+                  <option value="{{ t.id }}" ng-repeat="t in $db.model.topics | orderBy:'topic'">{{t.topic}}</option>
+                </select>
+                <label>Topic</label>
               </div>
             </div>
             <div class="row row-tight">
               <div class="input-field col s12">
-
-                <textarea id="edit_question_help_text" placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="selected.help_text"></textarea>
+                <textarea id="edit_question_help_text" placeholder="{{ example_question }}" id="q_desc" class="materialize-textarea" ng-model="edit_selected.help_text"></textarea>
                 <label class="active">Question</label>
               </div>
             </div>
@@ -176,63 +176,6 @@
               </div>
             </div>
           </form>
-        </div>
-      </div>
-
-      <!-- FAQ Modal -->
-      <div class="modal modal-fixed-footer container" id="modalhelp">
-        <div class="modal-content">
-          <h4>FAQ</h4>
-          <div class="divider"></div>
-          <div class="section">
-            <h5>How does freezing work?</h5>
-            <p>When you freeze your question, you'll keep your position on the queue, but a CA won't answer your question until you're unfrozen.</p>
-            <p>It's useful when you're near the front of the queue, but need to go to the bathroom or get some food.</p>
-            <div class="divider"></div>
-            <h5>How many times can I freeze my question?</h5>
-            <p>Up to once per question.</p>
-            <div class="divider"></div>
-            <h5>How do I freeze my question?</h5>
-            <p>Hit the freeze button: <i class="tiny material-icons grey-text lighten-1">pause</i></p>
-            <div class="divider"></div>
-            <h5>How can I unfreeze my question?</h5>
-            <p>Hit the unfreeze button: <i class="tiny material-icons grey-text lighten-1">play_arrow</i></p>
-            <p>Otherwise, you'll be automatically unfrozen after FREEZE_TIME minutes.</p>
-            <div class="divider"></div>
-            <h5>What does "the queue is closed" mean?</h5>
-            <p>If the queue is closed, that means you can't ask a question. If the queue is closed while you have a question on the queue, your question will not be deleted. </p>
-            <div class="divider"></div>
-            <h5>Why was my question kicked?</h5>
-            This means that a TA could not find you. When a TA tries to find you and fails, they will first freeze your question if it hasn't been frozen once already. The second time (or if you already used a freeze), your question gets removed from the queue. If you think you were kicked by accident, please see a TA.  
-          </div>
-        </div>
-        <div class="modal-footer">
-            <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
-        </div>
-      </div>
-
-      <!-- Debugging Tips Modal -->
-      <div class="modal modal-fixed-footer container" id="modaltips">
-        <div class="modal-content">
-          <h4>Debugging Tips</h4>
-          <div class="divider"></div>
-          <div class="section">
-            <h5>Identify a test case that triggers the problem</h5>
-            <p>
-                  The first thing you need to do is identify the smallest possible test-case that triggers a bug or error. This will allow you to isolate the issue and really focus on the issue in the context of a concrete example. Comment out all other things, run your code, and then trace through your code on the single test case to figure out where your code is diverging from what you expect it to do.
-            </p>
-
-            <div class="divider"></div>
-            <h5>Use print statements</h5>
-            <p>
-Almost every TA will ask you if you've added print statements to your code. Put print statements all over your code to (a) figure out the value of variables and see if they are what you expect or (b) see if your code executes far enough to get to the print statement or (c) etc. </p>
-            <div class="divider"></div>
-            <h5>Explain the logic of your code to a friend or a duck</h5>
-Have you ever explained your code to a TA and then instantly realized what the issue was? This is called rubber-ducky debugging (coined term). Basically, explain to yourself or your friend or a rubber duck what your code is doing and while doing that you will realize issues you hadn’t thought of when you were staring at you code. 
-          </div>
-        </div>
-        <div class="modal-footer">
-            <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
         </div>
       </div>
 
