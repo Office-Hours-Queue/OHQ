@@ -1,6 +1,7 @@
 var http = require('http');
 var express = require('express');
 var socketio = require('socket.io');
+var serveIndex = require('serve-index');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -71,6 +72,11 @@ require('./components/queue').io.history(io.of('/history'));
 require('./components/queue').io.waittime(io.of('/waittime'));
 require('./components/user').io(io.of('/user'));
 require('./components/stats/counts').io(io.of('/stats/counts'));
+
+// super-secret stats
+app.use('/analytics', auth.isAdmin);
+app.use('/analytics', express.static(path.join(__dirname, '../analytics')));
+app.use('/analytics', serveIndex(path.join(__dirname, '../analytics')));
 
 // custom error handlers (404, 500, ...) should go here when they're ready
 

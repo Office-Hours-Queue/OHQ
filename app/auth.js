@@ -213,10 +213,19 @@ function ioHasRole(role) {
   };
 }
 
+function isAdmin(req, res, next) {
+  if (req.isAuthenticated() && config.ADMIN_USERS.includes(req.user.andrew_id)) {
+    next();
+  } else {
+    res.redirect('/');
+  }
+}
+
 module.exports = {
   passport: passport,
   isAuthenticated: isAuthenticated,
   hasRole: hasRole,
   ioIsAuthenticated: ioIsAuthenticated,
-  ioHasRole: ioHasRole
+  ioHasRole: ioHasRole,
+  isAdmin: isAdmin
 };

@@ -8,7 +8,7 @@
     "start": "DEBUG=app:* NODE_ENV=development supervisor ./bin/www",
     "seed": "knex seed:run",
     "migrate": "knex migrate:latest",
-    "start-docker": "./bin/prestart_checks && ./bin/www",
+    "start-docker": "knex migrate:latest && ./bin/prestart_checks && ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -46,6 +46,7 @@
     "passport-local": "^1.0.0",
     "pg": "^6.0.2",
     "serve-favicon": "^2.3.0",
+    "serve-index": "^1.8.0",
     "socket.io": "^1.4.8"
   },
   "devDependencies": {

@@ -1,0 +1,207 @@
+---
+title: "15-112 Queue Weekly Report"
+output: html_document
+---
+
+```{r,echo=FALSE,include=FALSE}
+library(ggplot2)
+library(RPostgreSQL)
+library(plyr)
+library(knitr)
+library(DT)
+```
+
+```{r,echo=FALSE,message=FALSE}
+#connect to db 
+driver = dbDriver("PostgreSQL")
+conn = dbConnect(driver, dbname="queue2", host="localhost",port=5432, user="queue",password="supersecret")
+#get questions
+questions_query = dbSendQuery(conn,"select * from questions")
+questions = fetch(questions_query,n=-1)
+#get locations
+locations_query = dbSendQuery(conn,"select * from locations")
+locations = fetch(locations_query,n=-1)
+#get topics
+topics_query = dbSendQuery(conn,"select * from topics")
+topics = fetch(topics_query,n=-1)
+#get users
+users_query = dbSendQuery(conn,"select * from users")
+users = fetch(users_query, n=-1)
+```
+
+```{r,include=FALSE}
+#Filter questions by one week back 
+days_back = 50 #at 50 for demo purposes  
+one_week_ago = Sys.time() - 60 * 60 * 24 * days_back #currently at 50 days back for demo purposes
+this_week_idxs = which(questions["on_time"][,1] > one_week_ago)
+questions_this_week = questions[this_week_idxs,]
+```
+
+###TA Statistics 
+```{r,echo=FALSE,warning=FALSE}
+ta_indexs = which(users["role"] == "ca")
+tas = users[ta_indexs,]
+final_result = c("Andrew ID", "Questions Answered", "Avg Answer Time")
+for (row_index in seq(1,nrow(tas))) {
+  ta_id = tas[row_index,1]
+  ta_andrew_id = tas[row_index, 2]
+  ta_question_indxs = which(questions["ca_user_id"][,1] == ta_id)
+  ta_questions = questions[ta_question_indxs,]
+  n_questions = nrow(ta_questions)
+  ta_questions_clean_idx = which(ta_questions["off_reason"][,1] == "normal")
+  ta_questions_clean = ta_questions[ta_questions_clean_idx,]
+  response_times = (ta_questions_clean["off_time"] - ta_questions_clean["help_time"]) / 60
+  avg_response_time = mean(response_times[,1])
+  result = c(ta_andrew_id,n_questions, avg_response_time)
+  final_result = rbind(final_result,result)
+}
+formatted_result = data.frame(cbind(final_result[,1], final_result[,2], final_result[,3]))
+formatted_result = formatted_result[-1,]
+colnames(formatted_result) = c("Andrew ID", "Number of Questions", "Avg Answer Time (Mins)")
+datatable(formatted_result,options=list(order=list(list(2,'desc'))))
+```
+
+
+###Student Statistics 
+```{r,echo=FALSE,warning=FALSE}
+student_indexs = which(users["role"] == "student")
+students = users[student_indexs,]
+final_result = c("Andrew ID", "Questions Asked")
+for (row_index in seq(1,nrow(students))) {
+  student_id = students[row_index,1]
+  student_andrew_id = students[row_index,2]
+  student_question_indxs = which(questions["student_user_id"][,1] == student_id)
+  student_questions = questions[student_question_indxs,]
+  n_questions = nrow(student_questions)
+  result = c(student_andrew_id,n_questions)
+  final_result = rbind(final_result,result)
+}
+formatted_result = data.frame(cbind(final_result[,1], final_result[,2]))
+formatted_result = formatted_result[-1,]
+colnames(formatted_result) = c("Andrew ID", "Questions Asked")
+questions_per_student = formatted_result
+datatable(formatted_result,options=list(order=list(list(2,'desc'))))
+```
+
+###Semester Wait Time 
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+build_wait_time_graph = function (questions,title) {
+  start_time = questions["on_time"]
+  wait_time = apply(questions[,c("off_time","on_time", "frozen_end_time", "frozen_time","help_time")],1, function (data) {
+    off_time = data[[1]]
+    on_time = data[[2]]
+    frozen_end_time = data[[3]]
+    frozen_time = data[[4]]
+    help_time = data[[5]]
+    if (!(is.na(frozen_time))) {
+      return((as.numeric(difftime(help_time,frozen_time))) + (as.numeric(difftime(frozen_time,on_time))))
+      
+    } else {
+      return(as.numeric(difftime(help_time,on_time)))
+    }
+  })
+  wait_times = data.frame(cbind(start_time,(wait_time)))
+  colnames(wait_times) = c("start_time", "wait_time")
+  ggplot(wait_times,aes(x=start_time,y=wait_time)) + geom_smooth() + xlab("Question Date") + ylab("Wait Time (mins)") + ggtitle(title) 
+}
+build_wait_time_graph(questions,"Student Wait Time (Semester)")
+```
+
+###Weekly Wait Times 
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+build_wait_time_graph(questions_this_week,"Student Wait Time (This Week)")
+```
+
+###Semester Question Load 
+```{r,echo=FALSE,message=FALSE}
+build_question_load_graph = function (questions,title) {
+  start_times = questions["on_time"]
+  ggplot(start_times,aes(x=on_time)) + geom_density() + xlab("Date") + ylab("Density") + ggtitle(title) 
+}
+build_question_load_graph(questions,"Question Load (Semester)")
+```
+
+###Weekly Question Load 
+```{r,echo=FALSE,message=FALSE}
+build_question_load_graph(questions_this_week,"Question Load (This Week)")
+```
+
+###Semester Minute Rule 
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+build_minute_rule_graph = function (questions,title) {
+  question_length = (questions["off_time"] - questions["help_time"]) / 60
+  question_start = questions["on_time"]
+  minute_rule = data.frame(question_start,question_length)
+  colnames(minute_rule) = c("time","minutes_to_answer")
+  ggplot(minute_rule, aes(x=time,y=minutes_to_answer)) + geom_smooth()  + xlab("Date") + ylab("Time to Answer") + ggtitle(title)
+}
+build_minute_rule_graph(questions,"Minute Rule (Semester)")
+```
+
+###Weeky Minute Rule 
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+build_minute_rule_graph(questions_this_week, "Minute Rule (This Week)")
+```
+
+###Questions Per Student 
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+colnames(questions_per_student) = c("Andrew ID", "q_asked")
+questions_per_student[,2] = as.numeric(questions_per_student[,2])
+ggplot(questions_per_student, aes(x=q_asked)) +  geom_histogram() + xlab("Questions Asked Per Student") + ylab("Count") + ggtitle("Questions Per Student")
+```
+
+###Topics (Semester)
+```{r,echo=FALSE,message=FALSE}
+build_topic_usage_graph = function (questions,title) {
+  topic_ids = questions["topic_id"]
+  topic_names = apply(topic_ids,1,function(id) {
+    index = which(topics["id"] == id)
+    return(topics[index,][1,2])
+  })
+  topic_counts= data.frame((topic_names))
+  colnames(topic_counts) = c("Topic")
+  ggplot(topic_counts,aes(factor(Topic))) + geom_bar() + xlab("Topic") + ylab("Count") + ggtitle(title) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+}
+build_topic_usage_graph(questions, "Topic Usage (Semester)")
+```
+
+###Topics (Weekly)
+```{r,echo=FALSE,message=FALSE}
+build_topic_usage_graph(questions_this_week,"Topic Usage (This Week)")
+```
+
+###Locations (Semester)
+```{r,echo=FALSE,message=FALSE}
+build_location_usage_graph = function (questions,title) {
+  location_ids = questions["location_id"]
+  location_names = apply(location_ids,1,function(id) {
+    index = which(locations["id"] == id)
+    return(locations[index,][1,2])
+  })
+  location_counts = data.frame((location_names))
+  colnames(location_counts) = c("Location")
+  ggplot(location_counts,aes(factor(Location))) + geom_bar() + xlab("Location") + ylab("Count") + ggtitle(title) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+}
+
+build_location_usage_graph(questions, "Location Usage (Semester)")
+```
+
+
+###Locations (Weekly)
+```{r,echo=FALSE,message=FALSE}
+build_location_usage_graph(questions_this_week, "Location Usage (This Week)")
+```
+
+
+
+
+
+
+
+
+
+```{r,include=FALSE}
+#close connections 
+dbDisconnect(conn)
+dbUnloadDriver(driver)
+```

@@ -36,10 +36,11 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
       if (old_open_count === 0 && new_open_count > 0 &&
               (new_questions[0].is_new || old_questions.length > 0)) {
         (new Notify('15-112 Office Hours', {
-          icon: '/style/images/scs-logo.gif',
+          icon: '/images/site-icons/notification-512.png',
           body: 'A new student is on the queue.',
           notifyClick: function() { window.focus(); },
           closeOnClick: true,
+          tag: '112_notification',
         })).show();
       }
     });
