@@ -7,6 +7,7 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support.ui import Select
 import psycopg2
 from jsonschema import validate
 import json
@@ -218,10 +219,27 @@ class User(object):
         user_info = self.driver.find_element_by_id("user_info").text
         assert("123" in user_info)
 
+    def test_faq(self,expected_text):
+        faq_link = self.driver.find_element_by_id("faq")
+        faq_link.click()
+        tips = self.driver.find_element_by_id("modalhelp")
+        assert(expected_text in tips.text)
+        self.driver.find_element_by_partial_link_text("CLOSE").click()
+        time.sleep(1)
+
 class Student(User): 
     """Represents a User with role 'student'."""
     def __init__(self):
         super().__init__("student")
+
+    def test_debugging_tips(self):
+        link = self.driver.find_element_by_id("debugging_tips")
+        link.click()
+        tips = self.driver.find_element_by_id("modaltips")
+        expected_text = "lmost every TA will ask you"
+        assert(expected_text in tips.text)
+        self.driver.find_element_by_partial_link_text("CLOSE").click()
+        time.sleep(1)
 
     def ask_question(self,check_fn=None):
         """Ask a question."""
@@ -237,13 +255,36 @@ class Student(User):
         desc = self.driver.find_element_by_id("q_desc")
         desc.send_keys("woo")
 
+        #select topic 
+        self.driver.find_elements_by_xpath("/html/body/main/div/div[2]/div/div/div[2]/div/div/div/form/div[1]/div[2]/div/input")[0].click()
+        options = self.driver.find_elements_by_tag_name("li")
+        for option in options:
+            try:
+                if (option.text=="Recursion"):
+                    option.click()
+            except:
+                continue
+        time.sleep(1)
+
+        #selection location 
+        self.driver.find_elements_by_xpath("/html/body/main/div/div[2]/div/div/div[2]/div/div/div/form/div[1]/div[1]/div/input")[0].click()
+        options = self.driver.find_elements_by_tag_name("li")
+        for option in options:
+            try:
+                if (option.text=="GHC 5000"):
+                    option.click()
+            except:
+                continue
+        time.sleep(3)
+
         #ask question
         ask = self.driver.find_element_by_id("submit_new_q")
         ask.click()
-        time.sleep(1)
+        time.sleep(2)
 
         #check that it showed up
         self.driver.find_elements_by_id("your_question_student")
+        time.sleep(1)
 
         #check the help text
         desc_text = self.driver.find_element_by_id("help_text").text
@@ -253,14 +294,15 @@ class Student(User):
 
     def edit_question(self,check_fn=None):
         """Edit the student's current question (assumed to exist)."""
-        time.sleep(1)
+        time.sleep(2)
         pencil = self.driver.find_element_by_id("edit_question")
         pencil.click()
-        time.sleep(1)
+        time.sleep(2)
         desc = self.driver.find_element_by_id("edit_question_help_text")
         desc.send_keys("secondwoo")
         submit_edit = self.driver.find_element_by_id("edit_question_submit")
         submit_edit.click()
+        time.sleep(2)
         desc_text = self.driver.find_element_by_id("help_text").text
         assert(desc_text == "woosecondwoo")
 
