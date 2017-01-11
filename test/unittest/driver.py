@@ -224,7 +224,7 @@ class User(object):
         faq_link.click()
         tips = self.driver.find_element_by_id("modalhelp")
         assert(expected_text in tips.text)
-        self.driver.find_element_by_partial_link_text("CLOSE").click()
+        self.driver.find_element_by_link_text("CLOSE").click()
         time.sleep(1)
 
 class Student(User): 
@@ -284,7 +284,7 @@ class Student(User):
 
         #check that it showed up
         self.driver.find_elements_by_id("your_question_student")
-        time.sleep(1)
+        time.sleep(2)
 
         #check the help text
         desc_text = self.driver.find_element_by_id("help_text").text
@@ -313,7 +313,7 @@ class Student(User):
         time.sleep(1)
         delete = self.driver.find_element_by_id("delete_question")
         delete.click()
-        time.sleep(1)
+        time.sleep(2)
         do_delete = self.driver.find_element_by_name("do_delete")
         do_delete.click()
         time.sleep(1)
@@ -349,14 +349,14 @@ class Student(User):
         return pos
 
     def check_ta_alert_text(self,text):
-        time.sleep(1)
+        time.sleep(2)
         status = self.driver.find_element_by_id("question_status_ta").text
         assert(text in status)
 
     def check_freeze_text(self,text):
         time.sleep(1)
         status = self.driver.find_element_by_id("question_status").text
-        assert(status == text)
+        assert(text in status)
 
     def can_ask_question(self):
         time.sleep(1)
