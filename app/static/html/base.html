@@ -16,16 +16,16 @@
         <a href="/#/student">Queue</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
+        <a id="faq" href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
+        <a id="debugging_tips" href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
     </ul>
 
     <ul class="right hide-on-med-and-down">
       <li ng-if="user.role === 'ca'">
-        <a href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
+        <a id="faq" href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
       </li>
       <li>
         <a href="/#/account">Account</a>
@@ -61,10 +61,10 @@
         <a href="/#/account">Account</a>
       </li>
       <li>
-        <a ng-click="clicked_faq()"  href="#modalhelp" modal>FAQ</a>
+        <a id="faq" ng-click="clicked_faq()"  href="#modalhelp" modal>FAQ</a>
       </li>
       <li ng-if="user.role === 'student'">
-        <a href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
+        <a id="debugging_tips" href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
       <div class="divider"></div>
       <li>

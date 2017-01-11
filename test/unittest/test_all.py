@@ -87,6 +87,13 @@ class TestStudent(unittest.TestCase):
         self.ca.tearDown()
         self.student.tearDown()
 
+    def test_debugging_and_faq(self):
+        self.student.test_faq("Up to once per question.")
+        self.student.test_debugging_tips()
+
+    def test_account_page_student(self): 
+        self.student.test_account_page()
+
     def test_ask_edit_freeze_delete_question(self):
         # #ask, edit
         self.student.ask_question()
@@ -180,57 +187,7 @@ class TestCA(unittest.TestCase):
         self.ca.update_minute_rule(5)
         ca2.logout()
         ca2.tearDown()
-
-    def test_online_open_buttons(self):
-        other_ca = CA()
-        other_student = Student()
-        other_ca.register()
-        other_ca.login()
-        other_student.register()
-        other_student.login()
-        #if the buttons don't change these fails
-        self.ca.go_online()
-        self.ca.go_offline()
-        self.ca.go_online()
-        one_worked = False
-        try:    
-            self.ca.close_queue()
-            self.ca.open_queue()
-            self.ca.close_queue()
-            one_worked = True
-        except:
-            try:
-                self.ca.open_queue()
-                self.ca.close_queue()
-                one_worked = True
-            except:
-                pass
-        assert(one_worked)
-        closed = other_student.driver.find_element_by_id("closed")
-        assert("closed" in closed.text)
-        other_ca.open_queue()
-        other_ca.logout()
-        other_student.logout()
-        other_student.tearDown()
-        other_ca.tearDown()
-
-    def test_n_cas(self):
-        n_cas = self.ca.get_num_cas().split(" ");
-        n = 0
-        if (n_cas[0] != "No"):
-            assert(n_cas[0].isdigit())
-            n = int(n_cas[0])        
-        ca2  = CA()
-        ca2.register()
-        ca2.login()
-        ca2.go_online()
-        n_cas = self.ca.get_num_cas().split(" ");
-        assert(n_cas[0].isdigit())
-        n_after = int(n_cas[0])
-        assert(n_after == n + 1)
-        ca2.logout()
-        ca2.tearDown()
-
+  
     def test_n_questions(self):
         n_questions = self.ca.get_n_questions().split(" ");
         if (n_questions[0] != "No"):
@@ -271,11 +228,73 @@ class TestCA(unittest.TestCase):
         self.student.ask_question()
         self.ca.answer_question()
         self.ca.freeze_question()
-        self.student.check_freeze_text("frozen") 
+        self.student.check_freeze_text("unfreezing") 
         self.student.logout()
         self.student.login()
         time.sleep(1)
         self.student.delete_question()
+
+    def test_online_open_buttons(self):
+        other_ca = CA()
+        other_student = Student()
+        other_ca.register()
+        other_ca.login()
+        other_student.register()
+        other_student.login()
+        one_worked = False
+        try:    
+            self.ca.close_queue()
+            self.ca.open_queue()
+            self.ca.close_queue()
+            one_worked = True
+        except:
+            try:
+                self.ca.open_queue()
+                self.ca.close_queue()
+                one_worked = True
+            except:
+                pass
+        assert(one_worked)
+        closed = other_student.driver.find_element_by_id("closed")
+        assert("closed" in closed.text)
+        other_ca.open_queue()
+        other_ca.logout()
+        other_student.logout()
+        other_student.tearDown()
+        other_ca.tearDown()
+
+    def test_n_cas(self):
+        n_cas = self.ca.get_num_cas().split(" ");
+        n = 0
+        if (n_cas[0] != "No"):
+            assert(n_cas[0].isdigit())
+            n = int(n_cas[0])        
+        ca2  = CA()
+        ca2.register()
+        ca2.login()
+        self.student.ask_question()
+        ca2.answer_question()
+        ca2.finish_question()
+        n_cas = self.ca.get_num_cas().split(" ");
+        assert(n_cas[0].isdigit())
+        n_after = int(n_cas[0])
+        assert(n_after == n + 1)
+        ca2.logout()
+        ca2.tearDown()
+
+    def test_faq_page_ca(self):
+        self.ca.test_faq("Closing the queue")
+
+    def test_ca_account_info(self):
+        self.ca.test_account_page()
+
+    # def test_stats_page(self):
+    #     pass
+
+    # def test_admin_page(self):
+    #     pass
+
+
 
 
 if __name__ == '__main__':

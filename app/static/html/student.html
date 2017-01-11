@@ -46,7 +46,7 @@
                     <label>Location</label>
                   </div>
                   <div class="input-field col s12 m6">
-                    <select ng-model="new_selected.topic" material-select watch>
+                    <select id="topic_select" ng-model="new_selected.topic" material-select watch>
                       <option value="" disabled>What do you need help with?</option>
                       <option name="topic_option" value="{{ t.id }}" ng-repeat="t in $db.model.topics | orderBy: 'topic'">{{ t.topic }}</option>
                     </select>
