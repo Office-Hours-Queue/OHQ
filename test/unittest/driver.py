@@ -7,6 +7,7 @@ import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.support.ui import Select
 import psycopg2
 from jsonschema import validate
 import json
@@ -122,10 +123,11 @@ class User(object):
     def register(self,check_fn=None):
         """Registers the user."""
         self.driver.get(User.Config["queue_url"])
-        no_apps = self.driver.find_element_by_partial_link_text("Don't have Google Apps? Click here.")
+        no_apps = self.driver.find_element_by_id("no_google_login")
+
         no_apps.click()
         time.sleep(1)
-        register = self.driver.find_element_by_partial_link_text("Register")
+        register = self.driver.find_element_by_partial_link_text("register")
         register.click()
         time.sleep(1)
 
@@ -147,7 +149,7 @@ class User(object):
         self.driver.get(User.Config["queue_url"])
 
         #click no google apps modal
-        no_apps = self.driver.find_element_by_partial_link_text("Don't have Google Apps? Click here.")
+        no_apps = self.driver.find_element_by_id("no_google_login")
         no_apps.click()
         time.sleep(1)
 
@@ -175,7 +177,7 @@ class User(object):
         logout.click()
         time.sleep(1)
         lets_begin = self.driver.find_element_by_id('lets_begin')
-        assert("BEGIN" in lets_begin.text)
+        assert("LOG" in lets_begin.text)
         if (check_fn != None): check_fn(self)
 
     def on_ca_page(self):
@@ -193,10 +195,51 @@ class User(object):
         """Run arbitrary selenium code on the web page."""
         run_fn(self)
 
+    def test_account_page(self):
+        """Test the account information page"""
+        self.driver.get(User.Config["queue_url"]+"/#/account")
+        time.sleep(1)
+
+        user_info = self.driver.find_element_by_id("user_info").text
+        assert(self.info["email"] in user_info)
+        assert(self.info["first_name"] in user_info) 
+        assert(self.info["last_name"] in user_info)
+
+        edit_link = self.driver.find_element_by_id("edit_name_link")
+        edit_link.click()
+        time.sleep(1)
+
+        edit_input = self.driver.find_element_by_id("edit_nick_name_input")
+        edit_input.send_keys("123")
+
+        save_button = self.driver.find_element_by_id("edit_save")
+        save_button.click()
+
+        time.sleep(1)
+        user_info = self.driver.find_element_by_id("user_info").text
+        assert("123" in user_info)
+
+    def test_faq(self,expected_text):
+        faq_link = self.driver.find_element_by_id("faq")
+        faq_link.click()
+        tips = self.driver.find_element_by_id("modalhelp")
+        assert(expected_text in tips.text)
+        self.driver.find_element_by_link_text("CLOSE").click()
+        time.sleep(1)
+
 class Student(User): 
     """Represents a User with role 'student'."""
     def __init__(self):
         super().__init__("student")
+
+    def test_debugging_tips(self):
+        link = self.driver.find_element_by_id("debugging_tips")
+        link.click()
+        tips = self.driver.find_element_by_id("modaltips")
+        expected_text = "lmost every TA will ask you"
+        assert(expected_text in tips.text)
+        self.driver.find_element_by_partial_link_text("CLOSE").click()
+        time.sleep(1)
 
     def ask_question(self,check_fn=None):
         """Ask a question."""
@@ -212,13 +255,36 @@ class Student(User):
         desc = self.driver.find_element_by_id("q_desc")
         desc.send_keys("woo")
 
+        #select topic 
+        self.driver.find_elements_by_xpath("/html/body/main/div/div[2]/div/div/div[2]/div/div/div/form/div[1]/div[2]/div/input")[0].click()
+        options = self.driver.find_elements_by_tag_name("li")
+        for option in options:
+            try:
+                if (option.text=="Recursion"):
+                    option.click()
+            except:
+                continue
+        time.sleep(1)
+
+        #selection location 
+        self.driver.find_elements_by_xpath("/html/body/main/div/div[2]/div/div/div[2]/div/div/div/form/div[1]/div[1]/div/input")[0].click()
+        options = self.driver.find_elements_by_tag_name("li")
+        for option in options:
+            try:
+                if (option.text=="GHC 5000"):
+                    option.click()
+            except:
+                continue
+        time.sleep(3)
+
         #ask question
         ask = self.driver.find_element_by_id("submit_new_q")
         ask.click()
-        time.sleep(1)
+        time.sleep(2)
 
         #check that it showed up
         self.driver.find_elements_by_id("your_question_student")
+        time.sleep(2)
 
         #check the help text
         desc_text = self.driver.find_element_by_id("help_text").text
@@ -228,14 +294,15 @@ class Student(User):
 
     def edit_question(self,check_fn=None):
         """Edit the student's current question (assumed to exist)."""
-        time.sleep(1)
+        time.sleep(2)
         pencil = self.driver.find_element_by_id("edit_question")
         pencil.click()
-        time.sleep(1)
+        time.sleep(2)
         desc = self.driver.find_element_by_id("edit_question_help_text")
         desc.send_keys("secondwoo")
         submit_edit = self.driver.find_element_by_id("edit_question_submit")
         submit_edit.click()
+        time.sleep(2)
         desc_text = self.driver.find_element_by_id("help_text").text
         assert(desc_text == "woosecondwoo")
 
@@ -246,7 +313,7 @@ class Student(User):
         time.sleep(1)
         delete = self.driver.find_element_by_id("delete_question")
         delete.click()
-        time.sleep(1)
+        time.sleep(2)
         do_delete = self.driver.find_element_by_name("do_delete")
         do_delete.click()
         time.sleep(1)
@@ -260,7 +327,7 @@ class Student(User):
         toggle_freeze.click()
         time.sleep(1)
         freeze_text = self.driver.find_element_by_id("question_status").text
-        assert(freeze_text == "frozen")
+        assert("unfreezing" in freeze_text)
 
         if (check_fn != None): check_fn(self)
 
@@ -282,14 +349,14 @@ class Student(User):
         return pos
 
     def check_ta_alert_text(self,text):
-        time.sleep(1)
+        time.sleep(2)
         status = self.driver.find_element_by_id("question_status_ta").text
         assert(text in status)
 
     def check_freeze_text(self,text):
         time.sleep(1)
         status = self.driver.find_element_by_id("question_status").text
-        assert(status == text)
+        assert(text in status)
 
     def can_ask_question(self):
         time.sleep(1)
@@ -306,22 +373,6 @@ class CA(User):
     """Represents a User with role 'ca'."""
     def __init__(self):
         super().__init__("ca")
-
-    def go_online(self,check_fn=None):
-        """Mark the CA as online."""
-        go_online_btn = self.driver.find_element_by_id("go_online_btn")
-        go_online_btn.click()
-        time.sleep(1)
-
-        if (check_fn != None): check_fn(self)
-
-    def go_offline(self,check_fn=None):
-        """Mark the CA as offline."""
-        go_offline_btn = self.driver.find_element_by_id("go_offline_btn")
-        go_offline_btn.click()
-        time.sleep(1)
-
-        if (check_fn != None): check_fn(self)
 
     def close_queue(self,check_fn=None):
         """Have the CA close the queue. """

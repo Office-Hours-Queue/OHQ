@@ -1,7 +1,7 @@
 {
 	"cmu_login_andrew":"edryer",
 	"cmu_login_pass":"",
-	"queue_reg_code":"private",
+	"queue_reg_code":"112rocks",
 	"queue_url":"http://localhost:3000",
 	"db_host": "localhost",
 	"db_name": "queue",
