@@ -61,7 +61,7 @@
                 </div>
                 <div class="row row-tight">
                   <div class="col s12 center">
-                    <a id="submit_new_q" class="btn btn-full z-depth-0" ng-class="{true: 'waves-effect waves-light green', false:'disabled'}[new_selected.topic !== '']" ng-click="ask_question()">Ask</a>
+                    <a id="submit_new_q" class="btn btn-full z-depth-0" ng-class="{true: 'waves-effect waves-light green', false:'disabled'}[new_selected.topic !== '' && new_selected.location != '']" ng-click="ask_question()">Ask</a>
                   </div>
                 </div>
               </form>
