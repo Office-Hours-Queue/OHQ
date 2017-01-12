@@ -61,7 +61,7 @@ router.post('/edit', isAuthenticated.errorJson, validate({body: UserEditSchema})
       } else {
         if (body.hasOwnProperty('password')) {
           // TODO: use async
-          body.pw_bcrypt = bcrypt.hashSync(body.password, 4);
+          body.pw_bcrypt = bcrypt.hashSync(body.password, 11);
           delete body.password;
         }
         return db('users')
@@ -154,7 +154,7 @@ router.post('/createlocal', validate({body: UserSchema}), function(req, res, nex
       } else {
 
   // async hash password, then join with role
-        var hashPromise = Promise.promisify(bcrypt.hash)(body.password, 4);
+        var hashPromise = Promise.promisify(bcrypt.hash)(body.password, 11);
         var rolePromise = Promise.resolve(role.role);
 
         return Promise.join(rolePromise, hashPromise);
