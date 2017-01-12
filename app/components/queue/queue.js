@@ -287,6 +287,7 @@ function questionOpen() {
   return db.raw('(q.off_time IS NULL)');
 }
 
+
 // condition for a question to be closed
 function questionClosed() {
   return db.raw('(q.off_time IS NOT NULL)');
@@ -652,6 +653,7 @@ function freezeStudentQuestion(studentId) {
   return freezeQuestion(studentId)
     .where(questionOpen())
     .andWhere('q.student_user_id', studentId)
+    .andWhere(questionNotAnswering())
     .then();
 }
 

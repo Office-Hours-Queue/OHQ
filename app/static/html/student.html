@@ -85,7 +85,7 @@
                 <i class="material-icons">mode_edit</i>
               </a>
               <span class="right">&nbsp;&nbsp;</span>
-              <a id="toggle_freeze" class="right grey-text {{ q.can_freeze || q.is_frozen ? 'text-lighten-1 clickable' : 'text-lighten-3 non-clickable' }}" ng-click="toggle_freeze()">
+              <a id="toggle_freeze" class="right grey-text {{ (q.can_freeze && q.state!== 'answering') || q.is_frozen ? 'text-lighten-1 clickable' : 'text-lighten-3 non-clickable' }}" ng-click="toggle_freeze(q.state)">
                 <i class="material-icons">{{ q.is_frozen ? 'play_arrow' : 'pause' }}</i>
               </a>
               </span>

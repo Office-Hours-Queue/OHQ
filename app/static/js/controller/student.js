@@ -28,7 +28,8 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
 
   set_random_question();
 
-  $scope.toggle_freeze = function() {
+  $scope.toggle_freeze = function(state) {
+    if (state == 'answering') {return;}
     if ($db.is_frozen()) {
       $db.unfreeze_question();
     } else if ($db.can_freeze()) {
