@@ -70,7 +70,12 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       $rootScope.$apply(function() {
 			  d.io_connected = false;
       });
-		})
+		});
+		d.qsio.on("error", function(reason) {
+			if (reason === 'Not authorized') {
+				window.location = '/api/login/endauth';
+			}
+		});
 		d.hsio.on("connect", function() {
 			d.hsio.emit('get_last_n', d.n_history);
 		});
