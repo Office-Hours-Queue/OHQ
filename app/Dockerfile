@@ -1,4 +1,4 @@
-FROM node:argon-alpine
+FROM node:6.9.4-alpine
 
 # Create an unprivileged user to install/run our app
 RUN addgroup -S app &&\
