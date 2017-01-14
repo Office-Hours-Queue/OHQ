@@ -181,6 +181,26 @@
                   </div>
                 </div>
               </div>
+              <!-- Extra row for spacing -->
+              <div class="row" ng-if="notify.supported"></div>
+              <div class="row row-tight" ng-if="notify.supported">
+                <div class="col s12 grey-text">
+                  <span class="clickable" ng-click="notify.show_settings = !notify.show_settings">
+                    <i class="material-icons icon-text-align">{{ notify.show_settings ? 'expand_less' : 'expand_more' }}</i>
+                    <em>{{ notify.show_settings ? 'Less' : 'More' }}</em>
+                  </span>
+                </div>
+              </div>
+              <div class="row row-tight section" ng-if="notify.show_settings">
+                <div class="col s12">
+                  <input type="checkbox" id="notification-checkbox" ng-model="notify.enabled"></input>
+                  <label for="notification-checkbox" class="black-text">
+                    Notify me when a TA is coming
+                    <br ng-if="notify.error" />
+                    <span class="red-text" ng-if="notify.error">Couldn't get permission to show notifications. Make sure notifications aren't blocked.</span>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         </div>

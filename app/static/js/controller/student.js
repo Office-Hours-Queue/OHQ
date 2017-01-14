@@ -1,4 +1,4 @@
-var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
+var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($scope,$rootScope,$db,lss) {
   $rootScope.$db = $db;
   $rootScope.current_page = "student";
   $scope.name = "student";
@@ -114,6 +114,106 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
     $scope.$evalAsync(function() {
       $scope.new_selected.topic = '';
     });
+  });
+
+  // intialize saved notify on/off settings from localstorage
+  var Notify = window.Notify.default;
+  var ls_key = 'student_notify_enabled';
+  if (lss.get(ls_key) === null) {
+    lss.set(ls_key, false);
+  }
+  (function() {
+    $scope.notify = {
+      enabled: lss.get(ls_key),
+      error: false,
+      show_settings: false,
+      supported: true
+    };
+    // this sometimes crashes
+    try {
+      $scope.notify.supported = Notify.isSupported();
+    } catch(e) {
+      // oh well
+    }
+  })();
+
+  // enable/disable the notifications flag as needed
+  // this is needlessly complicated because of the weird notification
+  // api that exists, even with a wrapper library
+  $scope.$watch(function() {
+    return $scope.notify.enabled;
+  }, function() {
+    if ($scope.notify.enabled) {
+      // want to turn on notifications
+
+      if (!Notify.needsPermission) {
+        // don't need permission
+        lss.set(ls_key, true);
+        $scope.notify.error = false;
+
+      } else if (Notify.isSupported()) {
+        // needs permission and is supported
+        var success = function() {
+          $scope.$apply(function() {
+            lss.set(ls_key, true);
+            $scope.notify.error = false;
+            $scope.notify.enabled = lss.get(ls_key);
+          });
+        };
+        var fail = function() {
+          $scope.$apply(function() {
+            lss.set(ls_key, false);
+            $scope.notify.error = true;
+            $scope.notify.enabled = lss.get(ls_key);
+          });
+        };
+        Notify.requestPermission(success, fail);
+
+      } else {
+        // notifications not supported
+        lss.set(ls_key, false);
+        $scope.notify.error = true;
+        $scope.notify.supported = false;
+      }
+
+    } else {
+      // turn off notification
+      lss.set(ls_key, false);
+    }
+
+    $scope.notify.enabled = lss.get(ls_key);
+  });
+
+  // handle the actual notifications by watching for changes
+  // in the current question
+  var curNotification = null;
+  $scope.$watchCollection(function() {
+    return $db.model.questions;
+  }, function(newQ, oldQ) {
+
+    // question answered - show notification
+    if (newQ.length > 0 && oldQ.length > 0 &&
+        oldQ[0].state !== 'answering' &&
+        newQ[0].state === 'answering' &&
+        lss.get(ls_key)) {
+      var ta_name = newQ[0].ca_first_name + ' ' + newQ[0].ca_last_name;
+      curNotification = new Notify('15-112 Office Hours', {
+        icon: '/images/site-icons/notification-512.png',
+        body: 'TA ' + ta_name + ' is on the way',
+        closeOnClick: true,
+        tag: '112_student_notification',
+        timeout: 15
+      });
+      curNotification.show();
+    }
+
+    // question un-answered - hide notification if it's still there
+    if ((oldQ.length > 0 && oldQ[0].state === 'answering') &&
+        (newQ.length === 0 || newQ[0].state !== 'answering') &&
+        lss.get(ls_key) && curNotification !== null) {
+      curNotification.close();
+    }
+
   });
 
   $scope.getOffTime = function(question) {
