@@ -52,7 +52,8 @@ def login_as_student_and_wait(andrew_id,password):
 		print("failed!")
 
 #Server location
-url = "https://queue.edwarddryer.com"
+# url = "https://queue.edwarddryer.com"
+url = "http://localhost:3000"
 
 #Add accounts to valid_andrew_ids 
 p = open( "andrew_ids.p", "rb" )
