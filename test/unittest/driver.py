@@ -326,8 +326,8 @@ class Student(User):
         toggle_freeze = self.driver.find_element_by_id("toggle_freeze")
         toggle_freeze.click()
         time.sleep(1)
-        freeze_text = self.driver.find_element_by_id("question_status").text
-        assert("unfreezing" in freeze_text)
+        freeze_text = self.driver.find_element_by_id("frozen_status").text
+        assert("TAs won't call you while you're frozen" in freeze_text)
 
         if (check_fn != None): check_fn(self)
 
@@ -337,15 +337,21 @@ class Student(User):
         toggle_freeze = self.driver.find_element_by_id("toggle_freeze")
         toggle_freeze.click()
         time.sleep(1)
-        freeze_text = self.driver.find_element_by_id("question_status").text
-        assert(freeze_text == "on the queue")
-        
+        found = False
+        try:
+            freeze_text = self.driver.find_element_by_id("frozen_status").text
+            assert("TAs won't call you while you're frozen" in freeze_text)
+            found = True
+        except:
+            pass
+        assert(not(found))
         if (check_fn != None): check_fn(self)
 
     def get_pos(self):
         """Get the student's position in the queue."""
         time.sleep(1)
         pos = self.driver.find_element_by_id("queue_position").text
+        if (pos == "next"):  return "1"
         return pos
 
     def check_ta_alert_text(self,text):
@@ -355,7 +361,7 @@ class Student(User):
 
     def check_freeze_text(self,text):
         time.sleep(1)
-        status = self.driver.find_element_by_id("question_status").text
+        status = self.driver.find_element_by_id("frozen_status").text
         assert(text in status)
 
     def can_ask_question(self):
