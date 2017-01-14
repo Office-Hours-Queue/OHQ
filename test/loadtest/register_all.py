@@ -6,7 +6,8 @@ from threading import Thread
 import pickle
 
 #Server location
-url = "https://queue.edwarddryer.com"
+# url = "https://queue.edwarddryer.com"
+url = "http://localhost:3000"
 
 #Add accounts to valid_andrew_ids 
 p = open( "andrew_ids.p", "rb" )
@@ -24,7 +25,7 @@ for andrew_id in info:
 		"password" : "passwords",
 		"first_name" : "woo",
 		"last_name" : "haa", 
-		"registration_code" : "private"
+		"registration_code" : "112rocks"
 	}
 	print("Register: ", s.post(url + "/api/user/createlocal", json=reg_payload))
 

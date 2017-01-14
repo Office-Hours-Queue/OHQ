@@ -110,7 +110,7 @@
                         <i class="material-icons">check</i>
                       </div>
                       <div class="rhs">
-                        <h5>
+                        <h5 id="question_status_ta">
                           <small>
                             <span>TA</span>
                             <span class="bold-text">{{ q.ca_first_name }} {{ q.ca_last_name }}</span>
@@ -130,7 +130,7 @@
                             <span class="bold-text">frozen</span>
                           </small>
                         </h5>
-                        <p>
+                        <p id="frozen_status">
                           <em ng-if="q.state === 'frozen'">TAs won't call you while you're frozen</em>
                           <br />
                           <em>Automatically unfreezing <span am-time-ago="q.frozen_end_time"></span></em>
@@ -145,8 +145,8 @@
                         <h5 style="margin-bottom: 0">
                           <small>
                             <span>You are</span>
-                            <span class="bold-text" ng-if="q.queue_ps > 0">{{ q.queue_ps+1 }}<sup>{{ ordinal(q.queue_ps+1) }}</sup></span>
-                            <span class="bold-text" ng-if="q.queue_ps === 0">next</span>
+                            <span class="bold-text" ng-if="q.queue_ps > 0"><span id="queue_position">{{ q.queue_ps+1 }}</span><sup>{{ ordinal(q.queue_ps+1) }}</sup></span>
+                            <span class="bold-text" ng-if="q.queue_ps === 0"><span id='queue_position'>next</span></span>
                             <span>in line</span>
                           </small>
                         </h5>
@@ -174,7 +174,7 @@
                             {{ q.topic }}
                           </small>
                         </h5>
-                        <p ng-if="q.help_text">{{ q.help_text }}</p>
+                        <p id="help_text" ng-if="q.help_text">{{ q.help_text }}</p>
                         <p ng-if="!q.help_text" class="grey-text"><em>No additional details</em></p>
                       </div>
                     </div>
