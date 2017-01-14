@@ -1,6 +1,7 @@
 .DS_Store
 
 backup/data
+backup/f16_data.tgz
 
 */selenium-server-standalone-3.0.1.jar
 */selenium-server-standalone-2.53.1.jar
