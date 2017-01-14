@@ -15,7 +15,7 @@ config.KNEX = {
 
 // Google Spreadsheet backup ID
 config.GOOGLE_SHEETS = {
-	"id": "1yMXVOOSyNXrZN05CkabjwVIi3eOwpYZN7rMpXvO51_k"
+	"id": "1BLgV7OxRBPf5nEjWjSlGNOYGq6DtsJoj2KC9VqwSa5A"
 };
 
 // Superusers who can access super-secret stuff
