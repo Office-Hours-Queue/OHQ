@@ -113,6 +113,11 @@ var questions = (function() {
         case 'off_time':
           debug('question_closed');
           emitEvent('question_closed');
+          if (pendingUnfreezeNotifications[id] !== undefined) {
+            debug("delete freeze timer")
+            clearTimeout(pendingUnfreezeNotifications[id]);
+            delete pendingUnfreezeNotifications[id];
+          }
           break;
         case 'ca_user_id':
           if ((was_changed("help_time",changes))) { 
