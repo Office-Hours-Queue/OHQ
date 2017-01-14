@@ -236,3 +236,26 @@ footer.page-footer {
 .bold-text {
   font-weight: 600;
 }
+
+i.icon-text-align {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.offset-container {
+  padding-left: 38px;
+}
+
+.offset-block:not(:last-child) {
+  margin-bottom: 18px;
+}
+
+.offset-container .lhs {
+  padding-top: 2px;
+  margin-left: -38px;
+  position: absolute;
+}
+
+.offset-container .rhs {
+  display: inline;
+}

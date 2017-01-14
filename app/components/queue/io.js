@@ -555,6 +555,8 @@ function makeStudentQuestion(question) {
     frozen_end_time: question.frozen_end_time,
     can_freeze: question.can_freeze,
     state: getQuestionState(question),
-    off_time: question.off_time
+    off_time: question.off_time,
+    ca_first_name: question.ca_first_name,
+    ca_last_name: question.ca_last_name
   }]);
 };

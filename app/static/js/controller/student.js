@@ -124,4 +124,23 @@ var student_ctl = ["$scope","$rootScope","$db",function($scope,$rootScope,$db) {
     return new Date(question.on_time);
   };
 
+  $scope.ordinal = function(num) {
+    if (isNaN(num)) {
+      return '';
+    }
+    if (Math.floor(num / 10) === 1) {
+      return 'th';
+    }
+    switch (num % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  };
+
 }];
