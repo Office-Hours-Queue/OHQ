@@ -4,6 +4,8 @@ exports.seed = function(knex, Promise) {
 
                 knex.insert([
                         {andrew_id : "ambikac" , role : "ca" } ,  
+                        { andrew_id: "arajesh", role : "ca" },
+                        { andrew_id: "dpratyus", role : "ca" },
                         {andrew_id : "angogate" , role : "ca" } ,  
                         {andrew_id : "armanh" , role : "ca" } ,  
                         {andrew_id : "azguo" , role : "ca" } ,  
