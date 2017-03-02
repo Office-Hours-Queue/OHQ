@@ -12,16 +12,25 @@ postgresql:
         - POSTGRES_USER=queue
 
 nodeapp:
-    image: edryer/112queue:1.1
+    build: app
     container_name: 112_queue_nodeapp
     restart: always
     links:
         - postgresql:112_queue_postgres
     labels:
         - "112_queue"
-    expose:
-        - "3000"
     ports: 
         - "127.0.0.1:3000:3000"
     environment:
         - NODE_ENV=production
+
+superset:
+    image: amancevice/superset:0.17.0
+    container_name: 112_queue_superset
+    restart: always
+    links:
+        - postgresql:112_queue_postgres
+    labels:
+        - "112_queue"
+    ports:
+        - "127.0.0.1:3001:8088"
