@@ -7,8 +7,7 @@ router.post('/localauth',auth.passport.authenticate('local'),function(req, res) 
 });
 
 router.get('/googleauth',
-  auth.passport.authenticate('google', { scope: ['openid profile email'],
-                                         hd: 'andrew.cmu.edu' }));
+  auth.passport.authenticate('google', { scope: ['openid profile email'] }));
 
 router.get('/success',auth.passport.authenticate('google', { failureRedirect: '/#/google_deny' }), function(req,res) {
   res.redirect('/#/' + req.user.role);
