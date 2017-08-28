@@ -1,0 +1,63 @@
+exports.seed = function(knex, Promise) {
+  
+  return Promise.all([
+
+                knex.insert([
+                  
+                        { andrew_id: "agwu", role : "ca" }, 
+                        { andrew_id: "angogate", role : "ca" }, 
+                        { andrew_id: "armanh", role : "ca" }, 
+                        { andrew_id: "aschick", role : "ca" }, 
+                        { andrew_id: "aschreff", role : "ca" }, 
+                        { andrew_id: "asilbaug", role : "ca" }, 
+                        { andrew_id: "atomarel", role : "ca" }, 
+                        { andrew_id: "azguo", role : "ca" }, 
+                        { andrew_id: "bsoderna", role : "ca" }, 
+                        { andrew_id: "cfulton1", role : "ca" }, 
+                        { andrew_id: "cowarang", role : "ca" }, 
+                        { andrew_id: "cs1", role : "ca" }, 
+                        { andrew_id: "cweissgl", role : "ca" }, 
+                        { andrew_id: "cwurman", role : "ca" }, 
+                        { andrew_id: "dlin2", role : "ca" }, 
+                        { andrew_id: "dyd", role : "ca" }, 
+                        { andrew_id: "dzq", role : "ca" }, 
+                        { andrew_id: "eclinch", role : "ca" }, 
+                        { andrew_id: "edryer", role : "ca" }, 
+                        { andrew_id: "ewwong", role : "ca" }, 
+                        { andrew_id: "fmarsh", role : "ca" }, 
+                        { andrew_id: "hkillen", role : "ca" }, 
+                        { andrew_id: "jasonh1", role : "ca" }, 
+                        { andrew_id: "jessieli", role : "ca" }, 
+                        { andrew_id: "jlenney", role : "ca" }, 
+                        { andrew_id: "jmoavenz", role : "ca" }, 
+                        { andrew_id: "judyz", role : "ca" }, 
+                        { andrew_id: "jxgong", role : "ca" }, 
+                        { andrew_id: "jyzhao", role : "ca" }, 
+                        { andrew_id: "kdchin", role : "ca" }, 
+                        { andrew_id: "lanhaow", role : "ca" }, 
+                        { andrew_id: "ldegroot", role : "ca" }, 
+                        { andrew_id: "lld", role : "ca" }, 
+                        { andrew_id: "mbgardne", role : "ca" }, 
+                        { andrew_id: "mengyinf", role : "ca" }, 
+                        { andrew_id: "nanakis", role : "ca" }, 
+                        { andrew_id: "nraju", role : "ca" }, 
+                        { andrew_id: "nviggian", role : "ca" }, 
+                        { andrew_id: "oweijin", role : "ca" }, 
+                        { andrew_id: "raunaksg", role : "ca" }, 
+                        { andrew_id: "rbhardw1", role : "ca" }, 
+                        { andrew_id: "rishabhc", role : "ca" }, 
+                        { andrew_id: "sbhartiy", role : "ca" }, 
+                        { andrew_id: "she2", role : "ca" }, 
+                        { andrew_id: "spark3", role : "ca" }, 
+                        { andrew_id: "tchetal", role : "ca" }, 
+                        { andrew_id: "tstentz", role : "ca" }, 
+                        { andrew_id: "vasua", role : "ca" }, 
+                        { andrew_id: "xiningg", role : "ca" }, 
+                        { andrew_id: "xinranl1", role : "ca" }, 
+                        { andrew_id: "ybb", role : "ca" }, 
+                        { andrew_id: "youngchk", role : "ca" }, 
+                        { andrew_id: "yuzhes", role : "ca" }
+                        
+    ]).into('valid_andrew_ids')
+  ]);
+};
