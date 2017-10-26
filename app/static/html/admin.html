@@ -1,6 +1,6 @@
 <div data-extend-template="/html/base.html">
 
-	<!-- Content --> 
+	<!-- Content -->
 	<div data-block-append="content">
 	<div class="container">
    	<br />
@@ -13,7 +13,7 @@
 			<div class="collapsible-header"><b>Minute Rule</b></div>
 			<div class="collapsible-body">
 			<p>
-				The minute rule denotes the maximum amount of time a TA should spend with a student. 
+				The minute rule denotes the maximum amount of time a TA should spend with a student.
 				<br/>
 				<br/>
           		<label for="minuteRule">Update Minute Rule</label>
@@ -27,7 +27,7 @@
 			<div class="collapsible-header"><b>Topics</b></div>
 			<div class="collapsible-body">
 
-			<ul class="collection">  
+			<ul class="collection">
 				<li class="{{ t.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="t in $db.model.topics | orderBy : 'topic'">
                                                     <span ng-if="t.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(t.topic, 'Topic', t.id)" ng-href="#modaldelete" modal ></span>
                                                     <span ng-if="!(t.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(t.topic, 'Topic', t.id); enable_topic_or_loc()"></span>
@@ -43,7 +43,7 @@
 			<div class="collapsible-header"><b>Locations</b></div>
 			<div class="collapsible-body">
 
-                                    <ul class="collection">  
+                                    <ul class="collection">
                                         <li class="{{ l.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="l in $db.model.locations | orderBy : 'location' ">
                                                                             <span ng-if="l.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(l.location, 'Location', l.id)" ng-href="#modaldelete" modal ></span>
                                                                             <span ng-if="!(l.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(l.location, 'Location', l.id); enable_topic_or_loc()"></span>
@@ -55,15 +55,30 @@
 		</li>
 
 		<li>
-			<div class="collapsible-header"><b>Queue Access</b></div>
+			<div class="collapsible-header"><b>Student Queue Access</b></div>
 			<div class="collapsible-body">
 			<p>
-				Enter a student's andrew id below to let them login to the queue. 
+				Enter a student's andrew id below to let them login to the queue.
 				<br/>
 				<br/>
-          		<label for="new_andrew_id">New Andrew ID</label>
-				<input id="new_andrew_id" type="text">
-				<button ng-click="add_andrew_id()" class="btn blue">Add Student</button>
+          		<label for="new_student_andrew_id">New Andrew ID</label>
+				<input id="new_student_andrew_id" type="text">
+				<button ng-click="add_student_andrew_id()" class="btn blue">Add Student</button>
+
+			</p>
+			</div>
+		</li>
+
+		<li>
+			<div class="collapsible-header"><b>Staff Queue Access</b></div>
+			<div class="collapsible-body">
+			<p>
+				Enter a staff member's andrew id below to let them login to the queue.
+				<br/>
+				<br/>
+							<label for="new_ca_andrew_id">New Andrew ID</label>
+				<input id="new_ca_andrew_id" type="text">
+				<button ng-click="add_ca_andrew_id()" class="btn blue">Add Staff</button>
 
 			</p>
 			</div>
@@ -73,7 +88,7 @@
    	</div>
 
 	</div>
-    
+
       <!-- Confirm Delete  -->
       <div class="modal bottom-sheet" id="modaldelete">
         <div class="modal-content">
@@ -117,7 +132,7 @@
 				<input id="new_location" type="text">
 				<button id="new_location_button" ng-click="$db.add_new_location()" class="modal-action modal-close btn blue">Add</button>
 
-          		
+
 
         </div>
       </div>
@@ -132,8 +147,3 @@
 
 
 </div>
-
-
-
-
-
