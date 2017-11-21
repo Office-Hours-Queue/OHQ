@@ -80,8 +80,8 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
   // Add the question
   $scope.ask_question = function() {
     if (!$db.has_active_question() &&
-          $scope.new_selected.location !== '' &&
-          $scope.new_selected.topic !== '') {
+         $scope.new_selected.location !== '' &&
+         $scope.new_selected.topic !== '') {
       $db.add_question({
         "location_id": parseInt($scope.new_selected.location),
         "topic_id": parseInt($scope.new_selected.topic),
@@ -89,6 +89,21 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
       });
       $scope.new_selected.help_text = '';
       $scope.new_selected.topic = '';
+    } else if (!$db.has_active_question() &&
+                $scope.new_selected.location == '' &&
+                $scope.new_selected.topic == '') {
+      Materialize.toast("Please enter a location and a topic", 3000)
+			return
+    } else if (!$db.has_active_question() &&
+                $scope.new_selected.location !== '' &&
+                $scope.new_selected.topic == '') {
+      Materialize.toast("Please enter a topic", 3000)
+			return
+    } else if (!$db.has_active_question() &&
+                $scope.new_selected.location == '' &&
+                $scope.new_selected.topic !== '') {
+      Materialize.toast("Please enter a location", 3000)
+			return
     }
   };
 
