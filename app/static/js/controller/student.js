@@ -191,6 +191,22 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
     return $db.model.questions;
   }, function(newQ, oldQ) {
 
+    if (newQ.length > 0) {
+      if (newQ[0].state !== 'answering') {
+        if (newQ[0].queue_ps == 0) {
+          document.title = "112Q - next in line";
+        } else {
+          var pos = String(newQ[0].queue_ps+1) + $scope.ordinal(newQ[0].queue_ps+1);
+          document.title = "112Q - " + pos + " in line";
+        }
+      } else {
+        var ta_name = newQ[0].ca_first_name + ' ' + newQ[0].ca_last_name;
+        document.title = "112Q - TA " + ta_name + " is on the way"
+      }
+    } else {
+      document.title = "112Q";
+    }
+
     // question answered - show notification
     if (newQ.length > 0 && oldQ.length > 0 &&
         oldQ[0].state !== 'answering' &&
