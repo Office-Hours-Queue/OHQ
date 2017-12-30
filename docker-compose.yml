@@ -2,7 +2,7 @@ postgresql:
     image: postgres:9.6.1-alpine
     container_name: 112_queue_postgres
     restart: always
-    labels: 
+    labels:
         - "112_queue"
     expose:
         - "5432"
@@ -19,18 +19,7 @@ nodeapp:
         - postgresql:112_queue_postgres
     labels:
         - "112_queue"
-    ports: 
+    ports:
         - "127.0.0.1:3000:3000"
     environment:
         - NODE_ENV=production
-
-superset:
-    image: amancevice/superset:0.17.0
-    container_name: 112_queue_superset
-    restart: always
-    links:
-        - postgresql:112_queue_postgres
-    labels:
-        - "112_queue"
-    ports:
-        - "127.0.0.1:3001:8088"
