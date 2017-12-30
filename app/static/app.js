@@ -1,21 +1,20 @@
-/* 
+/*
  * Initialize angular app
  */
 var app = angular.module("queue", ["ngRoute","angular-blocks","ui.materialize","materialize-tooltip-enhancement","angularMoment","chart.js","LocalStorageModule"]);
 
 /*
- * Register factories 
+ * Register factories
  */
 app.factory("$db",db);
 
-/* 
- * Register controllers 
+/*
+ * Register controllers
  */
 app.controller("student_ctl",student_ctl);
 app.controller("ca_ctl",ca_ctl);
 app.controller("stats_ctl",stats_ctl);
 app.controller("login_ctl",login_ctl);
-app.controller("register_ctl",register_ctl);
 app.controller("admin_ctl",admin_ctl);
 app.controller("account_ctl",account_ctl);
 
@@ -42,10 +41,6 @@ app.config(function($routeProvider) {
     $routeProvider.when("/admin", {
         templateUrl : "html/admin.html",
         controller: "admin_ctl"
-    });
-    $routeProvider.when("/register", {
-        templateUrl : "html/register.html",
-        controller: "register_ctl"
     });
     $routeProvider.when("/account", {
         templateUrl : "html/account.html",

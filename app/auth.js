@@ -4,7 +4,6 @@
 
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt');
 var db = require('./db');
 var config = require('./config');
@@ -67,16 +66,13 @@ passport.use(
 
                        // user isn't in our roster
                        if (typeof validUser === 'undefined') {
-                         throw { name: 'UserCreationException',
-                                 message: 'Your Andrew ID is not marked as in 15-112' };
+                          validUser = {"role": "student"};
                        }
 
                        // user is ok - insert and pass it back up
-                       else {
                          return db.insert(getUserInfo(profile, validUser.role))
                                   .into('users')
                                   .returning('*');
-                       }
                      })
                      .then(function(insertedUser) {
                         return Promise.resolve(insertedUser[0]);
@@ -106,7 +102,7 @@ function getUserInfo(googleProfile,role) {
     }
   }
 
-  result.andrew_id = result.email.split('@andrew.cmu.edu')[0];
+  result.andrew_id = result.email;
   result.last_name = googleProfile.name.familyName;
   result.first_name = googleProfile.name.givenName;
   result.role = role;
@@ -114,34 +110,6 @@ function getUserInfo(googleProfile,role) {
 
   return result;
 }
-
-passport.use(new LocalStrategy(
-  function(andrewid, password, done) {
-    db.select().from('users')
-      .where('andrew_id', andrewid)
-      .first()
-      .then(function(user) {
-        if (typeof user === 'undefined') {
-          done(null, false);
-        } else if (user.pw_bcrypt === null) {
-          done(null, false);
-        } else {
-          bcrypt.compare(password, user.pw_bcrypt, function(err, res) {
-            if (err) {
-              done(err);
-            } else if (res) {
-              done(null, user);
-            } else {
-              done(null, false);
-            }
-          });
-        }
-      })
-      .catch(function(err) {
-        done(err);
-      });
-  })
-);
 
 var isAuthenticated = {
 

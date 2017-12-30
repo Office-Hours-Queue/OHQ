@@ -21,46 +21,7 @@
       <p>
         <a id="lets_begin" href="/api/login/googleauth" class="btn btn-large btn-flat waves-effect waves-light green darken-1 white-text">Log in</a>
       </p>
-      <div class="section">
-        <p>
-          <a id="no_google_login" href="#non-google-modal" class="all-caps grey-text text-lighten-1" modal>Don't have CMU Google Apps? Click here.</a>
-        </p>
-      </div>
     </div>
   </div>
 </div>
 
-<!-- Modal for non-google login -->
-<div id="non-google-modal" class="modal">
-    <div class="modal-content container">
-      <h4 class="center">Non-Google Log In</h4>
-
-      <p>If you don't have Google Apps (some graduate students don't), then you'll have to <a class="modal-action modal-close" href="/#/register">register</a> an account and login using this page. </p> 
-
-        <form>
-
-        <div class="row">
-            <div class="col m6 s12">
-                <div class="input-field">
-                  <label for="username">Andrew ID</label>
-                  <input id="username" name="username" type="text" class="validate" required>
-                </div>
-            </div>
-            <div class="col m6 s12">
-                <div class="input-field">
-                  <label for="password">Password</label>
-                  <input id="password" name="password" type="password" class="validate" required>
-                </div>
-            </div>
-        </div>
-
-        <div class="center row">
-            <div class="center col s12">
-                <input ng-click="login_submit()" name="no_google_submit" class="btn light-blue darken-3" type="submit" value="Sign in">
-            </div>
-        </div>
-
-        </form>
-    </div>
-    <a class="modal-action modal-close waves-effect btn-flat right" style="margin-top:-40px; margin-bottom:5px;">Close</a>
-</div>
