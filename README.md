@@ -1,7 +1,7 @@
 # 15-112-Queue
 Realtime queueing for office hours.
 
-#Running Locally
+## Running Locally
 Run postgresql locally, or run comment out the `nodeapp` parts of `docker-compose.yml` and run `docker-compose up`.
 ```
 cd app
@@ -14,12 +14,20 @@ npm start
 
 Navigate to `localhost:3000`. Don't use `127.0.0.1:3000`. It will break parts of the queue (a cookie domain issue). 
 
-#Testing Procedures
+## Testing Procedures
 - Run stress test
 - Run unit tests on all browser types
 - Test on mobile using chrome dev tools
 
-#Deployment
+## Database Environmental Variables
+
+- RDS_HOSTNAME 
+- RDS_PORT 
+- RDS_DB_NAME 
+- RDS_USERNAME 
+- RDS_PASSWORD 
+
+## Deployment
 The preferred way to deploy this app onto a production server is using Docker. The `docker-compose.yml` file builds images for our app and Postgres.
 
 Although the app can be run as a standalone, public webservice, we recommend putting a reverse proxy (like nginx) in front of it to serve static assets. This is advantageous because you can run other web services on port 80/443, and it reduces load on the app. Set up the reverse proxy along the lines of `deploy_configs/nginx.conf`. `/api/` and `/socket.io/` should be forwarded to the app, while everything else should be served statically.
