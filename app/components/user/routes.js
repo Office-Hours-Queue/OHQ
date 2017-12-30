@@ -10,23 +10,6 @@ router.get('/', isAuthenticated.errorJson, function(req, res, next) {
   res.send(req.user);
 });
 
-var UserEditSchema = {
-  type: 'object',
-  additionalProperties: false,
-  properties: {
-    email: {
-      type: 'string',
-      format: 'email',
-      required: false
-    },
-    password: {
-      type: 'string',
-      minLength: 8,
-      required: false
-    },
-  }
-};
-
 var NameEditSchema = {
   type: 'object',
   additionalProperties: false,
