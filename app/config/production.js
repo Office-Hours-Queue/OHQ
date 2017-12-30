@@ -10,7 +10,8 @@ config.GOOGLE_OAUTH2_CONFIG = {
 // Connection to database
 config.KNEX = {
   client: 'postgresql',
-  connection: 'postgres://queue:supersecret@112_queue_postgres:5432/queue'
+  connection: 'postgres://' + process.env.RDS_USERNAME + ':' + process.env.RDS_PASSWORD +
+                '@' + process.env.RDS_HOSTNAME + ':' + process.env.RDS_PORT + '/' + process.env.RDS_DB_NAME
 };
 
 // Google Spreadsheet backup ID
