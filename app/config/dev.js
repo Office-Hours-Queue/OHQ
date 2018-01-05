@@ -22,6 +22,8 @@ config.GOOGLE_SHEETS = {
 config.ADMIN_USERS = [
   'kevinzhe',
   'edryer',
+  'fmarsh',
+  'aschick'
 ];
 
 module.exports = config;
