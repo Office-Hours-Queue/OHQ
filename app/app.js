@@ -65,6 +65,7 @@ app.use('/api/login', require('./components/login').routes);
 app.use('/api/user', require('./components/user').routes );
 app.use('/api/validusers', require('./components/validusers').routes);
 app.use('/api/stats/timespent', require('./components/stats/timespent').routes);
+app.use('/api/course/', require('./components/course').routes)
 
 // hook up socket handlers
 require('./components/queue').io.queue(io.of('/queue'));
