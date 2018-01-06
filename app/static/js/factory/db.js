@@ -93,6 +93,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
     d.model = {
       "questions":[],
       "topics":[],
+      "courses":[],
       "locations":[],
       "queue_meta": [],
       "current_question": [],

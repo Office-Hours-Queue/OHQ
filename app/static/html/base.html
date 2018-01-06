@@ -9,6 +9,13 @@
       <li ng-if="user.role === 'ca'">
         <a href="/#/admin">Admin</a>
       </li>
+
+      <!-- TODO: better verification for course admin access -->
+
+      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu'"> 
+        <a href="/#/course_admin">Courses</a>
+      </li>
+      
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
@@ -50,6 +57,12 @@
       </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/admin">Admin</a>
+      </li>
+
+      <!-- TODO: better verification for course admin access -->
+      
+      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu'"> 
+        <a href="/#/course_admin">Courses</a>
       </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
