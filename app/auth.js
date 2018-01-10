@@ -26,7 +26,17 @@ passport.deserializeUser(function(id, done) {
       if (typeof user === 'undefined') {
         done('Invalid session cookie');
       } else {
-        done(null, cleanUser(user));
+        db.select('course', 'role')
+          .from('roles')
+          .where({'user': user.id})
+          .then(function(roleList) {
+            roles = {}
+            for (var i = 0; i < roleList.length; i++) {
+              roles[roleList[i].course] = roleList[i].role;
+            }
+            user.roles = roles;
+            done(null, cleanUser(user));
+          });
       }
       // returning null here prevents bluebird from complaining
       // about an unreturned promise
@@ -95,7 +105,7 @@ passport.use(
 
 function getUserInfo(googleProfile,role) {
   var result = {};
-  
+
   for (var i = 0; i < googleProfile.emails.length; i++) {
     if (googleProfile.emails[i].type === 'account') {
       result.email = googleProfile.emails[i].value;
@@ -157,6 +167,32 @@ var hasRole = function(role) {
   };
 };
 
+
+var hasCourseRole = function(role) {
+  return {
+
+    redirect: function(req, res, next) {
+      if (req.isAuthenticated() &&
+          req.user.roles[req.body.course_id] === role) {
+        next();
+      } else {
+        res.redirect('/');
+      }
+    },
+
+    errorJson: function(req, res, next) {
+      if (req.isAuthenticated() &&
+          req.user.roles[req.body.course_id] === role) {
+        next();
+      } else {
+        res.status(401).send({ name: 'AuthorizationError',
+                               message: 'Not authorized' });
+      }
+    }
+
+  };
+};
+
 function ioIsAuthenticated(socket, next) {
   if (socket.request.isAuthenticated()) {
     next();
@@ -195,5 +231,6 @@ module.exports = {
   hasRole: hasRole,
   ioIsAuthenticated: ioIsAuthenticated,
   ioHasRole: ioHasRole,
-  isAdmin: isAdmin
+  isAdmin: isAdmin,
+  hasCourseRole: hasCourseRole
 };

@@ -47,6 +47,7 @@ var stats_ctl = ['$scope', '$rootScope', '$db', '$http', function($scope, $rootS
   // handle the hours stats
   (function() {
     $scope.time_spent_answering = 0;
+		//TODO: add {params: {course: course_id}}
     $http.get('/api/stats/timespent/answering').then(function(resp) {
       $scope.time_spent_answering = resp.data.seconds;
     });
