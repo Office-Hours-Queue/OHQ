@@ -35,6 +35,7 @@ passport.deserializeUser(function(id, done) {
               roles[roleList[i].course] = roleList[i].role;
             }
             user.roles = roles;
+            user.is_admin = config.ADMIN_USERS.includes(user.andrew_id)
             done(null, cleanUser(user));
           });
       }

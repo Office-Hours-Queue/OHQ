@@ -8,17 +8,22 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 
 	/* Access to user object */
 	$rootScope.check_login = function () {
+		var set_course = function () {
+			if ($rootScope.current_course != undefined
+					&& $rootScope.current_course != $rootScope.last_set_course) {
+				$rootScope.$broadcast("user_ready");
+			}
+		}
+
 		//Get login user object
 		$http.get('/api/user', {}).then(function (data) {
 			if (data["data"]["first_name"] != undefined && $rootScope.user == undefined) {
 				$rootScope.user = data["data"];
-				if ($rootScope.current_page != "login") { return ;}
-				if ($rootScope.user["role"] == "ca" && $rootScope.current_page == "admin") { return; }
+				if ($rootScope.current_page != "login") { set_course(); return; }
+				if ($rootScope.user["role"] == "ca" && $rootScope.current_page == "admin") { set_course(); return; }
 				window.location = "/#/" + $rootScope.user["role"]
 			}
-			if ($rootScope.current_course != undefined) {
-				$rootScope.$broadcast("user_ready");
-			}
+			set_course();
 		}, function() {
 			if ($route.current.scope.name != "login") {
 				window.location = "/#/";
@@ -91,6 +96,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 		d.qsio.emit('join_course', $rootScope.current_course);
 		d.hsio.emit('join_course', $rootScope.current_course);
 		d.wsio.emit('join_course', $rootScope.current_course);
+		$rootScope.last_set_course = $rootScope.current_course;
 	});
 
 	/* Initialize Model of the database */
