@@ -1,0 +1,70 @@
+<div data-extend-template="/html/base.html">
+	<div data-block-append="content">
+	<div class="container">
+   	<br />
+	<ul class="collapsible popout" data-collapsible="accordion">
+		<li id="edit_course_li">
+			<div class="collapsible-header"><b>Edit Courses</b></div>
+			<div class="collapsible-body">
+
+			<ul class="collection">
+				<li class="{{ c.active ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="c in courses">
+                                                    <span ng-if="c.active" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(c.name, c.id, c.active)" ng-href="#modaldelete" modal ></span>
+                                                    <span ng-if="!(c.active)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(c.name, c.id, c.active); enable_disable_course()"></span>
+                                                   {{ c.number }}
+                                                </li>
+				<a ng-href="#modal_add_course" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add course</li></a>
+			</ul>
+
+
+			</div>
+		</li>
+
+		<li id="edit_user_role">
+			<div class="collapsible-header"><b>Edit User Role</b></div>
+			<div class="collapsible-body">
+			<!-- TODO -->
+		</li>
+
+		<li id="batch_role_assignment">
+			<div class="collapsible-header"><b>Batch Role Assignment</b></div>
+			<div class="collapsible-body">
+			<!-- TODO -->
+		</li>
+
+	</ul>
+	<div class="modal modal-fullheight container" id="modal_add_course">
+      <div class="modal-content">
+        <h5> Add Course </h5>
+        <div class="divider"></div>
+        <div class="section" style="padding-bottom: 0">
+			<label for="new_course_num">Course Number</label>
+			<input id="new_course_num" type="text">
+			<label for="new_course_name">Course Name</label>
+			<input id="new_course_name" type="text">
+			<button ng-click="add_course()" class="btn blue">Add Course</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+    </div>
+
+    <div class="modal bottom-sheet" id="modaldelete">
+        <div class="modal-content">
+          <div class="container">
+            <div class="row row-tight valign-wrapper">
+              <div class="col s8 valign">
+                <h5>Disable course</h5>
+                <p>Are you sure you want to disable '{{ selected_del_course }}'?</p>
+              </div>
+              <div class="col s4 valign right">
+                <a id="prefbtn" ng-click="enable_disable_course()" name="do_delete" class="modal-action modal-close waves-effect waves-light btn-flat red-text">Disable</a>
+                <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+  </div>
+</div>
+</div>

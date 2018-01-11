@@ -12,8 +12,8 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 		Materialize.toast("Minute rule updated!",2000);
 	}
 	$scope.add_student_andrew_id = function () {
-    $http.post("/api/validusers/add/student", [{ andrew_id: $("#new_student_andrew_id").val() }]);
-    Materialize.toast("Student added!",2000);
+	    $http.post("/api/validusers/add/student", [{ andrew_id: $("#new_student_andrew_id").val() }]);
+	    Materialize.toast("Student added!",2000);
 	}
 	$scope.add_ca_andrew_id = function () {
 		$http.post("/api/validusers/add/ca", [{ andrew_id: $("#new_ca_andrew_id").val() }]);

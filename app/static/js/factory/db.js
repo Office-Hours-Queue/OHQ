@@ -98,6 +98,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
     d.model = {
       "questions":[],
       "topics":[],
+      "courses":[],
       "locations":[],
       "queue_meta": [],
       "current_question": [],

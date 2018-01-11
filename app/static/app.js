@@ -16,6 +16,7 @@ app.controller("ca_ctl",ca_ctl);
 app.controller("stats_ctl",stats_ctl);
 app.controller("login_ctl",login_ctl);
 app.controller("admin_ctl",admin_ctl);
+app.controller("course_admin_ctl", course_admin_ctl);
 app.controller("account_ctl",account_ctl);
 
 /*
@@ -41,6 +42,10 @@ app.config(function($routeProvider) {
     $routeProvider.when("/admin", {
         templateUrl : "html/admin.html",
         controller: "admin_ctl"
+    });
+    $routeProvider.when("/course_admin", {
+        templateUrl : "html/course_admin.html",
+        controller: "course_admin_ctl"
     });
     $routeProvider.when("/account", {
         templateUrl : "html/account.html",
