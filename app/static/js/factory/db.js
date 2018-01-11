@@ -88,8 +88,6 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
       req();
       setInterval(req, 1000 * 60 * 10);
     });
-		console.log("YO THE COURSE:")
-		console.log($rootScope.current_course);
 		d.qsio.emit('join_course', $rootScope.current_course);
 		d.hsio.emit('join_course', $rootScope.current_course);
 		d.wsio.emit('join_course', $rootScope.current_course);
