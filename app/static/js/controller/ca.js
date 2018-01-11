@@ -2,14 +2,18 @@
 var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db,$http) {
 	$rootScope.$db = $db;
 	$rootScope.current_page = "ca";
+	//TODO: make 1 the course id you're currently in
+	console.log("Doing this one");
+	$rootScope.current_course = 1;
 	$scope.name = "ca";
 
+	console.log("And noooow doing this one");
 	$rootScope.check_login();
 
-      $scope.clicked_faq = function () {
-        ga('send', 'event','FAQ','TA clicked',$rootScope.user["andrew_id"])
-      };
-	
+  $scope.clicked_faq = function () {
+    ga('send', 'event','FAQ','TA clicked',$rootScope.user["andrew_id"])
+  };
+
   var Notify = window.Notify.default;
 
   // Attach a listener to fire notifications

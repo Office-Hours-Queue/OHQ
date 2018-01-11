@@ -21,32 +21,40 @@ module.exports.queue = function(io) {
   // cas join room cas_USERID
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
-    if (socket.request.user.role === 'ca') {
-      socket.join('ca');
-      socket.join('ca_' + socket.request.user.id);
-      oncajoin(socket, userid);
-    } else if (socket.request.user.role === 'student') {
-      socket.join('student');
-      socket.join('student_' + socket.request.user.id);
-      onstudentjoin(socket, userid);
-    } else {
-      throw new Error('Not authorized');
-    }
+    socket.on('join_course', function(course_id) {
+      if (socket.current_rooms != undefined) {
+        socket.current_rooms.forEach(socket.leave)
+      }
+      socket.current_rooms = [];
+      if (socket.request.user.roles[course_id] === 'ca') {
+        socket.join(course_id + '_ca');
+        socket.join(course_id + '_ca_' + socket.request.user.id);
+        socket.current_rooms.push(course_id + '_ca');
+        socket.current_rooms.push(course_id + '_ca_' + socket.request.user.id);
+        oncajoin(socket, userid, course_id);
+      } else {
+        socket.join(course_id + '_student');
+        socket.join(course_id + '_student_' + socket.request.user.id);
+        socket.current_rooms.push(course_id + '_student');
+        socket.current_rooms.push(course_id + '_student_' + socket.request.user.id);
+        onstudentjoin(socket, userid, course_id);
+      }
+    });
   });
 
   // these helper utilities get a handle to the corresponding
   // socket.io room
-  var cas = function() {
-    return io.to('ca');
+  var cas = function(course_id) {
+    return io.to(course_id + '_ca');
   };
-  var ca = function(userid) {
-    return io.to('ca_' + userid);
+  var ca = function(userid, course_id) {
+    return io.to(course_id + '_ca_' + userid);
   };
-  var students = function() {
-    return io.to('student');
+  var students = function(course_id) {
+    return io.to(course_id + '_student');
   };
-  var student = function(userid) {
-    return io.to('student_' + userid);
+  var student = function(userid, course_id) {
+    return io.to(course_id + '_student_' + userid);
   };
 
   //
@@ -56,73 +64,73 @@ module.exports.queue = function(io) {
 
   // when a ca joins, we need to listen for messages they send, and
   // send down the current data
-  var oncajoin = function(socket, userid) {
+  var oncajoin = function(socket, userid, course_id) {
 
     //
     // listen for CA events
     //
 
     socket.on('freeze_question', function() {
-      queue.questions.freezeCa(userid);
+      queue.questions.freezeCa(userid, course_id);
     });
 
     socket.on('kick_question', function() {
-      queue.questions.closeCa(userid, 'ca_kick');
+      queue.questions.closeCa(userid, 'ca_kick', course_id);
     });
 
     socket.on('finish_question', function() {
-      queue.questions.closeCa(userid, 'normal');
+      queue.questions.closeCa(userid, 'normal', course_id);
     });
 
     socket.on('answer_question', function() {
-      queue.questions.answer(userid);
+      queue.questions.answer(userid, course_id);
     });
 
     socket.on("return_question", function () {
-      queue.questions.return(userid);
+      queue.questions.return(userid, course_id);
     });
-    
+
     socket.on('close_queue', function() {
-      queue.meta.close(userid);
+      queue.meta.close(userid, course_id);
     });
 
     socket.on('open_queue', function() {
-      queue.meta.open(userid);
+      queue.meta.open(userid, course_id);
     });
 
     socket.on('update_minute_rule', function(minutes) {
-      queue.meta.setTimeLimit(minutes, userid);
+      queue.meta.setTimeLimit(minutes, userid, course_id);
     });
 
     socket.on("enable_topic", function (topic) {
-      queue.topics.enableTopic(topic);
+      queue.topics.enableTopic(topic, course_id);
     });
 
     socket.on("enable_location", function(loc) {
-      queue.locations.enableLocation(loc);
+      queue.locations.enableLocation(loc, course_id);
     });
 
     socket.on('delete_topic', function (topic) {
-      queue.topics.deleteTopic(topic);
+      queue.topics.deleteTopic(topic, course_id);
     });
 
     socket.on("delete_location", function (location) {
-      queue.locations.deleteLocation(location);
+      queue.locations.deleteLocation(location, course_id);
     });
 
     socket.on('add_topic', function (topic) {
-      queue.topics.addTopic(topic);
+      queue.topics.addTopic(topic, course_id);
     });
 
     socket.on('add_location', function (location) {
-      queue.locations.addLocation(location);
+      queue.locations.addLocation(location, course_id);
     });
 
     //
     // emit current ca data
     //
 
-    queue.meta.getCurrent().then(function(meta) {
+    queue.meta.getCurrent(course_id).then(function(meta) {
       socket.emit('queue_meta', makeMessage('data', [{
         id: 0,
         open: meta.open,
@@ -130,23 +138,23 @@ module.exports.queue = function(io) {
       }]));
     });
 
-    queue.questions.getOpen().then(function(questions) {
+    queue.questions.getOpen(course_id).then(function(questions) {
       questions.forEach(function(question) {
         socket.emit('questions_initial', makeCaQuestion(question));
       });
     });
 
-    queue.questions.getAnsweringUserId(userid).then(function(question) {
+    queue.questions.getAnsweringUserId(userid, course_id).then(function(question) {
       if (typeof question !== 'undefined') {
         socket.emit('current_question', makeCaQuestion(question));
       }
     });
 
-    queue.locations.getAll().then(function(locations) {
+    queue.locations.getAll(course_id).then(function(locations) {
       socket.emit('locations', makeMessage('data', locations));
     });
 
-    queue.topics.getAll().then(function(topics) {
+    queue.topics.getAll(course_id).then(function(topics) {
       socket.emit('topics', makeMessage('data', topics));
     });
 
@@ -167,25 +175,25 @@ module.exports.queue = function(io) {
 
     queue.questions.emitter.on('question_frozen', function(question) {
       if (question.initial_ca_user_id !== null) {
-        ca(question.initial_ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
+        ca(question.initial_ca_user_id, question.course_id).emit('current_question', makeMessage('delete', [question.id]));
       }
     });
 
     queue.questions.emitter.on('question_answered', function(question) {
-      ca(question.ca_user_id).emit('current_question', makeCaQuestion(question));
+      ca(question.ca_user_id, question.course_id).emit('current_question', makeCaQuestion(question));
     });
 
     queue.questions.emitter.on('question_closed', function(question) {
-      ca(question.ca_user_id).emit('current_question', makeMessage('delete', [question.id]));
-      cas().emit('questions', makeMessage('delete', [question.id]));
+      ca(question.ca_user_id, question.course_id).emit('current_question', makeMessage('delete', [question.id]));
+      cas(question.course_id).emit('questions', makeMessage('delete', [question.id]));
     });
 
-    queue.questions.emitter.on("question_returned", function (ca_user_id,question_id) {
-      ca(ca_user_id).emit('current_question', makeMessage('delete', [question_id]));
+    queue.questions.emitter.on("question_returned", function (ca_user_id,question_id,course_id) {
+      ca(ca_user_id, course_id).emit('current_question', makeMessage('delete', [question_id]));
     });
 
     queue.meta.emitter.on('update', function(meta) {
-      cas().emit('queue_meta', makeMessage('data', [{
+      cas(meta.course_id).emit('queue_meta', makeMessage('data', [{
         id: 0,
         open: meta.open,
         time_limit: meta.time_limit
@@ -193,19 +201,19 @@ module.exports.queue = function(io) {
     });
 
     queue.locations.emitter.on("new_location", function (loc) {
-      cas().emit("locations", makeMessage('data',loc));
+      cas(loc.course_id).emit("locations", makeMessage('data',loc));
     });
 
     queue.locations.emitter.on("update_location", function (loc) {
-      cas().emit("locations", makeMessage('data',loc));
+      cas(loc.course_id).emit("locations", makeMessage('data',loc));
     });
 
    queue.topics.emitter.on("new_topic", function (topic) {
-      cas().emit("topics", makeMessage('data',topic));
+      cas(topic.course_id).emit("topics", makeMessage('data',topic));
     });
 
     queue.topics.emitter.on("update_topic", function (topic) {
-      cas().emit("topics", makeMessage('data',topic));
+      cas(topic.course_id).emit("topics", makeMessage('data',topic));
     });
 
 
@@ -219,8 +227,8 @@ module.exports.queue = function(io) {
 
   // when a student joins, listen for messages they send, and
   // send down the current data
-  var onstudentjoin = function(socket, userid) {
-  
+  var onstudentjoin = function(socket, userid, course_id) {
+
     //
     // listen for student events
     //
@@ -236,43 +244,43 @@ module.exports.queue = function(io) {
 
     socket.on('update_question', function(question) {
       try {
-        queue.questions.updateMeta(userid, question);
+        queue.questions.updateMeta(userid, question, course_id);
       } catch (error) {
         console.log(error);
       }
     });
 
     socket.on('delete_question', function() {
-      queue.questions.closeStudent(userid);
+      queue.questions.closeStudent(userid, course_id);
     });
 
     socket.on('freeze_question', function() {
-      queue.questions.freezeStudent(userid);
+      queue.questions.freezeStudent(userid, course_id);
     });
 
     socket.on('unfreeze_question', function() {
-      queue.questions.unfreezeStudent(userid);
+      queue.questions.unfreezeStudent(userid, course_id);
     });
 
     //
     // emit the current data on connect
     //
 
-    getStudentMeta().then(function(meta) {
+    getStudentMeta(course_id).then(function(meta) {
       socket.emit('queue_meta', makeMessage('data', [meta]));
     });
 
-    queue.locations.getEnabled().then(function(locations) {
+    queue.locations.getEnabled(course_id).then(function(locations) {
       socket.emit('locations', makeMessage('data', locations));
     });
 
-    queue.topics.getEnabled().then(function(topics) {
+    queue.topics.getEnabled(course_id).then(function(topics) {
       socket.emit('topics', makeMessage('data', topics));
     });
 
-    queue.questions.getOpenUserId(userid).then(function(question) {
+    queue.questions.getOpenUserId(userid, course_id).then(function(question) {
       if (typeof question !== 'undefined') {
-        student(userid).emit('questions', makeStudentQuestion(question));
+        student(userid, course_id).emit('questions', makeStudentQuestion(question));
       }
     });
 
@@ -292,7 +300,7 @@ module.exports.queue = function(io) {
 
     queue.questions.emitter.on('question_answered', function(question) {
       // tell everyone their new position on the queue
-      queue.questions.getOpen().then(function(questions) {
+      queue.questions.getOpen(question.course_id).then(function(questions) {
         questions.forEach(emitStudentQuestion);
       });
       //notify student that ca is coming
@@ -301,11 +309,11 @@ module.exports.queue = function(io) {
 
     queue.questions.emitter.on('question_closed', function(question) {
       // tell everyone their new position on the queue
-      queue.questions.getOpen().then(function(questions) {
+      queue.questions.getOpen(question.course_id).then(function(questions) {
         questions.forEach(emitStudentQuestion);
       });
       // notify student their question was closed
-      student(question.student_user_id).emit('questions', makeMessage('delete', [question.id]));
+      student(question.student_user_id, question.course_id).emit('questions', makeMessage('delete', [question.id]));
     });
 
     // listen for updates on queue_meta
@@ -317,56 +325,57 @@ module.exports.queue = function(io) {
     queue.questions.emitter.on('question_closed', emitStudentMeta);
 
     queue.locations.emitter.on("new_location", function (loc) {
-      students().emit("locations", makeMessage('data',loc));
+      students(loc.course_id).emit("locations", makeMessage('data',loc));
     });
 
     queue.locations.emitter.on("update_location", function (loc) {
       if (!(loc[0].enabled)) {
-        students().emit("locations",makeMessage('delete', [loc[0].id] ));
+        students(loc.course_id).emit("locations",makeMessage('delete', [loc[0].id] ));
       } else {
-        students().emit("locations", makeMessage('data',loc));
+        students(loc.course_id).emit("locations", makeMessage('data',loc));
       }
     });
 
    queue.topics.emitter.on("new_topic", function (topic) {
-      students().emit("topics", makeMessage('data',topic));
+      students(topic.course_id).emit("topics", makeMessage('data',topic));
     });
 
     queue.topics.emitter.on("update_topic", function (topic) {
       if (!(topic[0].enabled)){
-        students().emit('topics', makeMessage('delete', [topic[0].id] ));
+        students(topic.course_id).emit('topics', makeMessage('delete', [topic[0].id] ));
       } else {
-        students().emit("topics", makeMessage('data',topic));
+        students(topic.course_id).emit("topics", makeMessage('data',topic));
       }
     });
 
   })();
 
-  function getStudentMeta() {
+  function getStudentMeta(course_id) {
     return Promise.join(
-        queue.meta.getCurrent(),
-        queue.questions.getOpenCount(),
+        queue.meta.getCurrent(course_id),
+        queue.questions.getOpenCount(course_id),
         function(meta, count) {
           return Promise.resolve({
             id: 0,
             open: meta.open,
-            num_questions: count
+            num_questions: count,
+            course_id: course_id
           });
         });
   }
 
   function emitStudentMeta(meta) {
-    getStudentMeta().then(function(meta) {
-      students().emit('queue_meta', makeMessage('data', [meta]));
+    getStudentMeta(meta.course_id).then(function(meta) {
+      students(meta.course_id).emit('queue_meta', makeMessage('data', [meta]));
     });
   }
 
   function emitCaQuestion(question) {
-    cas().emit('questions', makeCaQuestion(question));  
+    cas(question.course_id).emit('questions', makeCaQuestion(question));
   };
 
   function emitStudentQuestion(question) {
-    student(question.student_user_id).emit('questions', makeStudentQuestion(question));
+    student(question.student_user_id, question.course_id).emit('questions', makeStudentQuestion(question));
   };
 
 };
@@ -388,39 +397,39 @@ module.exports.history = function(io) {
   // cas join room cas_USERID
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
-    if (socket.request.user.role === 'ca') {
-      socket.join('ca');
-      socket.join('ca_' + socket.request.user.id);
-      oncajoin(socket, userid);
-    } else if (socket.request.user.role === 'student') {
-      socket.join('student');
-      socket.join('student_' + socket.request.user.id);
-      onstudentjoin(socket, userid);
-    } else {
-      throw new Error('Not authorized');
-    }
+    socket.on('join_course', function(course_id) {
+      if (socket.request.user.roles[course_id] === 'ca') {
+        socket.join(course_id + '_ca');
+        socket.join(course_id + '_ca_' + socket.request.user.id);
+        oncajoin(socket, userid, course_id);
+      } else {
+        socket.join(course_id + '_student');
+        socket.join(course_id + '_student_' + socket.request.user.id);
+        onstudentjoin(socket, userid, course_id);
+      }
+    });
   });
 
   // these helper utilities get a handle to the corresponding
   // socket.io room
-  var cas = function() {
-    return io.to('ca');
+  var cas = function(course_id) {
+    return io.to(course_id + '_ca');
   };
-  var ca = function(userid) {
-    return io.to('ca_' + userid);
+  var ca = function(userid, course_id) {
+    return io.to(course_id + '_ca_' + userid);
   };
-  var students = function() {
-    return io.to('student');
+  var students = function(course_id) {
+    return io.to(course_id + '_student');
   };
-  var student = function(userid) {
-    return io.to('student_' + userid);
+  var student = function(userid, course_id) {
+    return io.to(course_id + '_student_' + userid);
   };
 
   // on connect, send down the latest n closed questions
-  var oncajoin = function(socket, userid) {
+  var oncajoin = function(socket, userid, course_id) {
     socket.on('get_last_n', function(n) {
       if (Number.isInteger(n)) {
-        queue.questions.getLatestClosed(n).then(function(questions) {
+        queue.questions.getLatestClosed(n, course_id).then(function(questions) {
           questions.forEach(function(question) {
             socket.emit('questions', makeCaQuestion(question));
           });
@@ -429,10 +438,10 @@ module.exports.history = function(io) {
     });
   };
 
-  var onstudentjoin = function(socket, userid) {
+  var onstudentjoin = function(socket, userid, course_id) {
     socket.on('get_last_n', function(n) {
       if (Number.isInteger(n)) {
-        queue.questions.getLatestClosedUserId(n, userid).then(function(questions) {
+        queue.questions.getLatestClosedUserId(n, userid, course_id).then(function(questions) {
           questions.forEach(function(question) {
             socket.emit('questions', makeStudentQuestion(question));
           });
@@ -444,10 +453,10 @@ module.exports.history = function(io) {
   // listen for new closed questions, and send them to cas + student
   (function () {
     queue.questions.emitter.on('question_closed', function(question) {
-      cas().emit('questions', makeCaQuestion(question));
+      cas(question.course_id).emit('questions', makeCaQuestion(question));
     });
     queue.questions.emitter.on('question_closed', function(question) {
-      student(question.student_user_id).emit('questions', makeStudentQuestion(question));
+      student(question.student_user_id, question.course_id).emit('questions', makeStudentQuestion(question));
     });
   })();
 
@@ -468,24 +477,25 @@ module.exports.waittime = function(io) {
   // handle subsequent client -> server communications
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
-    if (socket.request.user.role === 'ca') {
-      socket.join('ca');
-      oncajoin(socket, userid);
-    } else if (socket.request.user.role === 'student') {
-      socket.emit('Not authorized');
-    } else {
-      throw new Error('Not authorized');
-    }
+    socket.on('join_course', function(course_id) {
+      if (socket.request.user.roles[course_id] === 'ca') {
+        socket.join(course_id + '_ca');
+        socket.join(course_id + '_ca_' + socket.request.user.id);
+        oncajoin(socket, userid, course_id);
+      } else {
+        socket.emit('Not authorized')
+      }
+    });
   });
 
-  var oncajoin = function(socket, userid) {
+  var oncajoin = function(socket, userid, course_id) {
     var now = new Date();
     var tminus10 = new Date(now - 1000 * 60 * 10);
     var tminus60 = new Date(now - 1000 * 60 * 60);
 
     socket.on('get_latest', function() {
-      Promise.join(queue.questions.getWaitTime(tminus60, now),
-                queue.questions.getAverageWaitTime(tminus10, now),
+      Promise.join(queue.questions.getWaitTime(tminus60, now, course_id),
+                queue.questions.getAverageWaitTime(tminus10, now, course_id),
                 function(historic, current) {
                   for (var i = 0; i < historic.length; i++) {
                     historic[i].id = historic[i].time_period.getTime();
@@ -539,7 +549,7 @@ function makeCaQuestion(question) {
     on_time: question.on_time,
     off_time: question.off_time,
     help_time: question.help_time
-  }]); 
+  }]);
 };
 
 function makeStudentQuestion(question) {

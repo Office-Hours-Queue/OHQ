@@ -1,9 +1,9 @@
-/* 
- * Access to the database via socketio 
+/*
+ * Access to the database via socketio
  *  attempts to model the actual schema as well as possible
- *  usable for both ca,student views 
+ *  usable for both ca,student views
  */
-var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
+var db = ["$rootScope","$http","$route","localStorageService",function ($rootScope,$http,$route,lss) {
 	var d = {};
 
 	/* Access to user object */
@@ -12,21 +12,23 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		$http.get('/api/user', {}).then(function (data) {
 			if (data["data"]["first_name"] != undefined && $rootScope.user == undefined) {
 				$rootScope.user = data["data"];
-				$rootScope.$broadcast("user_ready");
 				if ($rootScope.current_page != "login") { return ;}
 				if ($rootScope.user["role"] == "ca" && $rootScope.current_page == "admin") { return; }
 				window.location = "/#/" + $rootScope.user["role"]
-			} 
+			}
+			if ($rootScope.current_course != undefined) {
+				$rootScope.$broadcast("user_ready");
+			}
 		}, function() {
 			if ($route.current.scope.name != "login") {
-				window.location = "/#/"; 
+				window.location = "/#/";
 			}
 		});
 	};
 
 	/* Connect to socketio when the user exists */
 	/* Initialize SocketIO */
-	$rootScope.$on("user_ready", function () {
+	$rootScope.$on("user_ready", function (course_id) {
 		console.log("CONNECTING TO SIO")
 		var sio_opts = {
 			"reconnection":true,
@@ -86,6 +88,11 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
       req();
       setInterval(req, 1000 * 60 * 10);
     });
+		console.log("YO THE COURSE:")
+		console.log($rootScope.current_course);
+		d.qsio.emit('join_course', $rootScope.current_course);
+		d.hsio.emit('join_course', $rootScope.current_course);
+		d.wsio.emit('join_course', $rootScope.current_course);
 	});
 
 	/* Initialize Model of the database */
@@ -108,7 +115,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		var payload = event["payload"];
 		console.log(event_type,payload,db_name)
 		switch (event_type) {
-			case "data": 
+			case "data":
 				for (var i = 0; i < payload.length; i++) {
 					var db_index = get_index_by_id(d.model[db_name],payload[i].id)
 					if (db_index == -1) {
@@ -120,7 +127,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 					}
 				}
 				break;
-			case "delete": 
+			case "delete":
 				for (var i = 0; i < payload.length; i++) {
 					var qid = payload[i]
 					var db_index = get_index_by_id(d.model[db_name],qid)
@@ -132,13 +139,13 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		}
 		$rootScope.$apply();
 	};
-	
+
 	/* Events to send */
 	d.add_question = function(payload) {
 		console.log(payload)
 		d.qsio.emit("new_question",payload)
 	}
-	d.delete_question = function() { 
+	d.delete_question = function() {
 		console.log("delete")
 		d.qsio.emit("delete_question", {})
 	}
@@ -219,14 +226,15 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	d.enable_loc = function (loc) {
 		d.qsio.emit('enable_location', loc);
 	}
+
 	/* Helpers */
 	d.get_field_by_id = function(fields,name,id) {
 		for (var i = 0; i < fields.length; i++) {
 			if (fields[i].id == id) {
 				return fields[i][name]
 			}
-		}	
-		return ""	
+		}
+		return ""
 	}
 	d.get_topic_by_id = function(id) { return d.get_field_by_id(d.model["topics"],"topic",id)}
 	d.get_location_by_id = function(id) { return d.get_field_by_id(d.model["locations"],"location",id) }
@@ -238,7 +246,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	}
 	d.is_frozen = function () {
 		if (d.model["questions"].length == 0) {
-			return false	
+			return false
 		}
 		return d.model["questions"][0].is_frozen
 	}
@@ -249,7 +257,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	}
 	d.get_question_list = function() {
 		if ($rootScope.show_history) {
-			return d.model["questions"]	
+			return d.model["questions"]
 		} else {
 			return d.model["questions"].filter(on_queue_or_frozen);
 		}
@@ -257,7 +265,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 	d.has_active_question = function () {
 		for (var i = 0; i < d.model["questions"].length; i++) {
 			if (d.model["questions"][i].state == "on_queue" || d.model["questions"][i].state == "frozen") {
-				return true; 
+				return true;
 			}
 		}
 		return false
@@ -268,7 +276,7 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 				return "TA answering"
 			case "frozen":
 				return "Frozen"
-			case "on_queue": 
+			case "on_queue":
 				return "On the Queue"
 			case "closed: self_kick":
 				return "Self closed"
@@ -281,6 +289,5 @@ var db = ["$rootScope","$http","$route",function ($rootScope,$http,$route) {
 		}
 	}
 
-
-	return d 
+	return d
 }];

@@ -67,6 +67,7 @@ passport.use(
           // user doesn't exist already
           else {
 
+            //TODO: remove roles from here
             // first, check user's role
             return db.select('role')
                      .from('valid_andrew_ids')
@@ -214,6 +215,19 @@ function ioHasRole(role) {
       }
     }
     next(new Error('Not authorized'));
+  };
+}
+
+function ioHasCourseRole(role, course_id) {
+  return function(socket, next) {
+    if (socket.request.isAuthenticated()) {
+      if (socket.request.user.roles[course_id] === role) {
+        next();
+        return;
+      } else {
+        next(new Error('Not authorized'));
+      }
+    }
   };
 }
 
