@@ -1,7 +1,7 @@
 /*
  * Initialize angular app
  */
-var app = angular.module("queue", ["ngRoute","angular-blocks","ui.materialize","materialize-tooltip-enhancement","angularMoment","chart.js","LocalStorageModule"]);
+var app = angular.module("queue", ["ngCsvImport","ngRoute","angular-blocks","ui.materialize","materialize-tooltip-enhancement","angularMoment","chart.js","LocalStorageModule"]);
 
 /*
  * Register factories

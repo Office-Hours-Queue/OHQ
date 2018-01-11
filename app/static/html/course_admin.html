@@ -23,13 +23,48 @@
 		<li id="edit_user_role">
 			<div class="collapsible-header"><b>Edit User Role</b></div>
 			<div class="collapsible-body">
-			<!-- TODO -->
+
+      <p>
+        Change the role of anyone in the database. If not in the database, the person may be added.
+        <br/>
+        <br/>
+        <label for="edit_role_andrew_id">AndrewID</label>
+        <input id="edit_role_andrew_id" type="text">
+        <label for="course_num">Course Number</label>
+        <input id="course_num" type="text">
+        <label for="editRole">Role</label>
+        <select id="editRole" ng-model="edit_user.role" material-select>
+          <option value="student">Student</option>
+          <option value="ca">Instructor</option>
+        </select>
+        <button id="update_role_btn" ng-click="edit_role()" class="btn blue">Edit</button>
+
+      </p>
 		</li>
 
 		<li id="batch_role_assignment">
 			<div class="collapsible-header"><b>Batch Role Assignment</b></div>
 			<div class="collapsible-body">
-			<!-- TODO -->
+			
+      <p>
+        Add people to a course with a defined role. Please use a CSV (comma-separated) file!
+        <br/>
+        <br/>
+        <label for="course_num">Course Number</label>
+        <input id="course_num" type="text">
+        <label for="batchRole">Role</label>
+        <select id="batchRole" ng-model="edit_user.role" material-select>
+          <option value="student">Student</option>
+          <option value="ca">Instructor</option>
+        </select>
+        <ng-csv-import content="csv.content"
+                       header="csv.header" 
+                       separator="csv.separator"
+                       result="csv.result">
+        </ng-csv-import>
+        <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Edit</button>
+
+      </p>
 		</li>
 
 	</ul>
@@ -42,6 +77,8 @@
 			<input id="new_course_num" type="text">
 			<label for="new_course_name">Course Name</label>
 			<input id="new_course_name" type="text">
+      <label for="new_course_ca">Initial Instructor AndrewID</label>
+      <input id="new_course_ca" type="text">
 			<button ng-click="add_course()" class="btn blue">Add Course</button>
         </div>
       </div>
