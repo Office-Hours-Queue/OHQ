@@ -11,6 +11,7 @@ app.factory("$db",db);
 /*
  * Register controllers
  */
+app.controller("landing_ctl",landing_ctl);
 app.controller("student_ctl",student_ctl);
 app.controller("ca_ctl",ca_ctl);
 app.controller("stats_ctl",stats_ctl);
@@ -23,6 +24,10 @@ app.controller("account_ctl",account_ctl);
  *  Setup routes
  */
 app.config(function($routeProvider) {
+    $routeProvider.when("/courses", {
+        templateUrl : "html/landing.html",
+        controller: "landing_ctl"
+    });
     $routeProvider.when("/", {
         templateUrl : "html/login.html",
         controller: "login_ctl"
