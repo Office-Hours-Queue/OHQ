@@ -87,7 +87,19 @@
 		<li id="batch_role_assignment">
 			<div class="collapsible-header"><b>Batch Role Assignment</b></div>
 			<div class="collapsible-body">
-			<!-- TODO -->
+			
+			<p>
+		        Add people to a course with a defined role. Please use a CSV (comma-separated) file!
+		        <br/>
+		        <br/>
+		        <label for="batchRole">Role</label>
+		        <select id="batchRole" ng-model="edit_user.role" material-select>
+		          <option value="student">Student</option>
+		          <option value="ca">Instructor</option>
+		        </select>
+		        <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Edit</button>
+
+		      </p>
 		</li>
 	</ul>
 

@@ -45,4 +45,7 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 			$db.enable_loc($scope.selected_del_id);
 		}
 	}
+	$scope.batch_role = function () {
+    
+  	}
 }];
