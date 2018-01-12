@@ -2,7 +2,7 @@
   <div class="nav-wrapper light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]">
     <div id="name_brand" class="brand-logo center">{{ user ? user.first_name : 'Connecting...' }}</div>
 
-    <ul class="left hide-on-med-and-down">
+    <ul ng-if="current_page !== 'landing'" class="left hide-on-med-and-down">
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca">Queue</a>
       </li>
@@ -12,7 +12,8 @@
 
       <!-- TODO: better verification for course admin access -->
 
-      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu'"> 
+      <!-- <li ng-if="user.is_admin"> -->
+      <li>
         <a href="/#/course_admin">Courses</a>
       </li>
       
@@ -52,22 +53,21 @@
     </a>
 
     <ul class="side-nav" id="mobile-menu">
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="user.role === 'ca' && current_page !== 'landing'">
         <a href="/#/ca">Queue</a>
       </li>
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="user.role === 'ca' && current_page !== 'landing'">
         <a href="/#/admin">Admin</a>
       </li>
 
-      <!-- TODO: better verification for course admin access -->
-      
-      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu'"> 
+      <!-- <li ng-if="user.is_admin && current_page !== 'landing'"> -->
+      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu' && current_page !== 'landing'"> 
         <a href="/#/course_admin">Courses</a>
       </li>
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="user.role === 'ca' && current_page !== 'landing'">
         <a href="/#/ca/stats">Stats</a>
       </li>
-      <li ng-if="user.role === 'student'">
+      <li ng-if="user.role === 'student' && current_page !== 'landing'">
         <a href="/#/student">Queue</a>
       </li>
       <li>
