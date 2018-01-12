@@ -32,12 +32,14 @@ module.exports.queue = function(io) {
         socket.current_rooms.push(course_id + '_ca');
         socket.current_rooms.push(course_id + '_ca_' + socket.request.user.id);
         oncajoin(socket, userid, course_id);
+        socket.emit('joined');
       } else {
         socket.join(course_id + '_student');
         socket.join(course_id + '_student_' + socket.request.user.id);
         socket.current_rooms.push(course_id + '_student');
         socket.current_rooms.push(course_id + '_student_' + socket.request.user.id);
         onstudentjoin(socket, userid, course_id);
+        socket.emit('joined');
       }
     });
   });
@@ -201,19 +203,19 @@ module.exports.queue = function(io) {
     });
 
     queue.locations.emitter.on("new_location", function (loc) {
-      cas(loc.course_id).emit("locations", makeMessage('data',loc));
+      cas(loc[0].course_id).emit("locations", makeMessage('data',loc));
     });
 
     queue.locations.emitter.on("update_location", function (loc) {
-      cas(loc.course_id).emit("locations", makeMessage('data',loc));
+      cas(loc[0].course_id).emit("locations", makeMessage('data',loc));
     });
 
    queue.topics.emitter.on("new_topic", function (topic) {
-      cas(topic.course_id).emit("topics", makeMessage('data',topic));
+      cas(topic[0].course_id).emit("topics", makeMessage('data',topic));
     });
 
     queue.topics.emitter.on("update_topic", function (topic) {
-      cas(topic.course_id).emit("topics", makeMessage('data',topic));
+      cas(topic[0].course_id).emit("topics", makeMessage('data',topic));
     });
 
 
@@ -325,26 +327,26 @@ module.exports.queue = function(io) {
     queue.questions.emitter.on('question_closed', emitStudentMeta);
 
     queue.locations.emitter.on("new_location", function (loc) {
-      students(loc.course_id).emit("locations", makeMessage('data',loc));
+      students(loc[0].course_id).emit("locations", makeMessage('data',loc));
     });
 
     queue.locations.emitter.on("update_location", function (loc) {
       if (!(loc[0].enabled)) {
-        students(loc.course_id).emit("locations",makeMessage('delete', [loc[0].id] ));
+        students(loc[0].course_id).emit("locations",makeMessage('delete', [loc[0].id] ));
       } else {
-        students(loc.course_id).emit("locations", makeMessage('data',loc));
+        students(loc[0].course_id).emit("locations", makeMessage('data',loc));
       }
     });
 
    queue.topics.emitter.on("new_topic", function (topic) {
-      students(topic.course_id).emit("topics", makeMessage('data',topic));
+      students(topic[0].course_id).emit("topics", makeMessage('data',topic));
     });
 
     queue.topics.emitter.on("update_topic", function (topic) {
       if (!(topic[0].enabled)){
-        students(topic.course_id).emit('topics', makeMessage('delete', [topic[0].id] ));
+        students(topic[0].course_id).emit('topics', makeMessage('delete', [topic[0].id] ));
       } else {
-        students(topic.course_id).emit("topics", makeMessage('data',topic));
+        students(topic[0].course_id).emit("topics", makeMessage('data',topic));
       }
     });
 
@@ -402,10 +404,12 @@ module.exports.history = function(io) {
         socket.join(course_id + '_ca');
         socket.join(course_id + '_ca_' + socket.request.user.id);
         oncajoin(socket, userid, course_id);
+        socket.emit('joined');
       } else {
         socket.join(course_id + '_student');
         socket.join(course_id + '_student_' + socket.request.user.id);
         onstudentjoin(socket, userid, course_id);
+        socket.emit('joined');
       }
     });
   });
@@ -482,6 +486,7 @@ module.exports.waittime = function(io) {
         socket.join(course_id + '_ca');
         socket.join(course_id + '_ca_' + socket.request.user.id);
         oncajoin(socket, userid, course_id);
+        socket.emit('joined');
       } else {
         socket.emit('Not authorized')
       }
