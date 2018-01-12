@@ -67,7 +67,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 		d.usio.on("cas_active", function (payload) { handle_db_update("cas_active",payload); });
 		d.hsio.on("questions", function(payload) { handle_db_update("closed_questions", payload); });
     d.wsio.on("wait_time", function(payload) { handle_db_update("wait_time", payload); });
-		d.qsio.on("connect", function() {
+		d.qsio.on("joined", function() {
       $rootScope.$apply(function() {
 			  setEmptyModel();
 			  d.io_connected = true;
@@ -83,10 +83,10 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 				window.location = '/api/login/endauth';
 			}
 		});
-		d.hsio.on("connect", function() {
+		d.hsio.on("joined", function() {
 			d.hsio.emit('get_last_n', d.n_history);
 		});
-    d.wsio.on("connect", function() {
+    d.wsio.on("joined", function() {
       var req = function() {
         d.wsio.emit('get_latest');
       };
@@ -96,6 +96,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 		d.qsio.emit('join_course', $rootScope.current_course);
 		d.hsio.emit('join_course', $rootScope.current_course);
 		d.wsio.emit('join_course', $rootScope.current_course);
+		d.usio.emit('join_course', $rootScope.current_course);
 		$rootScope.last_set_course = $rootScope.current_course;
 	});
 
@@ -115,6 +116,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
   setEmptyModel();
 
 	var handle_db_update = function(db_name,event) {
+		console.log("DB updated")
 		var event_type = event["type"];
 		var payload = event["payload"];
 		console.log(event_type,payload,db_name)

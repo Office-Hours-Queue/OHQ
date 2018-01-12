@@ -88,7 +88,7 @@ var questions = (function() {
         throw new Error("Consistency error - row is nested");
       }
 
-      var emitEvent = function(eventName) {
+      var emitEvent = function(eventName, course_id) {
         selectQuestionId(id, course_id).then(function(question) {
           result.emitter.emit(eventName, question);
         });
@@ -100,7 +100,7 @@ var questions = (function() {
       switch (field) {
         case 'frozen_time':
           debug('question_frozen');
-          emitEvent('question_frozen');
+          emitEvent('question_frozen', course_id);
           break;
         case 'frozen_end_time':
           // clear the pending event, and schedule a new one sometime
@@ -113,11 +113,11 @@ var questions = (function() {
           break;
         case 'help_time':
           if (was_changed("frozen_time",changes)) { break; }
-          emitEvent('question_answered');
+          emitEvent('question_answered', course_id);
           break;
         case 'off_time':
           debug('question_closed');
-          emitEvent('question_closed');
+          emitEvent('question_closed', course_id);
           if (pendingUnfreezeNotifications[id] !== undefined) {
             debug("delete freeze timer")
             clearTimeout(pendingUnfreezeNotifications[id]);
@@ -137,7 +137,7 @@ var questions = (function() {
         case "topic_id":
         case "location_id":
         case "help_text":
-          emitEvent('question_update');
+          emitEvent('question_update', course_id);
           break;
       }
     };
@@ -159,14 +159,16 @@ var questions = (function() {
 
   // When a user is edited, re-send their question
   dbEvents.users.on("update", function (new_user, old_user) {
-    if (new_user.first_name !== old_user.first_name && new_user.role === 'student') {
+    if (new_user.first_name !== old_user.first_name) {
       db('courses').select('id').then(function (courses) {
         for (var i = 0; i < courses.length; i++) {
-          selectOpenQuestionUserId(new_user.id, courses[i].id).then(function(question) {
-            if (question) {
-              result.emitter.emit('question_update', question);
-            }
-          });
+          if (new_user.roles[courses[i]] === 'student') {
+            selectOpenQuestionUserId(new_user.id, courses[i].id).then(function(question) {
+              if (question) {
+                result.emitter.emit('question_update', question);
+              }
+            });
+          }
         }
       });
     }
@@ -888,7 +890,7 @@ function enableTopic(topic, course_id) {
   }).return(null);
 }
 
-function deleteTopic(topic) {
+function deleteTopic(topic, course_id) {
   return db("topics").where({"id": topic, "course_id": course_id}).update({
     "enabled": false
   }).return(null);

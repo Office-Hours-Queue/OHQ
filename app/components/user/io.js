@@ -12,27 +12,34 @@ module.exports = function(io) {
   // cas join room cas_USERID
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
-    if (socket.request.user.role === 'ca') {
-      socket.join('cas');
-      socket.join('ca_' + socket.request.user.id);
-      oncajoin(socket, userid);
-    } else if (socket.request.user.role === 'student') {
-      socket.join('students');
-      socket.join('student_' + socket.request.user.id);
-      onstudentjoin(socket, userid);
-    } else {
-      throw new Error('Not authorized');
-    }
+    socket.join('student_' + socket.request.user.id);
+    socket.on('join_course', function(course_id) {
+      if (socket.current_rooms != undefined) {
+        socket.current_rooms.forEach(socket.leave)
+      }
+      socket.current_rooms = [];
+      if (socket.request.user.roles[course_id] === 'ca') {
+        socket.join(course_id + '_ca');
+        socket.join(course_id + '_ca_' + socket.request.user.id);
+        socket.current_rooms.push(course_id + '_ca');
+        socket.current_rooms.push(course_id + '_ca_' + socket.request.user.id);
+        oncajoin(socket, userid, course_id);
+        socket.emit('joined');
+      } else {
+        socket.join(course_id + '_student_' + socket.request.user.id);
+        socket.current_rooms.push(course_id + '_student_' + socket.request.user.id);
+        onstudentjoin(socket, userid, course_id);
+        socket.emit('joined');
+      }
+    });
   });
 
-  var ca = function(userid) {
-    return io.to('ca_' + userid);
+  var cas = function(course_id) {
+    return io.to(course_id + '_ca');
   };
-
-  var cas = function() {
-    return io.to('cas');
+  var ca = function(userid, course_id) {
+    return io.to(course_id + '_ca_' + userid);
   };
-
   var student = function(userid) {
     return io.to('student_' + userid);
   };
@@ -40,17 +47,17 @@ module.exports = function(io) {
 
   // when a ca joins, send down the current data.
   // there is nothing to listen for.
-  var oncajoin = function(socket, userid) {
+  var oncajoin = function(socket, userid, course_id) {
 
     // emit the current data
-    users.users.getActiveCas().then(function(activeCas) {
+    users.users.getActiveCas(course_id).then(function(activeCas) {
       socket.emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
-    
+
   };
 
   // there's nothing to do on student join
-  var onstudentjoin = function(socket, userid) {
+  var onstudentjoin = function(socket, userid, course_id) {
 
   };
 
@@ -59,29 +66,16 @@ module.exports = function(io) {
   //
 
   (function() {
-    
-    users.users.emitter.on('cas_active', function(activeCas) {
-      cas().emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
+
+    users.users.emitter.on('cas_active', function(activeCas, course_id) {
+      cas(course_id).emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
     });
 
     users.users.emitter.on('name_change', function(new_user) {
-      switch (new_user.role) {
-        case 'student':
-          student(new_user.id).emit('name_change', makeMessage('data', [{
-            id : new_user.id,
-            first_name: new_user.first_name
-          }]));
-          break;
-        case 'ca':
-          ca(new_user.id).emit('name_change', makeMessage('data', [{
-            id : new_user.id,
-            first_name: new_user.first_name
-          }]));
-          users.users.getActiveCas().then(function(activeCas) {
-            cas().emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
-          });
-          break;
-      }
+      student(new_user.id).emit('name_change', makeMessage('data', [{
+        id : new_user.id,
+        first_name: new_user.first_name
+      }]));
     });
 
   })();

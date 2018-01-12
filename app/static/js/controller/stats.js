@@ -15,6 +15,7 @@ var stats_ctl = ['$scope', '$rootScope', '$db', '$http', function($scope, $rootS
   // handle the question count stats
   (function() {
     var socket = io('/stats/counts');
+		socket.emit('join_course', $rootScope.current_course);
 
     $scope.ca_counts = [];
     $scope.questions_answered = 0;
@@ -47,8 +48,7 @@ var stats_ctl = ['$scope', '$rootScope', '$db', '$http', function($scope, $rootS
   // handle the hours stats
   (function() {
     $scope.time_spent_answering = 0;
-		//TODO: add {params: {course: course_id}}
-    $http.get('/api/stats/timespent/answering').then(function(resp) {
+    $http.get('/api/stats/timespent/answering', {params: {course_id: $rootScope.current_course}}).then(function(resp) {
       $scope.time_spent_answering = resp.data.seconds;
     });
   })();
