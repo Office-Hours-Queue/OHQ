@@ -118,7 +118,7 @@ function selectActiveCas(course_id) {
   return selectDefaultUserFields()
     .leftJoin('roles AS r', function() {
       this.on('u.id', 'r.user')
-          .andOn('r.course', course_id);
+          .andOn(db.raw('r.course = ' + course_id));
     })
     .where('r.role', 'ca')
     .whereIn('u.id', function() {

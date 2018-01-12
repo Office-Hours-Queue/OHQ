@@ -1,8 +1,6 @@
 var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($scope,$rootScope,$db,lss) {
   $rootScope.$db = $db;
   $rootScope.current_page = "student";
-  //TODO: make 1 the course id you're currently in
-  $rootScope.current_course = 1;
   $scope.name = "student";
   $rootScope.check_login();
 
@@ -87,7 +85,7 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
         "location_id": parseInt($scope.new_selected.location),
         "topic_id": parseInt($scope.new_selected.topic),
         "help_text": $scope.new_selected.help_text,
-        "course_id": $rootScope.current_course
+        "course_id": sessionStorage.getItem('current_course')
       });
       $scope.new_selected.help_text = '';
       $scope.new_selected.topic = '';

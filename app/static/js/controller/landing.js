@@ -2,6 +2,7 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	$rootScope.$db = $db;
 	$rootScope.current_page = "landing";
 	$scope.name = "landing";
+	sessionStorage.removeItem('current_course');
 	$rootScope.check_login();
 
 	$scope.is_pinned = function (course_id) {
@@ -52,9 +53,7 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	$scope.get_courses();
 
 	$scope.set_course = function (course_id) {
-		$rootScope.current_course = course_id;
+		sessionStorage.setItem('current_course', course_id);
 		$rootScope.check_login();
-		// console.log($rootScope.user);
-		window.location = "/#/" + $rootScope.user["role"]
 	}
 }];

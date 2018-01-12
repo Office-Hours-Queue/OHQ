@@ -9,9 +9,11 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 	/* Access to user object */
 	$rootScope.check_login = function () {
 		var set_course = function () {
-			if ($rootScope.current_course != undefined
-					&& $rootScope.current_course != $rootScope.last_set_course) {
+			if (sessionStorage.getItem('current_course') != undefined) {
 				$rootScope.$broadcast("user_ready");
+				if ($rootScope.current_page == "landing") {
+					window.location = "/#/" + ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student")
+				}
 			}
 		}
 
@@ -19,9 +21,11 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 		$http.get('/api/user', {}).then(function (data) {
 			if (data["data"]["first_name"] != undefined && $rootScope.user == undefined) {
 				$rootScope.user = data["data"];
-				if ($rootScope.current_page != "login") { set_course(); return; }
-				if ($rootScope.user["role"] == "ca" && $rootScope.current_page == "admin") { set_course(); return; }
-				window.location = "/#/" + $rootScope.user["role"]
+				if (sessionStorage.getItem('current_course') == undefined) {
+					window.location = "/#/courses";
+					return;
+				}
+				if ($rootScope.current_page != "login" && $rootScope.current_page != "landing") { return; }
 			}
 			set_course();
 		}, function() {
@@ -93,11 +97,11 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
       req();
       setInterval(req, 1000 * 60 * 10);
     });
-		d.qsio.emit('join_course', $rootScope.current_course);
-		d.hsio.emit('join_course', $rootScope.current_course);
-		d.wsio.emit('join_course', $rootScope.current_course);
-		d.usio.emit('join_course', $rootScope.current_course);
-		$rootScope.last_set_course = $rootScope.current_course;
+		d.qsio.emit('join_course', sessionStorage.getItem('current_course'));
+		d.hsio.emit('join_course', sessionStorage.getItem('current_course'));
+		d.wsio.emit('join_course', sessionStorage.getItem('current_course'));
+		d.usio.emit('join_course', sessionStorage.getItem('current_course'));
+		sessionStorage.setItem('last_set_course', sessionStorage.getItem('current_course'));
 	});
 
 	/* Initialize Model of the database */

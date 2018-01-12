@@ -757,6 +757,7 @@ function setTimeLimit(minutes, userid, course_id) {
       meta.time_limit = parseInt(minutes);
       meta.user_id = userid;
       meta.time = db.fn.now();
+      meta.course_id = course_id;
       delete meta.id;
       return db('queue_meta')
         .insert(meta);

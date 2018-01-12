@@ -2,8 +2,6 @@
 var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db,$http) {
 	$rootScope.$db = $db;
 	$rootScope.current_page = "ca";
-	//TODO: make 1 the course id you're currently in
-	$rootScope.current_course = 1;
 	$scope.name = "ca";
 
 	$rootScope.check_login();
