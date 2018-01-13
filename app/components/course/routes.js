@@ -38,6 +38,20 @@ router.get('/get_active', auth.isAuthenticated.errorJson, function(req, res, nex
   });
 });
 
+router.get('/get_tas', auth.hasCourseRole('ca').errorJson, function (req, res, next) {
+  return db.select('user')
+    .from('roles')
+    .where('course', req.query.course_id)
+    .then(function (roles) {
+      user_ids = roles.map((role) => role.user);
+      return db.select('*')
+        .from('users')
+        .whereIn('id', user_ids)
+        .then(function (users) {return res.send(users)});
+    })
+
+})
+
 var ValidCourseSchema = {
   type: 'object',
   additionalProperties: false,
@@ -104,12 +118,20 @@ router.post('/add',
   // is valid, insert it
       else {
         return db.insert(body)
-          .into('courses')
-          .returning('*');
+                 .into('courses')
+                 .returning('*')
+                 .then(function (newCourse) {
+                   newCourse = newCourse[0];
+                   return db.insert({"open": false, "max_freeze": 600, "time_limit": 5,
+                                     "registration_code": "placeholder",
+                                     "course_id": newCourse.id})
+                            .into('queue_meta')
+                            .then(() => newCourse);
+                 });
       }
     })
     .then(function(newCourse) {
-      res.send(newCourse);
+      return res.send(newCourse);
     })
     .catch(function(err) {
       if (err.name === 'AddCourseException') {

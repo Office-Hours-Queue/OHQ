@@ -33,6 +33,7 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
       $http.post("/api/user/edit_first_name", payload)
            .then(function(success) {
              Materialize.toast('Saved', 5000);
+						 $rootScope.user.first_name = payload.first_name;
              $('#modaleditname').closeModal();
            }, function(fail) {
              Materialize.toast('There was an error', 5000);

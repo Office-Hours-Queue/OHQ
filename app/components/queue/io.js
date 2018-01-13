@@ -353,13 +353,10 @@ module.exports.queue = function(io) {
   })();
 
   function getStudentMeta(course_id) {
-    console.log(course_id);
     return Promise.join(
         queue.meta.getCurrent(course_id),
         queue.questions.getOpenCount(course_id),
         function(meta, count) {
-          console.log(meta);
-          console.log(count);
           return Promise.resolve({
             id: 0,
             open: meta.open,

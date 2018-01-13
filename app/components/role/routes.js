@@ -68,77 +68,78 @@ var ValidSetBatchRoleSchema = {
   }
 };
 
-router.post('/add_initial_ca',
-            auth.isAdmin,
-            validate({body: ValidAddInitialCASchema}),
-            function(req, res, next) {
+// router.post('/add_initial_ca',
+//             auth.isAdmin,
+//             validate({body: ValidAddInitialCASchema}),
+//             function(req, res, next) {
+//
+//   var body = req.body;
+//
+//   // check if ta exists
+//   db.select('id')
+//     .from('users')
+//     .where('andrew_id', body.andrew_id)
+//     .first()
+//     .then(function(user) {
+//       if (typeof user === 'undefined') {
+//         throw { name: 'AddCAException',
+//                 message: body.andrew_id + ' is not currently a user.' };
+//       }
+//
+//       // ta does exist
+//       else {
+//         // check if ta has a role in the course
+//         return db.select('id')
+//                  .from('courses')
+//                  .where('number', body.course_number)
+//                  .first()
+//                  .then(function (course) {
+//                    if (typeof course === 'undefined') {
+//                      throw { name: 'AddCAException',
+//                              message: body.course_number + ' is not a valid course.' };
+//                    } else {
+//                      return db.select('role')
+//                               .from('roles')
+//                               .where({'user': user.id, 'course': course.id})
+//                               .first()
+//                               .then(function(role_row) {
+//                                 // they don't, we can just insert a new row
+//                                 if (typeof role_row === 'undefined') {
+//                                   return db.insert({'user': user.id, 'course': course.id,
+//                                                    'role': 'ca'})
+//                                           .into('roles')
+//                                           .returning('*');
+//                                 } else {
+//                                   // they do, we have to update the row
+//                                   return db.update({'role': 'ca'})
+//                                            .into('roles')
+//                                            .where({'user': user.id, 'course': course.id})
+//                                            .returning('*');
+//                                 }
+//                               })
+//                       }
+//                  })
+//       }
+//     })
+//     .then(function(newRoleRow) {
+//       res.send(newRoleRow);
+//     })
+//     .catch(function(err) {
+//       if (err.name === 'AddCAException') {
+//         res.status(400).send(err);
+//       } else {
+//         next(err);
+//       }
+//     });
+// });
 
-  var body = req.body;
-
-  // check if ta exists
-  db.select('id')
-    .from('users')
-    .where('andrew_id', body.andrew_id)
-    .first()
-    .then(function(user) {
-      if (typeof user === 'undefined') {
-        throw { name: 'AddCAException',
-                message: body.andrew_id + ' is not currently a user.' };
-      }
-
-      // ta does exist
-      else {
-        // check if ta has a role in the course
-        return db.select('id')
-                 .from('courses')
-                 .where('number', body.course_number)
-                 .first()
-                 .then(function (course) {
-                   if (typeof course === 'undefined') {
-                     throw { name: 'AddCAException',
-                             message: body.course_number + ' is not a valid course.' };
-                   } else {
-                     return db.select('role')
-                              .from('roles')
-                              .where({'user': user.id, 'course': course.id})
-                              .first()
-                              .then(function(role_row) {
-                                // they don't, we can just insert a new row
-                                if (typeof role_row === 'undefined') {
-                                  return db.insert({'user': user.id, 'course': course.id,
-                                                   'role': 'ca'})
-                                          .into('roles')
-                                          .returning('*');
-                                } else {
-                                  // they do, we have to update the row
-                                  return db.update({'role': 'ca'})
-                                           .into('roles')
-                                           .where({'user': user.id, 'course': course.id})
-                                           .returning('*');
-                                }
-                              })
-                      }
-                 })
-      }
-    })
-    .then(function(newRoleRow) {
-      res.send(newRoleRow);
-    })
-    .catch(function(err) {
-      if (err.name === 'AddCAException') {
-        res.status(400).send(err);
-      } else {
-        next(err);
-      }
-    });
-});
-
-router.post('/set_batch', validate({body: ValidSetBatchRoleSchema}),
+router.post('/set', validate({body: ValidSetBatchRoleSchema}),
             auth.hasCourseRole("ca").errorJson,
             function(req, res, next) {
   var body = req.body
   andrews_to_ids(body.andrew_ids)
-  .then(function (ids) {
+  .then(function (all_ids) {
+    ids = all_ids.filter((id) => id != undefined);
     return db.del().from('roles').whereIn('user', ids)
       .andWhere('course', body.course_id)
       .then(function (rows_affected) {
@@ -151,11 +152,36 @@ router.post('/set_batch', validate({body: ValidSetBatchRoleSchema}),
           });
         }
 
-        return db.insert(toInsert).into('roles').returning('*');
-      })
+        return db.insert(toInsert).into('roles').returning('*')
+               .then(function (successfully_inserted) {
+                 toInsert = [];
+                 andrews = []
+                 for (var i = 0; i < all_ids.length; i ++) {
+                   if (all_ids[i] == undefined) {
+                     andrews.push(body.andrew_ids[i]);
+                     toInsert.push({
+                       andrew_id: body.andrew_ids[i],
+                       course: body.course_id,
+                       role: body.role
+                     });
+                   }
+                 }
+                 return db.del().from('future_roles').whereIn('andrew_id', andrews)
+                   .andWhere('course', body.course_id)
+                   .then(function (rows_affected) {
+                     return db.insert(toInsert).into('future_roles').returning('*')
+                          .then(function (future_inserted) {
+                            return {
+                              "successfully_inserted": successfully_inserted,
+                              "future_inserted": future_inserted
+                            }
+                          });
+                    });
+                });
+        });
   })
-  .then(function(newRoles) {
-    res.send(newRoles);
+  .then(function(response) {
+    res.send(response);
   })
   .catch(function(err) {
     if (err.name === 'AndrewIdConversionException') {
@@ -166,58 +192,58 @@ router.post('/set_batch', validate({body: ValidSetBatchRoleSchema}),
   });
 });
 
-router.post('/set',
-            validate({body: ValidSetRoleSchema}),
-            auth.hasCourseRole("ca").errorJson,
-            function(req, res, next) {
-
-  var body = req.body;
-
-  // check if ta exists
-  db.select('id')
-    .from('users')
-    .where('andrew_id', body.andrew_id)
-    .first()
-    .then(function(user) {
-      if (typeof user === 'undefined') {
-        throw { name: 'AddCAException',
-                message: body.andrew_id + ' is not currently a user.' };
-        }
-
-        // ta does exist
-        else {
-           return db.select('role')
-            .from('roles')
-            .where({'user': user.id, 'course': body.course_id})
-            .first()
-            .then(function(role_row) {
-              // they don't, we can just insert a new row
-              if (typeof role_row === 'undefined') {
-                return db.insert({'user': user.id, 'course': body.course_id,
-                                 'role': body.role})
-                        .into('roles')
-                        .returning('*');
-              } else {
-                // they do, we have to update the row
-                return db.update({'role': body.role})
-                         .into('roles')
-                         .where({'user': user.id, 'course': body.course_id})
-                         .returning('*');
-              }
-            })
-        }
-    })
-    .then(function(newRoleRow) {
-      res.send(newRoleRow);
-    })
-    .catch(function(err) {
-      if (err.name === 'AddCAException') {
-        res.status(400).send(err);
-      } else {
-        next(err);
-      }
-    });
-});
+// router.post('/set',
+//             validate({body: ValidSetRoleSchema}),
+//             auth.hasCourseRole("ca").errorJson,
+//             function(req, res, next) {
+//
+//   var body = req.body;
+//
+//   // check if ta exists
+//   db.select('id')
+//     .from('users')
+//     .where('andrew_id', body.andrew_id)
+//     .first()
+//     .then(function(user) {
+//       if (typeof user === 'undefined') {
+//         throw { name: 'AddCAException',
+//                 message: body.andrew_id + ' is not currently a user.' };
+//         }
+//
+//         // ta does exist
+//         else {
+//            return db.select('role')
+//             .from('roles')
+//             .where({'user': user.id, 'course': body.course_id})
+//             .first()
+//             .then(function(role_row) {
+//               // they don't, we can just insert a new row
+//               if (typeof role_row === 'undefined') {
+//                 return db.insert({'user': user.id, 'course': body.course_id,
+//                                  'role': body.role})
+//                         .into('roles')
+//                         .returning('*');
+//               } else {
+//                 // they do, we have to update the row
+//                 return db.update({'role': body.role})
+//                          .into('roles')
+//                          .where({'user': user.id, 'course': body.course_id})
+//                          .returning('*');
+//               }
+//             })
+//         }
+//     })
+//     .then(function(newRoleRow) {
+//       res.send(newRoleRow);
+//     })
+//     .catch(function(err) {
+//       if (err.name === 'AddCAException') {
+//         res.status(400).send(err);
+//       } else {
+//         next(err);
+//       }
+//     });
+// });
 
 function andrews_to_ids(andrew_ids) {
   return Promise.all(
@@ -225,8 +251,7 @@ function andrews_to_ids(andrew_ids) {
                           .first().then(
       function (user) {
         if (typeof user === 'undefined') {
-          throw { name: 'AndrewIdConversionException',
-                  message: e + ' is not currently a user.' };
+          return undefined;
         } else {
           return user.id;
         }

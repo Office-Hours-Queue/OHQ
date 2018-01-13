@@ -12,7 +12,6 @@ module.exports = function(io) {
   // cas join room cas_USERID
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
-    socket.join('student_' + socket.request.user.id);
     socket.on('join_course', function(course_id) {
       if (socket.current_rooms != undefined) {
         socket.current_rooms.forEach(socket.leave)
@@ -25,11 +24,6 @@ module.exports = function(io) {
         socket.current_rooms.push(course_id + '_ca_' + socket.request.user.id);
         oncajoin(socket, userid, course_id);
         socket.emit('joined');
-      } else {
-        socket.join(course_id + '_student_' + socket.request.user.id);
-        socket.current_rooms.push(course_id + '_student_' + socket.request.user.id);
-        onstudentjoin(socket, userid, course_id);
-        socket.emit('joined');
       }
     });
   });
@@ -39,9 +33,6 @@ module.exports = function(io) {
   };
   var ca = function(userid, course_id) {
     return io.to(course_id + '_ca_' + userid);
-  };
-  var student = function(userid) {
-    return io.to('student_' + userid);
   };
 
 
@@ -69,13 +60,6 @@ module.exports = function(io) {
 
     users.users.emitter.on('cas_active', function(activeCas, course_id) {
       cas(course_id).emit('cas_active', makeMessage('data', makeActiveCas(activeCas)));
-    });
-
-    users.users.emitter.on('name_change', function(new_user) {
-      student(new_user.id).emit('name_change', makeMessage('data', [{
-        id : new_user.id,
-        first_name: new_user.first_name
-      }]));
     });
 
   })();

@@ -8,7 +8,7 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
     role: ''
   }
 
-  // variables for modifying a course   
+  // variables for modifying a course
   $scope.selected_del_course = "unknown";
   $scope.selected_del_active = false;
   $scope.selected_del_id = -1;
@@ -21,19 +21,9 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
     }
 
     $http.post("/api/course/add", course_payload).then(function(success) {
-      // don't do nothin'
-    }, function(fail) {
-      Materialize.toast('There was an error', 5000);
-    });
-
-    var ca_payload = {
-      andrew_id: $("#new_course_ca").val(),
-      course_number: course_num
-    }
-
-    $http.post("/api/role/add_inital_ca", ca_payload).then(function(success) {
-      $('#modal_add_course').closeModal();
-      Materialize.toast('Saved', 5000);
+			$('#modal_add_course').closeModal();
+			Materialize.toast('Saved', 5000);
+			$scope.get_courses();
     }, function(fail) {
       Materialize.toast('There was an error', 5000);
     });
@@ -62,7 +52,7 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
   }
   $scope.get_courses();
 
-  
+
   $scope.select = function (del_item, del_id, del_active) {
     $scope.selected_del_course = del_item;
     $scope.selected_del_id = del_id;
@@ -107,6 +97,6 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
   }
 
   $scope.batch_role = function () {
-    
+
   }
 }];

@@ -67,13 +67,10 @@ passport.use(
 
           // user doesn't exist already
           else {
-
             return db.insert(getUserInfo(profile))
-                      .into('users')
-                      .returning('*')
-                      .then(function(insertedUser) {
-                        return Promise.resolve(insertedUser[0]);
-                       });
+                     .into('users')
+                     .returning('*')
+                     .then(transfer_future_roles);
           }
         })
         .then(function(dbUser) {
@@ -89,6 +86,24 @@ passport.use(
     }
   )
 );
+
+function transfer_future_roles(insertedUser) {
+  andrew_id = insertedUser[0].andrew_id;
+  return db.select('*')
+           .from('future_roles')
+           .where('andrew_id', andrew_id)
+           .then(function (roles) {
+             uid = insertedUser[0].id;
+             toInsert = roles.map((role) => ({"user": uid, "course": role.course,
+                                             "role": role.role}));
+             return db.insert(toInsert).into("roles")
+                      .then(function (insertedRoles) {
+                        db.del().from('future_roles')
+                                .where('andrew_id', andrew_id)
+                                .then((deleted) => Promise.resolve(insertedUser[0]))
+                      });
+           });
+}
 
 function getUserInfo(googleProfile) {
   var result = {};
@@ -193,5 +208,4 @@ module.exports = {
   ioIsAuthenticated: ioIsAuthenticated,
   ioHasCourseRole: ioHasCourseRole,
   isAdmin: isAdmin,
-  hasCourseRole: hasCourseRole
 };
