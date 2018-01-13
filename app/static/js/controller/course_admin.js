@@ -106,7 +106,24 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
     });
   }
 
+  $scope.submit_roles = function(people) {
+    for(var person in people) {
+      var payload = {
+
+      }
+      console.log(people[person]);
+    }
+  }
+
   $scope.batch_role = function () {
-    
+    var input, file, fr, result;
+    input = document.getElementById('csv_input');
+    file = input.files[0]
+    fr = new FileReader();
+    fr.onload = function(e) {
+      $scope.submit_roles(e.target.result.split("\n"));
+    }
+    fr.readAsText(file);
+
   }
 }];
