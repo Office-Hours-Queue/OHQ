@@ -35,6 +35,7 @@ passport.deserializeUser(function(id, done) {
               roles[roleList[i].course] = roleList[i].role;
             }
             user.roles = roles;
+            user.is_admin = config.ADMIN_USERS.includes(user.andrew_id)
             done(null, cleanUser(user));
           });
       }
@@ -67,27 +68,12 @@ passport.use(
           // user doesn't exist already
           else {
 
-            //TODO: remove roles from here
-            // first, check user's role
-            return db.select('role')
-                     .from('valid_andrew_ids')
-                     .where('andrew_id', getUserInfo(profile, 'student').andrew_id)
-                     .first()
-                     .then(function(validUser) {
-
-                       // user isn't in our roster
-                       if (typeof validUser === 'undefined') {
-                          validUser = {"role": "student"};
-                       }
-
-                       // user is ok - insert and pass it back up
-                         return db.insert(getUserInfo(profile, validUser.role))
-                                  .into('users')
-                                  .returning('*');
-                     })
-                     .then(function(insertedUser) {
+            return db.insert(getUserInfo(profile))
+                      .into('users')
+                      .returning('*')
+                      .then(function(insertedUser) {
                         return Promise.resolve(insertedUser[0]);
-                     });
+                       });
           }
         })
         .then(function(dbUser) {
@@ -104,7 +90,7 @@ passport.use(
   )
 );
 
-function getUserInfo(googleProfile,role) {
+function getUserInfo(googleProfile) {
   var result = {};
 
   for (var i = 0; i < googleProfile.emails.length; i++) {
@@ -116,7 +102,8 @@ function getUserInfo(googleProfile,role) {
   result.andrew_id = result.email;
   result.last_name = googleProfile.name.familyName;
   result.first_name = googleProfile.name.givenName;
-  result.role = role;
+  //TODO: remove this when roles are really gone
+  result.role = "student";
   result.google_id = googleProfile.id;
 
   return result;
@@ -143,38 +130,13 @@ var isAuthenticated = {
 
 };
 
-var hasRole = function(role) {
-  return {
-
-    redirect: function(req, res, next) {
-      if (req.isAuthenticated() &&
-          req.user.role === role) {
-        next();
-      } else {
-        res.redirect('/');
-      }
-    },
-
-    errorJson: function(req, res, next) {
-      if (req.isAuthenticated() &&
-          req.user.role === role) {
-        next();
-      } else {
-        res.status(401).send({ name: 'AuthorizationError',
-                               message: 'Not authorized' });
-      }
-    }
-
-  };
-};
-
-
 var hasCourseRole = function(role) {
   return {
 
     redirect: function(req, res, next) {
+      var course_id = req.body.course_id != undefined ? req.body.course_id : req.query.course_id
       if (req.isAuthenticated() &&
-          req.user.roles[req.body.course_id] === role) {
+          req.user.roles[course_id] === role) {
         next();
       } else {
         res.redirect('/');
@@ -182,8 +144,9 @@ var hasCourseRole = function(role) {
     },
 
     errorJson: function(req, res, next) {
+      var course_id = req.body.course_id != undefined ? req.body.course_id : req.query.course_id
       if (req.isAuthenticated() &&
-          req.user.roles[req.body.course_id] === role) {
+          req.user.roles[course_id] === role) {
         next();
       } else {
         res.status(401).send({ name: 'AuthorizationError',
@@ -200,22 +163,6 @@ function ioIsAuthenticated(socket, next) {
   } else {
     next(new Error('Not authorized'));
   }
-}
-
-function ioHasRole(role) {
-  return function(socket, next) {
-    if (socket.request.isAuthenticated()) {
-      if (Array.isArray(role) &&
-          role.indexOf(socket.request.user.role) !== -1) {
-        next();
-        return;
-      } else if (socket.request.user.role === role) {
-        next();
-        return;
-      }
-    }
-    next(new Error('Not authorized'));
-  };
 }
 
 function ioHasCourseRole(role, course_id) {
@@ -242,9 +189,9 @@ function isAdmin(req, res, next) {
 module.exports = {
   passport: passport,
   isAuthenticated: isAuthenticated,
-  hasRole: hasRole,
+  hasCourseRole: hasCourseRole,
   ioIsAuthenticated: ioIsAuthenticated,
-  ioHasRole: ioHasRole,
+  ioHasCourseRole: ioHasCourseRole,
   isAdmin: isAdmin,
   hasCourseRole: hasCourseRole
 };
