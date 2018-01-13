@@ -41,6 +41,7 @@
     "jsonschema": "^1.1.1",
     "knex": "^0.12.6",
     "morgan": "^1.7.0",
+    "papaparse": "^4.3.6",
     "passport": "^0.3.2",
     "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
