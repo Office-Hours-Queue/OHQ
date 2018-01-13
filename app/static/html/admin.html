@@ -55,25 +55,10 @@
 		</li>
 
 		<li>
-			<div class="collapsible-header"><b>Student Queue Access</b></div>
+			<div class="collapsible-header"><b>Staff Assignment</b></div>
 			<div class="collapsible-body">
 			<p>
-				Enter a student's andrew id below to let them login to the queue.
-				<br/>
-				<br/>
-          		<label for="new_student_andrew_id">New Andrew ID</label>
-				<input id="new_student_andrew_id" type="text">
-				<button ng-click="add_student_andrew_id()" class="btn blue">Add Student</button>
-
-			</p>
-			</div>
-		</li>
-
-		<li>
-			<div class="collapsible-header"><b>Staff Queue Access</b></div>
-			<div class="collapsible-body">
-			<p>
-				Enter a staff member's andrew id below to let them login to the queue.
+				Enter a staff member's andrew id below to add them as staff to the queue.
 				<br/>
 				<br/>
 							<label for="new_ca_andrew_id">New Andrew ID</label>
@@ -85,19 +70,25 @@
 		</li>
 
 		<li id="batch_role_assignment">
-			<div class="collapsible-header"><b>Batch Role Assignment</b></div>
+			<div class="collapsible-header"><b>Batch Staff Assignment</b></div>
 			<div class="collapsible-body">
 			
 			<p>
-		        Add people to a course with a defined role. Please use a CSV (comma-separated) file!
+		        Add multiple staff members to your course. (instructions here)
 		        <br/>
 		        <br/>
-		        <label for="batchRole">Role</label>
-		        <select id="batchRole" ng-model="edit_user.role" material-select>
-		          <option value="student">Student</option>
-		          <option value="ca">Instructor</option>
-		        </select>
-		        <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Edit</button>
+		        <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
+		        <div class="file-field input-field" style="padding-left: 29px; padding-right: 29px">
+		          <div class="btn blue">
+		            <span>Select File</span>
+		            <input id="csv_input" type="file" accept=".txt">
+		          </div>
+		          <div class="file-path-wrapper">
+		            <input class="file-path validate" type="text">
+		          </div>
+		          <br/>
+		          <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Submit</button>
+		        </div>
 
 		      </p>
 		</li>
@@ -131,13 +122,13 @@
         <h5> Add Topic </h5>
         <div class="divider"></div>
         <div class="section" style="padding-bottom: 0">
-<label for="new_topic">Topic</label>
-				<input id="new_topic" type="text">
-				<button id="new_topic_button" ng-click="$db.add_new_topic()" class="modal-action modal-close btn blue">Add Topic</button>
+			<label for="new_topic">Topic</label>
+			<input id="new_topic" type="text">
+			<button id="new_topic_button" ng-click="$db.add_new_topic()" class="modal-action modal-close btn blue">Add Topic</button>
         </div>
       </div>
       <div class="divider"></div>
-  </div>
+  	</div>
 
 
       <!-- Add location modal -->
@@ -155,10 +146,33 @@
         </div>
       </div>
       <div class="divider"></div>
-  </div>
+  	</div>
 
 
-
+  	<div class="modal modal-fullheight container" id="modal_instructions">
+      <div class="modal-content">
+        <h5> Instructions for Batch Assignment of Staff </h5>
+        <div class="divider"></div>
+        <div class="section" style="padding-bottom: 0">
+          Please upload a '.txt' file with the AndrewID's of the staff delimited by new-lines. For example, in my file 'staff.txt', I would put:
+          <br/>
+          <br/>
+          <code>
+            fmarsh@andrew.cmu.edu<br/>
+            aschick@andrew.cmu.edu<br/>
+            edryer@andrew.cmu.edu
+          </code>
+          <br/>
+          <br/>
+          Make sure that there are no additional characters in the file other than the AndrewID's.
+          <br/>
+          <div class="divider"></div>
+          <br/>
+          <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-blue">Close</a>
+        </div>
+      </div>
+      <div class="divider"></div>
+    </div>
 	</div>
 
 

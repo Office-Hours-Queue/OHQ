@@ -25,7 +25,7 @@
 			<div class="collapsible-body">
 
       <p>
-        Change the role of anyone in the database. If not in the database, the person may be added.
+        Change the role of anyone in the database.
         <br/>
         <br/>
         <label for="edit_role_andrew_id">AndrewID</label>
@@ -43,47 +43,48 @@
 		</li>
 
 		<li id="batch_role_assignment">
-			<div class="collapsible-header"><b>Batch Role Assignment</b></div>
+			<div class="collapsible-header"><b>Batch TA Assignment</b></div>
 			<div class="collapsible-body">
 			
       <p>
-        Add people to a course with a defined role. Please use a CSV (comma-separated) file!
+        Add people to a course with a defined role.
         <br/>
         <br/>
         <label for="course_num">Course Number</label>
-        <input id="course_num" type="text">
-        <label for="batchRole">Role</label>
-        <select id="batchRole" ng-model="edit_user.role" material-select>
-          <option value="student">Student</option>
-          <option value="ca">Instructor</option>
-        </select>
-        <ng-csv-import content="csv.content"
-                       header="csv.header" 
-                       separator="csv.separator"
-                       result="csv.result">
-        </ng-csv-import>
-        <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Edit</button>
+        <input id="course_num" type="text" style="margin-bottom: 0px">
+        <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
+        <div class="file-field input-field" style="padding-left: 29px; padding-right: 29px">
+          <div class="btn blue">
+            <span>Select File</span>
+            <input id="csv_input" type="file" accept=".txt">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text">
+          </div>
+          <br/>
+          <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Submit</button>
+        </div>
 
       </p>
 		</li>
 
 	</ul>
 	<div class="modal modal-fullheight container" id="modal_add_course">
-      <div class="modal-content">
-        <h5> Add Course </h5>
-        <div class="divider"></div>
-        <div class="section" style="padding-bottom: 0">
-			<label for="new_course_num">Course Number</label>
-			<input id="new_course_num" type="text">
-			<label for="new_course_name">Course Name</label>
-			<input id="new_course_name" type="text">
-      <label for="new_course_ca">Initial Instructor AndrewID</label>
-      <input id="new_course_ca" type="text">
-			<button ng-click="add_course()" class="btn blue">Add Course</button>
-        </div>
-      </div>
+    <div class="modal-content">
+      <h5> Add Course </h5>
       <div class="divider"></div>
+      <div class="section" style="padding-bottom: 0">
+  			<label for="new_course_num">Course Number</label>
+  			<input id="new_course_num" type="text">
+  			<label for="new_course_name">Course Name</label>
+  			<input id="new_course_name" type="text">
+        <label for="new_course_ca">Initial Instructor AndrewID</label>
+        <input id="new_course_ca" type="text">
+  			<button ng-click="add_course()" class="btn blue">Add Course</button>
+      </div>
     </div>
+    <div class="divider"></div>
+  </div>
 
     <div class="modal bottom-sheet" id="modaldelete">
         <div class="modal-content">
@@ -100,6 +101,31 @@
             </div>
           </div>
         </div>
+    </div>
+
+    <div class="modal modal-fullheight container" id="modal_instructions">
+      <div class="modal-content">
+        <h5> Instructions for Batch Assignment of Staff </h5>
+        <div class="divider"></div>
+        <div class="section" style="padding-bottom: 0">
+          Please upload a '.txt' file with the AndrewID's of the staff delimited by new-lines. For example, in my file 'staff.txt', I would put:
+          <br/>
+          <br/>
+          <code>
+            fmarsh@andrew.cmu.edu<br/>
+            aschick@andrew.cmu.edu<br/>
+            edryer@andrew.cmu.edu
+          </code>
+          <br/>
+          <br/>
+          Make sure that there are no additional characters in the file other than the AndrewID's.
+          <br/>
+          <div class="divider"></div>
+          <br/>
+          <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-blue">Close</a>
+        </div>
+      </div>
+      <div class="divider"></div>
     </div>
 
   </div>

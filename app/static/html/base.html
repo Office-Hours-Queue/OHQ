@@ -1,22 +1,21 @@
 <nav>
   <div class="nav-wrapper light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]">
-    <div id="name_brand" class="brand-logo center">{{ user ? user.first_name : 'Connecting...' }}</div>
+    <div id="name_brand" class="brand-logo center">
+      {{ current_page === 'landing' ? 'Office Hours Queue' : cur_course_num }}
+    </div>
 
     <ul ng-if="current_page !== 'landing'" class="left hide-on-med-and-down">
+      <li>
+        <a class="btn-floating blue" href="/#/courses">
+          <i class="material-icons">arrow_backward</i>
+        </a>
+      </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca">Queue</a>
       </li>
       <li ng-if="user.role === 'ca'">
         <a href="/#/admin">Admin</a>
-      </li>
-
-      <!-- TODO: better verification for course admin access -->
-
-      <!-- <li ng-if="user.is_admin"> -->
-      <li>
-        <a href="/#/course_admin">Courses</a>
-      </li>
-      
+      </li>  
       <li ng-if="user.role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
@@ -37,6 +36,13 @@
       </li>
       <li>
         <a href="/#/account">Account</a>
+      </li>
+
+      <!-- TODO: better verification for course admin access -->
+
+      <!-- <li ng-if="user.is_admin"> -->
+      <li>
+        <a href="/#/course_admin">Courses</a>
       </li>
       <li>
         <a href="/api/login/endauth">Log out</a>
@@ -61,7 +67,7 @@
       </li>
 
       <!-- <li ng-if="user.is_admin && current_page !== 'landing'"> -->
-      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu' && current_page !== 'landing'"> 
+      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu'"> 
         <a href="/#/course_admin">Courses</a>
       </li>
       <li ng-if="user.role === 'ca' && current_page !== 'landing'">
@@ -178,3 +184,4 @@ Have you ever explained your code to a TA and then instantly realized what the i
       <a id="prefbtn" class="modal-action modal-close waves-effect btn-flat">Close</a>
   </div>
 </div>
+

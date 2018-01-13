@@ -32,7 +32,6 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 				$scope.courses.push(data[i]);
 			}
 		}
-		console.log($scope.courses);
 	}
 
 	$scope.get_courses = function () {
@@ -51,10 +50,10 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	}
 	$scope.get_courses();
 
-	$scope.set_course = function (course_id) {
+	$scope.set_course = function (course_id, course_num) {
 		$rootScope.current_course = course_id;
+		$rootScope.cur_course_num = course_num;
 		$rootScope.check_login();
-		// console.log($rootScope.user);
 		window.location = "/#/" + $rootScope.user["role"]
 	}
 }];

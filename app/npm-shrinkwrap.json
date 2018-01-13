@@ -3009,6 +3009,11 @@
         "wrappy": "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
       }
     },
+    "papaparse": {
+      "version": "4.3.6",
+      "resolved": "https://registry.npmjs.org/papaparse/-/papaparse-4.3.6.tgz",
+      "integrity": "sha1-lWbtoOyrE6/LdApiOBxpn0hssUU="
+    },
     "passport": {
       "version": "0.3.2",
       "resolved": "https://registry.npmjs.org/passport/-/passport-0.3.2.tgz",
