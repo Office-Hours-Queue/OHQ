@@ -23,7 +23,7 @@
     </ul>
 
     <ul class="right hide-on-med-and-down">
-      <li ng-if="current_role === 'ca'">
+      <li ng-if="current_role !== undefined">
         <a id="faq" href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
       </li>
       <li ng-if="current_role === 'student'">
@@ -51,30 +51,31 @@
     </a>
 
     <ul class="side-nav" id="mobile-menu">
-      <li ng-if="user.role === 'ca' && current_page !== 'landing'">
+      <li ng-if="current_page !== 'landing'">
+        <a href="/#/courses">Courses</a>
+      </li>
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca">Queue</a>
       </li>
-      <li ng-if="user.role === 'ca' && current_page !== 'landing'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/admin">Admin</a>
       </li>
-
-      <!-- <li ng-if="user.is_admin && current_page !== 'landing'"> -->
-      <li ng-if="user.andrew_id === 'fmarsh@andrew.cmu.edu'">
-        <a href="/#/course_admin">Course Admin</a>
-      </li>
-      <li ng-if="user.role === 'ca' && current_page !== 'landing'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
-      <li ng-if="user.role === 'student' && current_page !== 'landing'">
+      <li ng-if="current_role === 'student'">
         <a href="/#/student">Queue</a>
+      </li>
+      <li ng-if="current_role !== undefined">
+        <a id="faq" ng-click="clicked_faq()" href="#modalhelp" modal>FAQ</a>
       </li>
       <li>
         <a href="/#/account">Account</a>
       </li>
-      <li>
-        <a id="faq" ng-click="clicked_faq()"  href="#modalhelp" modal>FAQ</a>
+      <li ng-if="user.is_admin">
+        <a href="/#/course_admin">Course Admin</a>
       </li>
-      <li ng-if="user.role === 'student'">
+      <li ng-if="current_role === 'student'">
         <a id="debugging_tips" href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
       <div class="divider"></div>
@@ -93,7 +94,7 @@
 </div>
 
  <!-- FAQ Modal -->
-<div class="modal modal-fixed-footer container" id="modalhelp">
+<div ng-if="current_role === 'ca'"class="modal modal-fixed-footer container" id="modalhelp">
   <div class="modal-content">
     <h4>FAQ</h4>
     <div class="divider"></div>
@@ -121,7 +122,7 @@
 
 
 <!-- FAQ Modal (student) -->
-<div class="modal modal-fixed-footer container" id="modalhelp">
+<div ng-if="current_role === 'student'" class="modal modal-fixed-footer container" id="modalhelp">
   <div class="modal-content">
     <h4>FAQ</h4>
     <div class="divider"></div>
