@@ -1,7 +1,7 @@
 var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db,$http) {
 	$rootScope.$db = $db;
-	$rootScope.check_login();
 	$rootScope.current_page = "admin";
+	$rootScope.check_login();
 	$scope.update_minute_rule = function () {
 		var min_rule =  $("#minuteRule").val();
 		if (isNaN(min_rule)) {

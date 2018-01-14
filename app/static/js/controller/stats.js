@@ -1,5 +1,5 @@
 var stats_ctl = ['$scope', '$rootScope', '$db', '$http', function($scope, $rootScope, $db, $http) {
-
+	$rootScope.current_page = "stats";
 	$rootScope.$db = $db;
 	$rootScope.check_login();
 

@@ -28,6 +28,18 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 				}
 				$rootScope.set_course();
 			}
+			if (["admin", "ca", "stats"].includes($rootScope.current_page)
+					&& $rootScope.current_role !== 'ca') {
+					window.location = "/#/" + ($rootScope.current_role || "courses");
+			}
+			if (["student"].includes($rootScope.current_page)
+					&& $rootScope.current_role !== 'student') {
+						window.location = "/#/" + ($rootScope.current_role || "courses");
+			}
+			if (["course_admin"].includes($rootScope.current_page)
+					&& !user.is_admin) {
+					window.location = "/#/" + ($rootScope.current_role || "courses");
+			}
 		}, function() {
 			if ($route.current.scope.name != "login") {
 				window.location = "/#/";

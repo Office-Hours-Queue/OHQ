@@ -1,7 +1,7 @@
 var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db,$http) {
 	$rootScope.$db = $db;
-	$rootScope.check_login();
 	$rootScope.current_page = "course_admin";
+	$rootScope.check_login();
 
   // model for editing user role
   $scope.edit_user = {
