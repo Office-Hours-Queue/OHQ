@@ -25,11 +25,11 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
   			lss.set(course_id, true);
     		Materialize.toast('Course Pinned!', 3000);
   		}
-		$scope.get_courses();
+		$scope.sort_courses($scope.courses);
 	}
 
 	$scope.sort_courses = function (data) {
-		$scope.courses = [];
+		$scope.all_courses = [];
 		$scope.pinned_courses = [];
 
 		for(var i = 0; i < data.length; i++) {
@@ -37,23 +37,17 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 				$scope.pinned_courses.push(data[i]);
 			}
 			else {
-				$scope.courses.push(data[i]);
+				$scope.all_courses.push(data[i]);
 			}
 		}
 	}
 
 	$scope.get_courses = function () {
-		$http.get("/api/course/get_all").then(function(success) {
+		$http.get("/api/course/get_active").then(function(success) {
 			$scope.courses = success.data;
-			$scope.sort_courses(success.data);
+			$scope.sort_courses($scope.courses);
 	    }, function(fail) {
 			Materialize.toast('There was an error', 5000);
-	    });
-
-	    $http.get("/api/course/get_active").then(function(success) {
-	    	$scope.active_courses = success.data;
-	    }, function(fail) {
-	    	Materialize.toast('There was an error', 5000);
 	    });
 	}
 	$scope.get_courses();
