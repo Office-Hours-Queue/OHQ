@@ -4,29 +4,29 @@
       {{ current_page === 'landing' ? 'Office Hours Queue' : cur_course_num }}
     </div>
 
-    <ul ng-if="current_page !== 'landing'" class="left hide-on-med-and-down">
-      <li>
+    <ul class="left hide-on-med-and-down">
+      <li ng-if="current_page !== 'landing'">
         <a href="/#/courses">Courses</a>
       </li>
-      <li ng-if="user.role === 'ca' && current_page !== 'account'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca">Queue</a>
       </li>
-      <li ng-if="user.role === 'ca' && current_page !== 'account'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/admin">Admin</a>
       </li>
-      <li ng-if="user.role === 'ca' && current_page !== 'account'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
-      <li ng-if="user.role === 'student' && current_page !== 'account'">
+      <li ng-if="current_role === 'student'">
         <a href="/#/student">Queue</a>
       </li>
     </ul>
 
     <ul class="right hide-on-med-and-down">
-      <li ng-if="current_page === 'ca'">
+      <li ng-if="current_role === 'ca'">
         <a id="faq" href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
       </li>
-      <li ng-if="current_page === 'student'">
+      <li ng-if="current_role === 'student'">
         <a id="debugging_tips" href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
       <li>

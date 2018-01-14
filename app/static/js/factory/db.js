@@ -8,9 +8,10 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 
 	$rootScope.set_course = function () {
 		if (sessionStorage.getItem('current_course') != undefined) {
+			$rootScope.current_role = ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student");
 			$rootScope.$broadcast("user_ready");
 			if ($rootScope.current_page == "landing") {
-				window.location = "/#/" + ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student")
+				window.location = "/#/" + ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student");
 			}
 		}
 	}
