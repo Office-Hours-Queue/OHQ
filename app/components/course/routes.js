@@ -123,12 +123,32 @@ router.post('/add',
                  .returning('*')
                  .then(function (newCourse) {
                    newCourse = newCourse[0];
+                   //New meta for the course
                    return db.insert({"open": false, "max_freeze": 600, "time_limit": 5,
                                      "registration_code": "placeholder",
                                      "course_id": newCourse.id})
-                            .into('queue_meta')
-                            .then(() => newCourse);
-                 });
+                    .into('queue_meta')
+                    .then(function (newMeta) {
+                      //Default locations
+                      locations = [
+                        { location: 'GHC Commons',  enabled: true, course_id: newCourse.id},
+                        { location: 'NA',  enabled: true, course_id: newCourse.id}
+                      ]
+                      return db.insert(locations)
+                         .into('locations')
+                         .then(function (newLoc) {
+                           //default topics
+                           topics = [
+                             { topic: 'Homework',  enabled: true, course_id: newCourse.id },
+                             { topic: 'Conceptual',  enabled: true, course_id: newCourse.id },
+                             { topic: 'NA',  enabled: true, course_id: newCourse.id }
+                           ]
+                           return db.insert(topics)
+                                    .into('topics')
+                                    .then(() => newCourse);
+                        })
+                    })
+                 })
       }
     })
     .then(function(newCourse) {
