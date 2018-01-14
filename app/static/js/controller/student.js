@@ -85,7 +85,7 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
         "location_id": parseInt($scope.new_selected.location),
         "topic_id": parseInt($scope.new_selected.topic),
         "help_text": $scope.new_selected.help_text,
-        "course_id": sessionStorage.getItem('current_course')
+        "course_id": parseInt(sessionStorage.getItem('current_course'))
       });
       $scope.new_selected.help_text = '';
       $scope.new_selected.topic = '';

@@ -13,15 +13,9 @@ module.exports = function(io) {
   io.on('connection', function(socket) {
     var userid = socket.request.user.id;
     socket.on('join_course', function(course_id) {
-      if (socket.current_rooms != undefined) {
-        socket.current_rooms.forEach(socket.leave)
-      }
-      socket.current_rooms = [];
       if (socket.request.user.roles[course_id] === 'ca') {
         socket.join(course_id + '_ca');
         socket.join(course_id + '_ca_' + socket.request.user.id);
-        socket.current_rooms.push(course_id + '_ca');
-        socket.current_rooms.push(course_id + '_ca_' + socket.request.user.id);
         oncajoin(socket, userid, course_id);
         socket.emit('joined');
       }

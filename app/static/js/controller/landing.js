@@ -51,10 +51,8 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	}
 	$scope.get_courses();
 
-	$scope.set_course = function (course_id, course_num) {
-		$rootScope.current_course = course_id;
-		$rootScope.cur_course_num = course_num;
-		$rootScope.check_login();
-		window.location = "/#/" + $rootScope.user["role"]
+	$scope.set_course = function (course_id) {
+			sessionStorage.setItem('current_course', course_id);
+			$rootScope.check_login();
 	}
 }];

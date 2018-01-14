@@ -9,6 +9,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 	/* Access to user object */
 	$rootScope.check_login = function () {
 		var set_course = function () {
+			console.log(sessionStorage.getItem('current_course'));
 			if (sessionStorage.getItem('current_course') != undefined) {
 				$rootScope.$broadcast("user_ready");
 				if ($rootScope.current_page == "landing") {
@@ -17,16 +18,20 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 			}
 		}
 
+		console.log("in it");
+
 		//Get login user object
 		$http.get('/api/user', {}).then(function (data) {
+			console.log("yoo");
 			if (data["data"]["first_name"] != undefined && $rootScope.user == undefined) {
 				$rootScope.user = data["data"];
 				if (sessionStorage.getItem('current_course') == undefined) {
 					window.location = "/#/courses";
 					return;
 				}
-				if ($rootScope.current_page != "login" && $rootScope.current_page != "landing") { return; }
+				//if ($rootScope.current_page != "login" && $rootScope.current_page != "landing") { return; }
 			}
+			console.log("yee");
 			set_course();
 		}, function() {
 			if ($route.current.scope.name != "login") {
@@ -39,6 +44,12 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 	/* Initialize SocketIO */
 	$rootScope.$on("user_ready", function (course_id) {
 		console.log("CONNECTING TO SIO")
+
+		if (d.qsio != undefined) {d.qsio.disconnect();}
+		if (d.usio != undefined) {d.usio.disconnect();}
+		if (d.hsio != undefined) {d.hsio.disconnect();}
+		if (d.wsio != undefined) {d.wsio.disconnect();}
+
 		var sio_opts = {
 			"reconnection":true,
 			"reconnectionDelay":200,
@@ -97,11 +108,11 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
       req();
       setInterval(req, 1000 * 60 * 10);
     });
+
 		d.qsio.emit('join_course', sessionStorage.getItem('current_course'));
 		d.hsio.emit('join_course', sessionStorage.getItem('current_course'));
 		d.wsio.emit('join_course', sessionStorage.getItem('current_course'));
 		d.usio.emit('join_course', sessionStorage.getItem('current_course'));
-		sessionStorage.setItem('last_set_course', sessionStorage.getItem('current_course'));
 	});
 
 	/* Initialize Model of the database */
