@@ -1,6 +1,6 @@
 <div data-extend-template="/html/base.html">
 
-	<!-- Content --> 
+	<!-- Content -->
 	<div data-block-append="content">
 	<div class="container">
    	<br />
@@ -26,7 +26,10 @@
                   <br />
                   <small>{{ user.email }}</small>
                   <br />
-                  <small>15-112 {{ user.role === 'ca' ? 'TA' : 'student' }}</small>
+									<div ng-repeat="c in ca_roles()">
+                  	<small>{{get_num(c)}} TA</small>
+										<br />
+									</div>
                 </h5>
                 <a id="edit_name_link" href="#modaleditname" modal>Edit nickname</a>
               </div>
@@ -77,8 +80,3 @@
 
 
 </div>
-
-
-
-
-

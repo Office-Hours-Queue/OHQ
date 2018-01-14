@@ -1,7 +1,7 @@
 <nav>
   <div class="nav-wrapper light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected || !current_course]">
     <div id="name_brand" class="brand-logo center">
-      {{ current_page === 'landing' ? 'Office Hours Queue' : cur_course_num }}
+      {{ current_page === 'landing' ? 'Office Hours Queue' : current_course_number + " Queue" }}
     </div>
 
     <ul class="left hide-on-med-and-down">

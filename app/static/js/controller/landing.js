@@ -4,10 +4,7 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	$scope.name = "landing";
 
 	/* clearing course related variables */
-	sessionStorage.removeItem('current_course');
 	$rootScope.unset_course();
-	$rootScope.current_role = undefined;
-	$rootScope.current_course = undefined;
 
 	$rootScope.check_login();
 
@@ -28,7 +25,15 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 		$scope.sort_courses($scope.courses);
 	}
 
+	var courseCompare = function (course1, course2) {
+	  if (course1.number < course2.number) { return -1; }
+	  if (course1.number > course2.number) { return 1; }
+	  return 0;
+	}
+
 	$scope.sort_courses = function (data) {
+		data.sort(courseCompare);
+
 		$scope.all_courses = [];
 		$scope.pinned_courses = [];
 
@@ -40,6 +45,7 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 				$scope.all_courses.push(data[i]);
 			}
 		}
+
 	}
 
 	$scope.get_courses = function () {
@@ -52,7 +58,10 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	}
 	$scope.get_courses();
 
-	$scope.set_course = function (course_id) {
+	$scope.set_course = function (course_id, course_number) {
+			var prefix = String(course_number).slice(0,2);
+			var suffix = String(course_number).slice(2);
+			sessionStorage.setItem('current_course_number', prefix + "-" + suffix);
 			sessionStorage.setItem('current_course', course_id);
 			$rootScope.set_course();
 	}

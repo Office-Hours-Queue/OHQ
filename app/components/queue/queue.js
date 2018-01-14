@@ -160,17 +160,18 @@ var questions = (function() {
   // When a user is edited, re-send their question
   dbEvents.users.on("update", function (new_user, old_user) {
     if (new_user.first_name !== old_user.first_name) {
-      db('courses').select('id').then(function (courses) {
-        for (var i = 0; i < courses.length; i++) {
-          if (new_user.roles[courses[i]] === 'student') {
-            selectOpenQuestionUserId(new_user.id, courses[i].id).then(function(question) {
-              if (question) {
-                result.emitter.emit('question_update', question);
-              }
-            });
-          }
-        }
-      });
+      db('roles').select('course')
+                 .where('user', new_user.id)
+                 .andWhere('role', 'student')
+                 .then(function (role_lines) {
+                   for (var i = 0; i < role_lines.length; i++) {
+                     selectOpenQuestionUserId(new_user.id, role_lines[i].course).then(function(question) {
+                       if (question) {
+                         result.emitter.emit('question_update', question);
+                       }
+                     });
+                   }
+                 });
     }
   });
 

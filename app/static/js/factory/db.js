@@ -9,8 +9,9 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 	$rootScope.set_course = function () {
 		if (sessionStorage.getItem('current_course') != undefined) {
 			$rootScope.current_course = sessionStorage.getItem('current_course')
+			$rootScope.current_course_number = sessionStorage.getItem('current_course_number')
 			$rootScope.current_role = ($rootScope.user["roles"][$rootScope.current_course] || "student");
-			$rootScope.$broadcast("user_ready");
+			$rootScope.$broadcast("course_ready");
 			if ($rootScope.current_page == "landing") {
 				window.location = "/#/" + ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student");
 			}
@@ -18,6 +19,12 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 	}
 
 	$rootScope.unset_course = function () {
+		sessionStorage.removeItem('current_course');
+		sessionStorage.removeItem('current_course_number');
+		$rootScope.current_role = undefined;
+		$rootScope.current_course = undefined;
+		$rootScope.current_course_number = undefined;
+
 		console.log("DISCONNECTING FROM SIO");
 
 		if (d.qsio != undefined) {d.qsio.disconnect();}
@@ -32,7 +39,8 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 		$http.get('/api/user', {}).then(function (data) {
 			if (data["data"]["first_name"] != undefined && $rootScope.user == undefined) {
 				$rootScope.user = data["data"];
-				if (sessionStorage.getItem('current_course') == undefined) {
+				$rootScope.$broadcast('user_ready')
+				if (sessionStorage.getItem('current_course') == undefined && $rootScope.current_page !== 'account') {
 					window.location = "/#/courses";
 					return;
 				}
@@ -47,7 +55,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 						window.location = "/#/" + ($rootScope.current_role || "courses");
 			}
 			if (["course_admin"].includes($rootScope.current_page)
-					&& !user.is_admin) {
+					&& !$rootScope.user.is_admin) {
 					window.location = "/#/" + ($rootScope.current_role || "courses");
 			}
 		}, function() {
@@ -59,7 +67,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 
 	/* Connect to socketio when the user exists */
 	/* Initialize SocketIO */
-	$rootScope.$on("user_ready", function (course_id) {
+	$rootScope.$on("course_ready", function (course_id) {
 		console.log("CONNECTING TO SIO")
 
 		var sio_opts = {
