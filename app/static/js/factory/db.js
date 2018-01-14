@@ -8,12 +8,22 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 
 	$rootScope.set_course = function () {
 		if (sessionStorage.getItem('current_course') != undefined) {
-			$rootScope.current_role = ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student");
+			$rootScope.current_course = sessionStorage.getItem('current_course')
+			$rootScope.current_role = ($rootScope.user["roles"][$rootScope.current_course] || "student");
 			$rootScope.$broadcast("user_ready");
 			if ($rootScope.current_page == "landing") {
 				window.location = "/#/" + ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student");
 			}
 		}
+	}
+
+	$rootScope.unset_course = function () {
+		console.log("DISCONNECTING FROM SIO");
+
+		if (d.qsio != undefined) {d.qsio.disconnect();}
+		if (d.usio != undefined) {d.usio.disconnect();}
+		if (d.hsio != undefined) {d.hsio.disconnect();}
+		if (d.wsio != undefined) {d.wsio.disconnect();}
 	}
 
 	/* Access to user object */
@@ -51,12 +61,6 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 	/* Initialize SocketIO */
 	$rootScope.$on("user_ready", function (course_id) {
 		console.log("CONNECTING TO SIO")
-
-		console.log(d.qsio);
-		if (d.qsio != undefined) {d.qsio.disconnect();}
-		if (d.usio != undefined) {d.usio.disconnect();}
-		if (d.hsio != undefined) {d.hsio.disconnect();}
-		if (d.wsio != undefined) {d.wsio.disconnect();}
 
 		var sio_opts = {
 			"reconnection":true,
@@ -97,9 +101,13 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
       });
 		});
 		d.qsio.on("disconnect", function () {
-      $rootScope.$apply(function() {
-			  d.io_connected = false;
-      });
+			if (sessionStorage.getItem('current_course')) {
+				$rootScope.$apply(function() {
+					d.io_connected = false;
+				});
+			} else {
+				d.io_connected = false;
+			}
 		});
 		d.qsio.on("error", function(reason) {
 			if (reason === 'Not authorized') {

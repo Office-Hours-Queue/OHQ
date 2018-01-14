@@ -2,8 +2,13 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	$rootScope.$db = $db;
 	$rootScope.current_page = "landing";
 	$scope.name = "landing";
+
+	/* clearing course related variables */
 	sessionStorage.removeItem('current_course');
+	$rootScope.unset_course();
 	$rootScope.current_role = undefined;
+	$rootScope.current_course = undefined;
+
 	$rootScope.check_login();
 
 	$scope.is_pinned = function (course_id) {
