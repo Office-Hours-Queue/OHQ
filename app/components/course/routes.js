@@ -45,10 +45,18 @@ router.get('/get_tas', auth.hasCourseRole('ca').errorJson, function (req, res, n
     .andWhere('role', 'ca')
     .then(function (roles) {
       user_ids = roles.map((role) => role.user);
-      return db.select('*')
+      return db.select('andrew_id')
         .from('users')
         .whereIn('id', user_ids)
-        .then(function (users) {return res.send(users)});
+        .then(function (current_users) {
+          return db.select('andrew_id')
+            .from('future_roles')
+            .where('course', req.query.course_id)
+            .andWhere('role', 'ca')
+            .then(function (future_users) {
+              return res.send(current_users.concat(future_users));
+            })
+        });
     })
 
 })

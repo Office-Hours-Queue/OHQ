@@ -79,6 +79,7 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 							{params: {course_id: parseInt(sessionStorage.getItem('current_course'))}})
 			.then(function(success) {
 				$scope.tas = success.data;
+				console.log($scope.tas);
 	    },
 			function(fail) {
 				Materialize.toast('There was an error', 5000);
