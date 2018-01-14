@@ -24,54 +24,46 @@
 			</div>
 		</li>
 		<li id="update_minute_rule_li">
-			<div class="collapsible-header"><b>Topics</b></div>
+			<div class="collapsible-header"><b>Topics</b>
+			</div>
 			<div class="collapsible-body">
-
-			<ul class="collection">
-				<li class="{{ t.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="t in $db.model.topics | orderBy : 'topic'">
-                                                    <span ng-if="t.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(t.topic, 'Topic', t.id)" ng-href="#modaldelete" modal ></span>
-                                                    <span ng-if="!(t.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(t.topic, 'Topic', t.id); enable_topic_or_loc()"></span>
-                                                   {{ t.topic}}
-                                                </li>
-				<a ng-href="#modal_add_topic" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add topic</li></a>
-			</ul>
-
-
+				<ul class="collection">
+					<li class="{{ t.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="t in $db.model.topics | orderBy : 'topic'">
+	            <span ng-if="t.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(t.topic, 'Topic', t.id)" ng-href="#modaldelete" modal ></span>
+	            <span ng-if="!(t.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(t.topic, 'Topic', t.id); enable_topic_or_loc()"></span>
+	           {{ t.topic}}
+	        </li>
+					<a ng-href="#modal_add_topic" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add topic</li></a>
+				</ul>
 			</div>
 		</li>
 		<li id="update_minute_rule_li">
-			<div class="collapsible-header"><b>Locations</b></div>
+			<div class="collapsible-header"><b>Locations</b>
+			</div>
 			<div class="collapsible-body">
-
-                                    <ul class="collection">
-                                        <li class="{{ l.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="l in $db.model.locations | orderBy : 'location' ">
-                                                                            <span ng-if="l.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(l.location, 'Location', l.id)" ng-href="#modaldelete" modal ></span>
-                                                                            <span ng-if="!(l.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(l.location, 'Location', l.id); enable_topic_or_loc()"></span>
-                                                                           {{ l.location}}
-                                                                        </li>
-                                        <a ng-href="#modal_add_location" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add location</li></a>
-                                    </ul>
+        <ul class="collection">
+            <li class="{{ l.enabled ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="l in $db.model.locations | orderBy : 'location' ">
+                <span ng-if="l.enabled" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(l.location, 'Location', l.id)" ng-href="#modaldelete" modal ></span>
+                <span ng-if="!(l.enabled)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(l.location, 'Location', l.id); enable_topic_or_loc()"></span>
+               {{ l.location}}
+            </li>
+            <a ng-href="#modal_add_location" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add location</li></a>
+        </ul>
 			</div>
 		</li>
 
 		<li>
-			<div class="collapsible-header"><b>Staff Assignment</b></div>
+			<div class="collapsible-header"><b>Staff Assignment</b>
+			</div>
 			<div class="collapsible-body">
-			<p>
-				Enter a staff member's Google email below to add them as staff to the queue.
-				<br/>
-				<br/>
-							<label for="new_ca_andrew_id">New Goolge Email</label>
-				<input id="new_ca_andrew_id" type="text">
-				<button ng-click="add_ca_andrew_id()" class="btn blue">Add Staff</button>
 				<ul class="collection">
-					<li ng-repeat="t in tas">
+					<li class="collection-item" ng-repeat="t in tas">
 						<span class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Remove" ng-click="select_ta(t.andrew_id)" ng-href="#modal_ta_delete" modal ></span>
 						{{ t.andrew_id }}
 					</li>
+					<a ng-href="#modal_add_staff" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add staff member</li></a>
 				</ul>
-			</p>
-		</div>
+			</div>
 		</li>
 
 		<li id="batch_role_assignment">
@@ -79,23 +71,21 @@
 			<div class="collapsible-body">
 
 			<p>
-		        Add multiple staff members to your course
-		        <br/>
-		        <br/>
-		        <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
-		        <div class="file-field input-field" style="padding-left: 29px; padding-right: 29px">
-		          <div class="btn blue">
-		            <span>Select File</span>
-		            <input id="csv_input" type="file" accept=".txt">
-		          </div>
-		          <div class="file-path-wrapper">
-		            <input class="file-path validate" type="text">
-		          </div>
-		          <br/>
-		          <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Submit</button>
-		        </div>
-
-		      </p>
+        Add multiple staff members to your course
+        <br/>
+        <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
+        <div class="file-field input-field" style="padding-left: 29px; padding-right: 29px">
+          <div class="btn blue">
+            <span>Browse</span>
+            <input id="csv_input" type="file" accept=".txt">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text">
+          </div>
+          <br/>
+          <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Submit</button>
+        </div>
+		  </p>
 		</li>
 	</ul>
 
@@ -170,6 +160,16 @@
       </div>
       <div class="divider"></div>
   	</div>
+
+		<!-- Add staff modal -->
+	<div class="modal modal-fullheight container" id="modal_add_staff">
+		<div class="modal-content">
+			<h5> Add Staff</h5>
+			<div class="divider"></div>
+			<div class="section" style="padding-bottom: 0">
+						<label for="new_ca_andrew_id">Staff Member's Google Apps enabled email</label>
+			<input id="new_ca_andrew_id" type="text">
+			<button id="new_ca_button" ng-click="add_ca_andrew_id()" class="modal-action modal-close btn blue">Add Staff</button>
 
 
   	<div class="modal modal-fullheight container" id="modal_instructions">

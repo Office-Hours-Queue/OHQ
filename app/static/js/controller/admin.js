@@ -15,8 +15,14 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 	$scope.add_ca_andrew_id = function () {
 		$http.post("/api/role/set", { "andrew_ids": [$("#new_ca_andrew_id").val()],
 																	 "course_id": parseInt(sessionStorage.getItem('current_course')),
-																	 "role": "ca"});
-		Materialize.toast("CA added!",2000);
+																	 "role": "ca"})
+				 .then(function(success) {
+					 		   $scope.get_tas();
+					 			 Materialize.toast("TA added!",2000);
+					 	   },
+					 		 function(fail) {
+					 			 Materialize.toast('There was an error', 5000);
+					 	   });
 	}
 
 	$scope.selected_del = "Topic";
@@ -55,6 +61,7 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 			}
 			console.log(payload)
 			$http.post("/api/role/set", payload).then(function(success) {
+				$scope.get_tas();
 				Materialize.toast('TAs Added', 5000);
 			}, function(fail) {
 				Materialize.toast('There was an error', 5000);
@@ -100,6 +107,7 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 		}
 
 		$http.post("/api/role/set", payload).then(function(success) {
+				$scope.get_tas();
 	      Materialize.toast('TA Removed', 5000);
 	    }, function(fail) {
 	      Materialize.toast('There was an error', 5000);

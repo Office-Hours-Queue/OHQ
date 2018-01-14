@@ -48,19 +48,23 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 			}
 			if (["admin", "ca", "stats"].includes($rootScope.current_page)
 					&& $rootScope.current_role !== 'ca') {
-					window.location = "/#/" + ($rootScope.current_role || "courses");
+					window.location = "/#/" + ($rootScope.current_role || "courses")
+					return;;
 			}
 			if (["student"].includes($rootScope.current_page)
 					&& $rootScope.current_role !== 'student') {
-						window.location = "/#/" + ($rootScope.current_role || "courses");
+						window.location = "/#/" + ($rootScope.current_role || "courses")
+						return;;
 			}
 			if (["course_admin"].includes($rootScope.current_page)
 					&& !$rootScope.user.is_admin) {
-					window.location = "/#/" + ($rootScope.current_role || "courses");
+					window.location = "/#/" + ($rootScope.current_role || "courses")
+					return;;
 			}
 		}, function() {
 			if ($route.current.scope.name != "login") {
 				window.location = "/#/";
+				return;
 			}
 		});
 	};
