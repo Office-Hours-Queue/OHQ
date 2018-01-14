@@ -135,7 +135,13 @@ var ValidSetBatchRoleSchema = {
 
 router.post('/set', validate({body: ValidSetBatchRoleSchema}),
             auth.hasCourseRole("ca").errorJson,
-            function(req, res, next) {
+            function (req, res, next) {set_role(req, res, next)});
+
+router.post('/set_admin', validate({body: ValidSetBatchRoleSchema}),
+            auth.isAdmin,
+            function (req, res, next) {set_role(req, res, next)});
+
+var set_role = function(req, res, next) {
   var body = req.body
   andrews_to_ids(body.andrew_ids)
   .then(function (all_ids) {
@@ -190,7 +196,7 @@ router.post('/set', validate({body: ValidSetBatchRoleSchema}),
       next(err);
     }
   });
-});
+}
 
 // router.post('/set',
 //             validate({body: ValidSetRoleSchema}),

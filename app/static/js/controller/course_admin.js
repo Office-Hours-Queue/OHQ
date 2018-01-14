@@ -13,6 +13,14 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
   $scope.selected_del_active = false;
   $scope.selected_del_id = -1;
 
+	$scope.find_id = function (course_num) {
+		for(var i = 0; i < $scope.courses.length; i++) {
+      if ($scope.courses[i].number == course_num) {
+        return $scope.courses[i].id;
+      }
+    }
+	}
+
   $scope.add_course = function () {
     var course_num = parseInt($("#new_course_num").val(), 10)
     var course_payload = {
@@ -31,7 +39,7 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
 
   $scope.edit_course = function () {
     var payload = {
-      id: parseInt($("#course_id").val(), 10),
+      id: find_id(parseInt($("#course_id").val(), 10)),
       active: $scope.selected_del_active
     }
 
@@ -73,36 +81,18 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
     });
   }
 
-  $scope.edit_role = function () {
-    var course_num = parseInt($("#course_num").val(), 10);
-    var course_id;
-
-    for(var i = 0; i < $scope.courses.length; i++) {
-      if ($scope.courses[i].number == course_num) {
-        course_id = $scope.courses[i].id;
-      }
-    }
-
-    var payload = {
-      andrew_id: $("#edit_role_andrew_id").val(),
-      course_id: course_id,
-      role: $scope.edit_user.role
-    }
-
-    $http.post("/api/role/set", payload).then(function(success) {
-      Materialize.toast('Saved', 5000);
-    }, function(fail) {
-      Materialize.toast('There was an error', 5000);
-    });
-  }
-
   $scope.submit_roles = function(people) {
-    for(var person in people) {
+			people = people.filter((person) => person != "");
       var payload = {
-
+				"andrew_ids": people,
+				"course_id": $scope.find_id(parseInt($("#batch_course_num").val(), 10)),
+				"role": "ca"
       }
-      console.log(people[person]);
-    }
+			$http.post("/api/role/set_admin", payload).then(function(success) {
+				Materialize.toast('TAs Added', 5000);
+			}, function(fail) {
+				Materialize.toast('There was an error', 5000);
+			});
   }
 
   $scope.batch_role = function () {
@@ -114,6 +104,6 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
       $scope.submit_roles(e.target.result.split("\n"));
     }
     fr.readAsText(file);
-
   }
+
 }];

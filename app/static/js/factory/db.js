@@ -6,33 +6,27 @@
 var db = ["$rootScope","$http","$route","localStorageService",function ($rootScope,$http,$route,lss) {
 	var d = {};
 
-	/* Access to user object */
-	$rootScope.check_login = function () {
-		var set_course = function () {
-			console.log(sessionStorage.getItem('current_course'));
-			if (sessionStorage.getItem('current_course') != undefined) {
-				$rootScope.$broadcast("user_ready");
-				if ($rootScope.current_page == "landing") {
-					window.location = "/#/" + ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student")
-				}
+	$rootScope.set_course = function () {
+		if (sessionStorage.getItem('current_course') != undefined) {
+			$rootScope.$broadcast("user_ready");
+			if ($rootScope.current_page == "landing") {
+				window.location = "/#/" + ($rootScope.user["roles"][sessionStorage.getItem('current_course')] || "student")
 			}
 		}
+	}
 
-		console.log("in it");
-
+	/* Access to user object */
+	$rootScope.check_login = function () {
 		//Get login user object
 		$http.get('/api/user', {}).then(function (data) {
-			console.log("yoo");
 			if (data["data"]["first_name"] != undefined && $rootScope.user == undefined) {
 				$rootScope.user = data["data"];
 				if (sessionStorage.getItem('current_course') == undefined) {
 					window.location = "/#/courses";
 					return;
 				}
-				//if ($rootScope.current_page != "login" && $rootScope.current_page != "landing") { return; }
+				$rootScope.set_course();
 			}
-			console.log("yee");
-			set_course();
 		}, function() {
 			if ($route.current.scope.name != "login") {
 				window.location = "/#/";
@@ -45,6 +39,7 @@ var db = ["$rootScope","$http","$route","localStorageService",function ($rootSco
 	$rootScope.$on("user_ready", function (course_id) {
 		console.log("CONNECTING TO SIO")
 
+		console.log(d.qsio);
 		if (d.qsio != undefined) {d.qsio.disconnect();}
 		if (d.usio != undefined) {d.usio.disconnect();}
 		if (d.hsio != undefined) {d.hsio.disconnect();}

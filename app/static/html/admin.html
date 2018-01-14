@@ -58,23 +58,28 @@
 			<div class="collapsible-header"><b>Staff Assignment</b></div>
 			<div class="collapsible-body">
 			<p>
-				Enter a staff member's andrew id below to add them as staff to the queue.
+				Enter a staff member's Google email below to add them as staff to the queue.
 				<br/>
 				<br/>
-							<label for="new_ca_andrew_id">New Andrew ID</label>
+							<label for="new_ca_andrew_id">New Goolge Email</label>
 				<input id="new_ca_andrew_id" type="text">
 				<button ng-click="add_ca_andrew_id()" class="btn blue">Add Staff</button>
-
+				<ul class="collection">
+					<li ng-repeat="t in tas">
+						<span class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Remove" ng-click="select_ta(t.andrew_id)" ng-href="#modal_ta_delete" modal ></span>
+						{{ t.andrew_id }}
+					</li>
+				</ul>
 			</p>
-			</div>
+		</div>
 		</li>
 
 		<li id="batch_role_assignment">
 			<div class="collapsible-header"><b>Batch Staff Assignment</b></div>
 			<div class="collapsible-body">
-			
+
 			<p>
-		        Add multiple staff members to your course. (instructions here)
+		        Add multiple staff members to your course
 		        <br/>
 		        <br/>
 		        <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
@@ -109,6 +114,24 @@
               </div>
               <div class="col s4 valign right">
                 <a id="prefbtn" ng-click="delete_topic_or_loc()" name="do_delete" class="modal-action modal-close waves-effect waves-light btn-flat red-text">Disable</a>
+                <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+			<!-- Confirm TA delete -->
+			<div class="modal bottom-sheet" id="modal_ta_delete">
+        <div class="modal-content">
+          <div class="container">
+            <div class="row row-tight valign-wrapper">
+              <div class="col s8 valign">
+                <h5>Remove {{ selected_ta }} as a staff member</h5>
+                <p>Are you sure you want to remove {{ selected_ta }}?</p>
+              </div>
+              <div class="col s4 valign right">
+                <a id="prefbtn" ng-click="delete_ta()" name="do_delete" class="modal-action modal-close waves-effect waves-light btn-flat red-text">Remove</a>
                 <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-flat">Cancel</a>
               </div>
             </div>

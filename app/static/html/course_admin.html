@@ -9,10 +9,10 @@
 
 			<ul class="collection">
 				<li class="{{ c.active ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="c in courses">
-                                                    <span ng-if="c.active" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(c.name, c.id, c.active)" ng-href="#modaldelete" modal ></span>
-                                                    <span ng-if="!(c.active)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(c.name, c.id, c.active); enable_disable_course()"></span>
-                                                   {{ c.number }}
-                                                </li>
+	          <span ng-if="c.active" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(c.name, c.id, c.active)" ng-href="#modaldelete" modal ></span>
+	          <span ng-if="!(c.active)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(c.name, c.id, c.active); enable_disable_course()"></span>
+	         {{ c.number }}
+	      </li>
 				<a ng-href="#modal_add_course" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add course</li></a>
 			</ul>
 
@@ -20,38 +20,16 @@
 			</div>
 		</li>
 
-		<li id="edit_user_role">
-			<div class="collapsible-header"><b>Edit User Role</b></div>
-			<div class="collapsible-body">
-
-      <p>
-        Change the role of anyone in the database.
-        <br/>
-        <br/>
-        <label for="edit_role_andrew_id">AndrewID</label>
-        <input id="edit_role_andrew_id" type="text">
-        <label for="course_num">Course Number</label>
-        <input id="course_num" type="text">
-        <label for="editRole">Role</label>
-        <select id="editRole" ng-model="edit_user.role" material-select>
-          <option value="student">Student</option>
-          <option value="ca">Instructor</option>
-        </select>
-        <button id="update_role_btn" ng-click="edit_role()" class="btn blue">Edit</button>
-
-      </p>
-		</li>
-
 		<li id="batch_role_assignment">
 			<div class="collapsible-header"><b>Batch TA Assignment</b></div>
 			<div class="collapsible-body">
-			
+
       <p>
         Add people to a course with a defined role.
         <br/>
         <br/>
-        <label for="course_num">Course Number</label>
-        <input id="course_num" type="text" style="margin-bottom: 0px">
+        <label for="batch_course_num">Course Number</label>
+        <input id="batch_course_num" type="text" style="margin-bottom: 0px">
         <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
         <div class="file-field input-field" style="padding-left: 29px; padding-right: 29px">
           <div class="btn blue">
@@ -78,8 +56,6 @@
   			<input id="new_course_num" type="text">
   			<label for="new_course_name">Course Name</label>
   			<input id="new_course_name" type="text">
-        <label for="new_course_ca">Initial Instructor AndrewID</label>
-        <input id="new_course_ca" type="text">
   			<button ng-click="add_course()" class="btn blue">Add Course</button>
       </div>
     </div>

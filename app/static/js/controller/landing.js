@@ -19,6 +19,7 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
   			lss.set(course_id, true);
     		Materialize.toast('Course Pinned!', 3000);
   		}
+		$scope.get_courses();
 	}
 
 	$scope.sort_courses = function (data) {
@@ -53,6 +54,6 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 
 	$scope.set_course = function (course_id) {
 			sessionStorage.setItem('current_course', course_id);
-			$rootScope.check_login();
+			$rootScope.set_course();
 	}
 }];

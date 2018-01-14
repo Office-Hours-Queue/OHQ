@@ -42,6 +42,7 @@ router.get('/get_tas', auth.hasCourseRole('ca').errorJson, function (req, res, n
   return db.select('user')
     .from('roles')
     .where('course', req.query.course_id)
+    .andWhere('role', 'ca')
     .then(function (roles) {
       user_ids = roles.map((role) => role.user);
       return db.select('*')

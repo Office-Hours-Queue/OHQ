@@ -113,6 +113,7 @@ module.exports.queue = function(io) {
     });
 
     socket.on('add_topic', function (topic) {
+      console.log(topic);
       queue.topics.addTopic(topic, course_id);
     });
 
