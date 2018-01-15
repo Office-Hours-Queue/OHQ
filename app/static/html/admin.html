@@ -58,7 +58,7 @@
 			<div class="collapsible-body">
 				<ul class="collection">
 					<li class="collection-item" ng-repeat="t in tas">
-						<span class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Remove" ng-click="select_ta(t.andrew_id)" ng-href="#modal_ta_delete" modal ></span>
+						<span ng-if="user.andrew_id != t.andrew_id" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Remove" ng-click="select_ta(t.andrew_id)" ng-href="#modal_ta_delete" modal ></span>
 						{{ t.andrew_id }}
 					</li>
 					<a ng-href="#modal_add_staff" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add staff member</li></a>

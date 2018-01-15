@@ -100,6 +100,11 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 	}
 
 	$scope.delete_ta = function () {
+		if ($scope.selected_ta == $rootScope.user.andrew_id) {
+			Materialize.toast("You can't remove yourself from a course", 5000);
+			return;
+		}
+
 		var payload = {
 			andrew_ids: [$scope.selected_ta],
 			course_id: parseInt(sessionStorage.getItem("current_course")),

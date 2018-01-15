@@ -45,6 +45,7 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
 
     $http.post("/api/course/edit", payload).then(function(success) {
       Materialize.toast('Saved', 5000);
+			$scope.get_courses();
       $('#modal_edit_course').closeModal();
     }, function(fail) {
       Materialize.toast('There was an error', 5000);
@@ -75,6 +76,7 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
 
     $http.post("/api/course/edit", payload).then(function(success) {
       Materialize.toast('Saved', 5000);
+			$scope.get_courses();
       $('#modal_edit_course').closeModal();
     }, function(fail) {
       Materialize.toast('There was an error', 5000);
