@@ -217,6 +217,7 @@ function selectDefaultQuestionFields(course_id) {
             .from('questions AS aq')
             .where('aq.off_time', null)
             .andWhere('aq.help_time', null)
+            .andWhere('aq.course_id', course_id)
             .andWhere(db.raw('aq.on_time < q.on_time'))
             .as('queue_position');
       },
@@ -506,6 +507,7 @@ function addQuestion(question) {
                    .from('questions AS q')
                    .transacting(trx)
                    .where('q.student_user_id', insertQuestion.student_user_id)
+                   .andWhere('q.course_id', insertQuestion.course_id)
                    .where(questionOpen())
                    .first();
         })
