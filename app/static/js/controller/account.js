@@ -33,10 +33,41 @@ var account_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScop
       $http.post("/api/user/edit_first_name", payload)
            .then(function(success) {
              Materialize.toast('Saved', 5000);
+						 $rootScope.user.first_name = payload.first_name;
              $('#modaleditname').closeModal();
            }, function(fail) {
              Materialize.toast('There was an error', 5000);
            });
     }
   };
+
+	$scope.get_num = function (course_id) {
+		if ($scope.courses) {
+			for(var i = 0; i < $scope.courses.length; i++) {
+				if ($scope.courses[i].id == course_id) {
+					var prefix = String($scope.courses[i].number).slice(0,2);
+					var suffix = String($scope.courses[i].number).slice(2);
+					return prefix + "-" + suffix;
+				}
+			}
+		}
+	}
+
+	$scope.get_courses = function () {
+		$http.get("/api/course/get_all").then(function(success) {
+			$scope.courses = success.data;
+		}, function(fail) {
+			Materialize.toast('There was an error', 5000);
+		});
+	}
+	$scope.get_courses();
+
+	$scope.ca_roles = function () {
+		if ($rootScope.user) {
+			return Object.entries($rootScope.user.roles)
+									 .filter(e => e[1] === 'ca')
+									 .map(e => parseInt(e[0]));
+		}
+	}
+
 }];

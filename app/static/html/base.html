@@ -1,40 +1,46 @@
 <nav>
-  <div class="nav-wrapper light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]">
-    <div id="name_brand" class="brand-logo center">{{ user ? user.first_name : 'Connecting...' }}</div>
+  <div class="nav-wrapper light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected || !current_course]">
+    <div id="name_brand" class="brand-logo center">
+      {{ current_page === 'landing' ? 'Office Hours Queue' : current_course_number + " Queue" }}
+    </div>
 
     <ul class="left hide-on-med-and-down">
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="current_page !== 'landing'">
+        <a href="/#/courses">Courses</a>
+      </li>
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca">Queue</a>
       </li>
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/admin">Admin</a>
       </li>
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
-      <li ng-if="user.role === 'student'">
+      <li ng-if="current_role === 'student'">
         <a href="/#/student">Queue</a>
-      </li>
-      <li ng-if="user.role === 'student'">
-        <a id="faq" href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
-      </li>
-      <li ng-if="user.role === 'student'">
-        <a id="debugging_tips" href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
     </ul>
 
     <ul class="right hide-on-med-and-down">
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="current_role !== undefined">
         <a id="faq" href="#modalhelp" ng-click="clicked_faq()" modal>FAQ</a>
+      </li>
+      <li ng-if="current_role === 'student'">
+        <a id="debugging_tips" href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
       <li>
         <a href="/#/account">Account</a>
+      </li>
+
+      <li ng-if="user.is_admin">
+        <a href="/#/course_admin">Course Admin</a>
       </li>
       <li>
         <a href="/api/login/endauth">Log out</a>
       </li>
     </ul>
-    <ul class="right" ng-if="!$db.io_connected">
+    <ul class="right" ng-if="!$db.io_connected && current_course">
       <li>
         <a class="grey-text text-lighten-2">Connecting...</a>
       </li>
@@ -45,25 +51,31 @@
     </a>
 
     <ul class="side-nav" id="mobile-menu">
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="current_page !== 'landing'">
+        <a href="/#/courses">Courses</a>
+      </li>
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca">Queue</a>
       </li>
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/admin">Admin</a>
       </li>
-      <li ng-if="user.role === 'ca'">
+      <li ng-if="current_role === 'ca'">
         <a href="/#/ca/stats">Stats</a>
       </li>
-      <li ng-if="user.role === 'student'">
+      <li ng-if="current_role === 'student'">
         <a href="/#/student">Queue</a>
+      </li>
+      <li ng-if="current_role !== undefined">
+        <a id="faq" ng-click="clicked_faq()" href="#modalhelp" modal>FAQ</a>
       </li>
       <li>
         <a href="/#/account">Account</a>
       </li>
-      <li>
-        <a id="faq" ng-click="clicked_faq()"  href="#modalhelp" modal>FAQ</a>
+      <li ng-if="user.is_admin">
+        <a href="/#/course_admin">Course Admin</a>
       </li>
-      <li ng-if="user.role === 'student'">
+      <li ng-if="current_role === 'student'">
         <a id="debugging_tips" href="#modaltips" ng-click="clicked_debugging_tips()" modal>Debugging</a>
       </li>
       <div class="divider"></div>
@@ -75,14 +87,14 @@
 </nav>
 
 <div class="progress" style="margin: 0; background-color: transparent">
-  <div class="indeterminate" ng-if="!$db.io_connected"></div>
+  <div class="indeterminate" ng-if="!$db.io_connected && current_course"></div>
 </div>
 
 <div data-block="content">
 </div>
 
  <!-- FAQ Modal -->
-<div ng-if="user.role === 'ca'" class="modal modal-fixed-footer container" id="modalhelp">
+<div ng-if="current_role === 'ca'"class="modal modal-fixed-footer container" id="modalhelp">
   <div class="modal-content">
     <h4>FAQ</h4>
     <div class="divider"></div>
@@ -94,13 +106,13 @@
     <p> Freezing a question takes it off the queue for 10 minutes. After 10 minutes is up (or a student chooses to be unfrozen), the question is put back onto the queue in the same position. This is useful if students need to go to the bathroom or get a snack. It can also be used the first time you can't find a student. </p>
     <div class="divider"></div>
     <h5>Should I kick,freeze, or finish the question I am answering?</h5>
-    <p>If you find the student and answer their question, click finish. If you can't find them, try to freeze their question. If you can't (the button is grey, meaning they were already frozen once), then kick them from the queue. </p>  
+    <p>If you find the student and answer their question, click finish. If you can't find them, try to freeze their question. If you can't (the button is grey, meaning they were already frozen once), then kick them from the queue. </p>
     <div class="divider"></div>
     <h5>What if the queue goes down?</h5>
     <p>There is a queue backup spreadsheet in the shared Google Drive folder. It has every question asked, with the most recent ones at the bottom.  </p>
     <div class="divider"></div>
     <h5>A student got an error saying “Your login attempt was denied. This is likely because you are not marked as in 15-112.” What do I do?</h5>
-    <p>We don’t let anyone login to the queue unless they are in 15-112. This student was probably added to the class after the roster was entered into the queue.  Go to Administration -> Grant Queue Access, and add the student. They should now be able to login. </p> 
+    <p>We don’t let anyone login to the queue unless they are in 15-112. This student was probably added to the class after the roster was entered into the queue.  Go to Administration -> Grant Queue Access, and add the student. They should now be able to login. </p>
     </div>
   </div>
   <div class="modal-footer">
@@ -110,7 +122,7 @@
 
 
 <!-- FAQ Modal (student) -->
-<div ng-if="user.role === 'student'" class="modal modal-fixed-footer container" id="modalhelp">
+<div ng-if="current_role === 'student'" class="modal modal-fixed-footer container" id="modalhelp">
   <div class="modal-content">
     <h4>FAQ</h4>
     <div class="divider"></div>
@@ -133,7 +145,7 @@
       <p>If the queue is closed, that means you can't ask a question. If the queue is closed while you have a question on the queue, your question will not be deleted. </p>
       <div class="divider"></div>
       <h5>Why was my question kicked?</h5>
-      This means that a TA could not find you. When a TA tries to find you and fails, they will first freeze your question if it hasn't been frozen once already. The second time (or if you already used a freeze), your question gets removed from the queue. If you think you were kicked by accident, please see a TA.  
+      This means that a TA could not find you. When a TA tries to find you and fails, they will first freeze your question if it hasn't been frozen once already. The second time (or if you already used a freeze), your question gets removed from the queue. If you think you were kicked by accident, please see a TA.
     </div>
   </div>
   <div class="modal-footer">
@@ -142,7 +154,7 @@
 </div>
 
 <!-- Debugging Tips Modal -->
-<div ng-if="user.role === 'student'" class="modal modal-fixed-footer container" id="modaltips">
+<div class="modal modal-fixed-footer container" id="modaltips">
   <div class="modal-content">
     <h4>Debugging Tips</h4>
     <div class="divider"></div>
@@ -158,7 +170,7 @@
 Almost every TA will ask you if you've added print statements to your code. Put print statements all over your code to (a) figure out the value of variables and see if they are what you expect or (b) see if your code executes far enough to get to the print statement or (c) etc. </p>
       <div class="divider"></div>
       <h5>Explain the logic of your code to a friend or a duck</h5>
-Have you ever explained your code to a TA and then instantly realized what the issue was? This is called rubber-ducky debugging (coined term). Basically, explain to yourself or your friend or a rubber duck what your code is doing and while doing that you will realize issues you hadn’t thought of when you were staring at you code. 
+Have you ever explained your code to a TA and then instantly realized what the issue was? This is called rubber-ducky debugging (coined term). Basically, explain to yourself or your friend or a rubber duck what your code is doing and while doing that you will realize issues you hadn’t thought of when you were staring at you code.
     </div>
   </div>
   <div class="modal-footer">

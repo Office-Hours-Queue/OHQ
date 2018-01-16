@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#01579b">
-    <title>112Q</title>
+    <title>OHQ</title>
 
     <!-- jQuery -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
@@ -44,16 +44,19 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-moment/1.0.1/angular-moment.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-chart.js/1.1.0/angular-chart.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-local-storage/0.5.0/angular-local-storage.min.js"></script>
+    <script src="/js/lib/angular-csv-import.js"></script>
 
     <!-- Angular Factories -->
     <script src="/js/factory/db.js"></script>
 
     <!-- Angular Controllers -->
+    <script src="/js/controller/landing.js"></script>
     <script src="/js/controller/student.js"></script>
     <script src="/js/controller/ca.js"></script>
     <script src="/js/controller/stats.js"></script>
     <script src="/js/controller/login.js"></script>
     <script src="/js/controller/admin.js"></script>
+    <script src="/js/controller/course_admin.js"></script>
     <script src="/js/controller/account.js"></script>
 
     <script src="/app.js"></script>
@@ -81,11 +84,11 @@
 <body ng-app="queue">
     <main ng-view></main>
 
-    <footer class="page-footer light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected]" ng-if="user">
+    <footer class="page-footer light-blue darken-3" ng-class="{true:'light-blue darken-3', false:'blue-grey darken-1'}[$db.io_connected || !current_course]" ng-if="user">
       <div class="footer-copyright">
           <div class="left"></div>
           <div class="center">
-             <a href="mailto:edryer@andrew.cmu.edu,kevinzhe@andrew.cmu.edu?subject=112 Queue Issue" class="white-text right-align">Issues? Email us.</a>
+             <a href="mailto:edryer@andrew.cmu.edu,kevinzhe@andrew.cmu.edu,fmarsh@andrew.cmu.edu,aschick@andrew.cmu.edu?subject=Queue Issue" class="white-text right-align">Issues? Email us.</a>
           </div>
       </div>
     </footer>

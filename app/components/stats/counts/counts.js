@@ -24,8 +24,8 @@ var counts = (function() {
 
   question_emitter.on('question_closed', function(question) {
     if (question.ca_user_id !== null) {
-      selectQuestionCountCa(question.ca_user_id).first().then(function(user) {
-        result.emitter.emit('ca_question_count', user);
+      selectQuestionCountCa(question.ca_user_id, question.course_id).first().then(function(user) {
+        result.emitter.emit('ca_question_count', user, question.course_id);
       });
     }
   });
@@ -42,17 +42,17 @@ function selectDefaultUserFields() {
 }
 
 // Get the question count for each CA
-function selectQuestionCountAllCas() {
-  return selectQuestionCount();
+function selectQuestionCountAllCas(course_id) {
+  return selectQuestionCount(course_id);
 }
 
 
 // Get the question count for one CA
-function selectQuestionCountCa(userid) {
-  return selectQuestionCount().where('u.id', userid);
+function selectQuestionCountCa(userid, course_id) {
+  return selectQuestionCount(course_id).where('u.id', userid);
 }
 
-function selectQuestionCount() {
+function selectQuestionCount(course_id) {
   return selectDefaultUserFields()
     .count('q AS question_count')
     .from('users AS u')
@@ -60,19 +60,23 @@ function selectQuestionCount() {
       this.on('u.id', 'q.ca_user_id')
           .andOn(db.raw('q.off_reason = \'normal\''));
     })
-    .where('u.role', 'ca')
+    .leftJoin('roles AS r', function () {
+      this.on('u.id', 'r.user')
+          .andOn('q.course_id', 'r.course');
+    })
+    .where({'r.role': 'ca', 'r.course': course_id})
     .groupBy('u.id');
 }
 
 // Get the number of unique students helped for a CA
-function selectUniqueStudentCountCa(userid) {
-  return selectUniqueStudentCount()
+function selectUniqueStudentCountCa(userid, course_id) {
+  return selectUniqueStudentCount(course_id)
     .where('u.id', userid)
     .first();
 }
 
 // Get the number of unique students helped
-function selectUniqueStudentCount() {
+function selectUniqueStudentCount(course_id) {
   return selectDefaultUserFields()
     .countDistinct('q.student_user_id AS unique_student_count')
     .from('users AS u')
@@ -80,7 +84,11 @@ function selectUniqueStudentCount() {
       this.on('u.id', 'q.ca_user_id')
           .andOn(db.raw('q.off_reason = \'normal\''));
     })
-    .where('u.role', 'ca')
+    .leftJoin('roles AS r', function () {
+      this.on('u.id', 'r.user')
+          .andOn('q.course_id', 'r.course');
+    })
+    .where({'r.role': 'ca', 'r.course': course_id})
     .groupBy('u.id');
 }
 

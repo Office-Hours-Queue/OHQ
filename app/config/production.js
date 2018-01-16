@@ -21,12 +21,12 @@ config.GOOGLE_SHEETS = {
 
 // Superusers who can access super-secret stuff
 config.ADMIN_USERS = [
-  'edryer',
-  'kevinzhe',
-  'kkleiven',
-  'koz',
-  'rnvarma',
-  'tstentz',
+  'aschick@andrew.cmu.edu',
+  'edryer@andrew.cmu.edu',
+  'fmarsh@andrew.cmu.edu',
+  'koz@cmu.edu',
+  'tstentz@andrew.cmu.edu',
+  'aschick@andrew.cmu.edu',
 ];
 
 module.exports = config;

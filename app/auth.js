@@ -26,7 +26,18 @@ passport.deserializeUser(function(id, done) {
       if (typeof user === 'undefined') {
         done('Invalid session cookie');
       } else {
-        done(null, cleanUser(user));
+        db.select('course', 'role')
+          .from('roles')
+          .where({'user': user.id})
+          .then(function(roleList) {
+            roles = {}
+            for (var i = 0; i < roleList.length; i++) {
+              roles[roleList[i].course] = roleList[i].role;
+            }
+            user.roles = roles;
+            user.is_admin = config.ADMIN_USERS.includes(user.andrew_id)
+            done(null, cleanUser(user));
+          });
       }
       // returning null here prevents bluebird from complaining
       // about an unreturned promise
@@ -56,27 +67,10 @@ passport.use(
 
           // user doesn't exist already
           else {
-
-            // first, check user's role
-            return db.select('role')
-                     .from('valid_andrew_ids')
-                     .where('andrew_id', getUserInfo(profile, 'student').andrew_id)
-                     .first()
-                     .then(function(validUser) {
-
-                       // user isn't in our roster
-                       if (typeof validUser === 'undefined') {
-                          validUser = {"role": "student"};
-                       }
-
-                       // user is ok - insert and pass it back up
-                         return db.insert(getUserInfo(profile, validUser.role))
-                                  .into('users')
-                                  .returning('*');
-                     })
-                     .then(function(insertedUser) {
-                        return Promise.resolve(insertedUser[0]);
-                     });
+            return db.insert(getUserInfo(profile))
+                     .into('users')
+                     .returning('*')
+                     .then(transfer_future_roles);
           }
         })
         .then(function(dbUser) {
@@ -93,9 +87,27 @@ passport.use(
   )
 );
 
-function getUserInfo(googleProfile,role) {
+function transfer_future_roles(insertedUser) {
+  andrew_id = insertedUser[0].andrew_id;
+  return db.select('*')
+           .from('future_roles')
+           .where('andrew_id', andrew_id)
+           .then(function (roles) {
+             uid = insertedUser[0].id;
+             toInsert = roles.map((role) => ({"user": uid, "course": role.course,
+                                             "role": role.role}));
+             return db.insert(toInsert).into("roles")
+                      .then(function (insertedRoles) {
+                        db.del().from('future_roles')
+                                .where('andrew_id', andrew_id)
+                                .then((deleted) => Promise.resolve(insertedUser[0]))
+                      });
+           });
+}
+
+function getUserInfo(googleProfile) {
   var result = {};
-  
+
   for (var i = 0; i < googleProfile.emails.length; i++) {
     if (googleProfile.emails[i].type === 'account') {
       result.email = googleProfile.emails[i].value;
@@ -105,7 +117,8 @@ function getUserInfo(googleProfile,role) {
   result.andrew_id = result.email;
   result.last_name = googleProfile.name.familyName;
   result.first_name = googleProfile.name.givenName;
-  result.role = role;
+  //TODO: remove this when roles are really gone
+  result.role = "student";
   result.google_id = googleProfile.id;
 
   return result;
@@ -132,12 +145,13 @@ var isAuthenticated = {
 
 };
 
-var hasRole = function(role) {
+var hasCourseRole = function(role) {
   return {
 
     redirect: function(req, res, next) {
+      var course_id = req.body.course_id != undefined ? req.body.course_id : req.query.course_id
       if (req.isAuthenticated() &&
-          req.user.role === role) {
+          req.user.roles[course_id] === role) {
         next();
       } else {
         res.redirect('/');
@@ -145,8 +159,9 @@ var hasRole = function(role) {
     },
 
     errorJson: function(req, res, next) {
+      var course_id = req.body.course_id != undefined ? req.body.course_id : req.query.course_id
       if (req.isAuthenticated() &&
-          req.user.role === role) {
+          req.user.roles[course_id] === role) {
         next();
       } else {
         res.status(401).send({ name: 'AuthorizationError',
@@ -165,19 +180,16 @@ function ioIsAuthenticated(socket, next) {
   }
 }
 
-function ioHasRole(role) {
+function ioHasCourseRole(role, course_id) {
   return function(socket, next) {
     if (socket.request.isAuthenticated()) {
-      if (Array.isArray(role) &&
-          role.indexOf(socket.request.user.role) !== -1) {
+      if (socket.request.user.roles[course_id] === role) {
         next();
         return;
-      } else if (socket.request.user.role === role) {
-        next();
-        return;
+      } else {
+        next(new Error('Not authorized'));
       }
     }
-    next(new Error('Not authorized'));
   };
 }
 
@@ -192,8 +204,8 @@ function isAdmin(req, res, next) {
 module.exports = {
   passport: passport,
   isAuthenticated: isAuthenticated,
-  hasRole: hasRole,
+  hasCourseRole: hasCourseRole,
   ioIsAuthenticated: ioIsAuthenticated,
-  ioHasRole: ioHasRole,
-  isAdmin: isAdmin
+  ioHasCourseRole: ioHasCourseRole,
+  isAdmin: isAdmin,
 };

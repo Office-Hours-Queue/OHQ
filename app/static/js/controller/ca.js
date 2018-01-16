@@ -6,10 +6,10 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
 
 	$rootScope.check_login();
 
-      $scope.clicked_faq = function () {
-        ga('send', 'event','FAQ','TA clicked',$rootScope.user["andrew_id"])
-      };
-	
+  $scope.clicked_faq = function () {
+    ga('send', 'event','FAQ','TA clicked',$rootScope.user["andrew_id"])
+  };
+
   var Notify = window.Notify.default;
 
   // Attach a listener to fire notifications

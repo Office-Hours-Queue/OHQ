@@ -40,10 +40,10 @@ var questions = (function() {
 
   // helper function that gets a procedure which will emit the
   // unfreeze event, and clean up timers
-  var notifyUnfrozen = function(id) {
+  var notifyUnfrozen = function(id, course_id) {
     return function() {
       debug('question_unfrozen');
-      selectQuestionId(id).then(function(question) {
+      selectQuestionId(id, course_id).then(function(question) {
         result.emitter.emit('question_unfrozen', question);
       });
       delete pendingUnfreezeNotifications[id];
@@ -53,22 +53,27 @@ var questions = (function() {
   // populate the pending unfreeze notifications when the app starts.
   // need to make sure that all clients who have a question that'll be
   // unfrozen in the future are scheduled to be notified.
-  selectQuestionsOpen()
-    .where('frozen_end_time', '>=', db.fn.now())
-    .then(function(questions) {
-      questions.forEach(function(question) {
-        pendingUnfreezeNotifications[question.id] =
-          setTimeout(
-            notifyUnfrozen(question.id),
-            Math.max(0, question.frozen_end_time - Date.now())
-          );
-      });
-    });
+  db('courses').select('id').then(function (courses) {
+    for (var i = 0; i < courses.length; i++) {
+      selectQuestionsOpen(courses[i].id)
+        .where('frozen_end_time', '>=', db.fn.now())
+        .then(function(questions) {
+          questions.forEach(function(question) {
+            pendingUnfreezeNotifications[question.id] =
+              setTimeout(
+                notifyUnfrozen(question.id, question.course_id),
+                Math.max(0, question.frozen_end_time - Date.now())
+              );
+          });
+        });
+    }
+  });
 
   dbEvents.questions.on('update', function(newQuestion, oldQuestion) {
     // something happened to an existing question. find out what happened,
     // then emit an appropriate event
     var id = newQuestion.id;
+    var course_id = newQuestion.course_id;
     var changes = diff(oldQuestion, newQuestion);
     for (var i in changes) {
       var change = changes[i];
@@ -83,8 +88,8 @@ var questions = (function() {
         throw new Error("Consistency error - row is nested");
       }
 
-      var emitEvent = function(eventName) {
-        selectQuestionId(id).then(function(question) {
+      var emitEvent = function(eventName, course_id) {
+        selectQuestionId(id, course_id).then(function(question) {
           result.emitter.emit(eventName, question);
         });
       };
@@ -95,24 +100,24 @@ var questions = (function() {
       switch (field) {
         case 'frozen_time':
           debug('question_frozen');
-          emitEvent('question_frozen');
+          emitEvent('question_frozen', course_id);
           break;
         case 'frozen_end_time':
           // clear the pending event, and schedule a new one sometime
           // in the future, when the question is to be unfrozen
           clearTimeout(pendingUnfreezeNotifications[id]);
           pendingUnfreezeNotifications[id] = setTimeout(
-            notifyUnfrozen(id),
+            notifyUnfrozen(id, course_id),
             Math.max(0, Date.parse(change.rhs) - Date.now())
           );
           break;
         case 'help_time':
           if (was_changed("frozen_time",changes)) { break; }
-          emitEvent('question_answered');
+          emitEvent('question_answered', course_id);
           break;
         case 'off_time':
           debug('question_closed');
-          emitEvent('question_closed');
+          emitEvent('question_closed', course_id);
           if (pendingUnfreezeNotifications[id] !== undefined) {
             debug("delete freeze timer")
             clearTimeout(pendingUnfreezeNotifications[id]);
@@ -120,11 +125,11 @@ var questions = (function() {
           }
           break;
         case 'ca_user_id':
-          if ((was_changed("help_time",changes))) { 
+          if ((was_changed("help_time",changes))) {
             if (newQuestion.ca_user_id == null) {
                //emit event releases ca_used_id as null
-               selectQuestionId(oldQuestion.id).then(function(question) {
-                result.emitter.emit("question_returned", oldQuestion.ca_user_id,question.id);
+               selectQuestionId(oldQuestion.id, course_id).then(function(question) {
+                result.emitter.emit("question_returned", oldQuestion.ca_user_id,question.id,question.course_id);
                });
               break;
             }
@@ -132,7 +137,7 @@ var questions = (function() {
         case "topic_id":
         case "location_id":
         case "help_text":
-          emitEvent('question_update');
+          emitEvent('question_update', course_id);
           break;
       }
     };
@@ -141,7 +146,7 @@ var questions = (function() {
 
   dbEvents.questions.on('insert', function(newQuestion) {
     // emit the full inserted object
-    selectQuestionId(newQuestion.id).then(function(question) {
+    selectQuestionId(newQuestion.id, newQuestion.course_id).then(function(question) {
       gsheets.googleSavePosition(question.student_andrew_id);
       result.emitter.emit('new_question', question);
     });
@@ -154,12 +159,19 @@ var questions = (function() {
 
   // When a user is edited, re-send their question
   dbEvents.users.on("update", function (new_user, old_user) {
-    if (new_user.first_name !== old_user.first_name && new_user.role === 'student') {
-      selectOpenQuestionUserId(new_user.id).then(function(question) {
-        if (question) {
-          result.emitter.emit('question_update', question);
-        }
-      });
+    if (new_user.first_name !== old_user.first_name) {
+      db('roles').select('course')
+                 .where('user', new_user.id)
+                 .andWhere('role', 'student')
+                 .then(function (role_lines) {
+                   for (var i = 0; i < role_lines.length; i++) {
+                     selectOpenQuestionUserId(new_user.id, role_lines[i].course).then(function(question) {
+                       if (question) {
+                         result.emitter.emit('question_update', question);
+                       }
+                     });
+                   }
+                 });
     }
   });
 
@@ -171,7 +183,7 @@ var questions = (function() {
 // Question selectors
 //
 
-function selectDefaultQuestionFields() {
+function selectDefaultQuestionFields(course_id) {
   return db.select(
       'q.id                  AS id',
       'us.id                 AS student_user_id',
@@ -199,11 +211,13 @@ function selectDefaultQuestionFields() {
       'q.initial_help_time   AS initial_help_time',
       'q.off_time            AS off_time',
       'q.off_reason          AS off_reason',
+      'q.course_id           AS course_id',
       function() {
         this.count('aq.id')
             .from('questions AS aq')
             .where('aq.off_time', null)
             .andWhere('aq.help_time', null)
+            .andWhere('aq.course_id', course_id)
             .andWhere(db.raw('aq.on_time < q.on_time'))
             .as('queue_position');
       },
@@ -219,6 +233,7 @@ function selectDefaultQuestionFields() {
       }
     )
     .from('questions AS q')
+    .where('q.course_id', course_id)
     .leftJoin('users AS us', 'us.id', 'q.student_user_id')
     .leftJoin('users AS uf', 'uf.id', 'q.frozen_by')
     .leftJoin('users AS uc', 'uc.id', 'q.ca_user_id')
@@ -228,47 +243,48 @@ function selectDefaultQuestionFields() {
 }
 
 // get question by id
-function selectQuestionId(id) {
-  return selectDefaultQuestionFields()
+function selectQuestionId(id, course_id) {
+  return selectDefaultQuestionFields(course_id)
     .where('q.id', id)
     .first();
 }
 
 // get question by user id
-function selectQuestionUserId(id) {
-  return selectDefaultQuestionFields()
+function selectQuestionUserId(id, course_id) {
+  return selectDefaultQuestionFields(course_id)
     .where('q.student_user_id', id);
 }
 
 // get active question by user id
-function selectOpenQuestionUserId(id) {
-  return selectDefaultQuestionFields()
+function selectOpenQuestionUserId(id, course_id) {
+  return selectDefaultQuestionFields(course_id)
     .where('q.student_user_id', id)
     .andWhere(questionOpen())
     .first();
 }
 
 // get currently answering question by user id
-function selectAnsweringQuestionCaUserId(caUserId) {
-  return selectDefaultQuestionFields()
+function selectAnsweringQuestionCaUserId(caUserId, course_id) {
+  return selectDefaultQuestionFields(course_id)
     .where('q.ca_user_id', caUserId)
     .andWhere(questionAnswering())
     .first();
 }
 
 // get open questions
-function selectQuestionsOpen() {
-  return selectDefaultQuestionFields()
+function selectQuestionsOpen(course_id) {
+  return selectDefaultQuestionFields(course_id)
     .where(questionOpen())
     .orderBy('q.on_time', 'desc');
 }
 
 // get the count of questions on the queue
-function selectOpenCount() {
+function selectOpenCount(course_id) {
   return db.count('*')
     .from('questions AS q')
     .where(questionOpen())
     .andWhere(questionNotAnswering())
+    .andWhere('course_id', course_id)
     .first()
     .then(function(questions) {
       return Promise.resolve(parseInt(questions.count));
@@ -276,15 +292,15 @@ function selectOpenCount() {
 }
 
 // get the last n closed questions
-function selectLatestClosed(n) {
-  return selectDefaultQuestionFields()
+function selectLatestClosed(n, course_id) {
+  return selectDefaultQuestionFields(course_id)
     .limit(n)
     .where(questionClosed())
     .orderBy('q.off_time', 'desc');
 }
 
-function selectLatestClosedUserId(n, studentId) {
-  return selectLatestClosed(n).andWhere('q.student_user_id', studentId);
+function selectLatestClosedUserId(n, studentId, course_id) {
+  return selectLatestClosed(n, course_id).andWhere('q.student_user_id', studentId);
 }
 
 // condition for a question to be open
@@ -336,7 +352,7 @@ function questionCanFreeze() {
 }
 
 // Wait time
-function selectWaitTime(startTime, endTime) {
+function selectWaitTime(startTime, endTime, course_id) {
   // round down to nearest 10 mins
   startTime = new Date(Math.floor(startTime.getTime() / (1000 * 60 * 10)) * (1000 * 60 * 10));
 
@@ -357,7 +373,8 @@ function selectWaitTime(startTime, endTime) {
              db.raw(waitTime),
              db.raw(timePeriod))
            .from('questions AS q')
-           .where('q.help_time', '>', startTime)
+           .where('course_id', course_id)
+           .andWhere('q.help_time', '>', startTime)
            .andWhere('q.help_time', '<', endTime)
            .andWhere(function() {
              db.where(questionClosed())
@@ -389,7 +406,7 @@ function selectWaitTime(startTime, endTime) {
 }
 
 // get the average wait time for all questions with start < help_time < end.
-function selectAverageWaitTime(start, end) {
+function selectAverageWaitTime(start, end, course_id) {
   var waitTime = 'AVG(' +
     'CASE WHEN frozen_time IS NOT NULL THEN ' +
     '  EXTRACT(EPOCH FROM (q.help_time - q.frozen_end_time + q.frozen_time - q.on_time)) ' +
@@ -399,7 +416,8 @@ function selectAverageWaitTime(start, end) {
   return db.select(
               db.raw(waitTime))
            .from('questions AS q')
-           .where('q.help_time', '>', start)
+           .where('course_id', course_id)
+           .andWhere('q.help_time', '>', start)
            .andWhere('q.help_time', '<', end)
            .andWhere(function() {
              db.where(questionClosed())
@@ -447,7 +465,11 @@ function addQuestion(question) {
       help_text: {
         type: 'string',
         required: true
-      }
+      },
+      course_id: {
+        type: 'integer',
+        required: true
+      },
     }
   };
 
@@ -463,11 +485,12 @@ function addQuestion(question) {
     topic_id: question.topic_id,
     location_id: question.location_id,
     help_text: question.help_text,
+    course_id: question.course_id,
     on_time: db.fn.now()
   };
 
   db.transaction(function(trx) {
-      selectCurrentMeta()
+      selectCurrentMeta(question.course_id)
         .transacting(trx)
         .then(function(meta) {
           if (!meta.open) {
@@ -484,6 +507,7 @@ function addQuestion(question) {
                    .from('questions AS q')
                    .transacting(trx)
                    .where('q.student_user_id', insertQuestion.student_user_id)
+                   .andWhere('q.course_id', insertQuestion.course_id)
                    .where(questionOpen())
                    .first();
         })
@@ -507,7 +531,7 @@ function addQuestion(question) {
           throw(err);
         }
       });
-  
+
 }
 
 //
@@ -515,7 +539,7 @@ function addQuestion(question) {
 //
 
 // answer a question
-function answerQuestion(caUserId) {
+function answerQuestion(caUserId, course_id) {
   db.transaction(function(trx) {
       db.select('*')
         .from('user_question_locks')
@@ -527,7 +551,7 @@ function answerQuestion(caUserId) {
                    .from('questions AS q')
                    .where(questionNotFrozen())
                    .andWhere(questionOpen())
-                   .andWhere('ca_user_id', caUserId)
+                   .andWhere({'ca_user_id': caUserId, 'course_id': course_id})
                    .transacting(trx)
                    .first();
         })
@@ -572,19 +596,19 @@ function answerQuestion(caUserId) {
 }
 
 //return question
-function returnQuestion(caUserId) {
+function returnQuestion(caUserId, course_id) {
     db.table('questions AS q')
       .update({
         help_time: null,
         ca_user_id: null
       })
-      .where('ca_user_id', caUserId)
+      .where({'ca_user_id': caUserId, 'course_id': course_id})
       .andWhere(questionAnswering())
       .then();
 }
 
 // update a question's details
-function updateQuestionMeta(userId, question) {
+function updateQuestionMeta(userId, question, course_id) {
   var questionUpdateSchema = {
     type: 'object',
     additionalProperties: false,
@@ -605,7 +629,7 @@ function updateQuestionMeta(userId, question) {
   };
 
   var valid = validator(question, questionUpdateSchema);
-  
+
   if (!valid.valid) {
     throw new Error('Invalid input');
   }
@@ -614,48 +638,49 @@ function updateQuestionMeta(userId, question) {
     .update(question)
     .where('student_user_id', userId)
     .andWhere('off_time', null)
+    .andWhere('course_id', course_id)
     .return(null);
 }
 
 // close a question
 
 // close the student's active question
-function closeStudentQuestion(studentId) {
-  return closeQuestion('self_kick', studentId)
+function closeStudentQuestion(studentId, course_id) {
+  return closeQuestion('self_kick', studentId, course_id)
     .where('q.student_user_id', studentId)
     .andWhere(questionOpen())
     .then();
 }
 
 // close the ca's active question
-function closeCaQuestion(caUserId, reason) {
-  return closeQuestion(reason, caUserId)
+function closeCaQuestion(caUserId, reason, course_id) {
+  return closeQuestion(reason, caUserId, course_id)
     .where('q.ca_user_id', caUserId)
     .andWhere(questionAnswering())
     .then();
 }
 
 // close an arbitary question
-function closeQuestionId(userid, reason, questionId) {
-  return closeQuestion(reason, userid)
+function closeQuestionId(userid, reason, questionId, course_id) {
+  return closeQuestion(reason, userid, course_id)
     .where('q.id', questionId)
     .andWhere('q.off_time', null)
     .then();
 }
 
 // update clause for question close
-function closeQuestion(reason, offBy) {
+function closeQuestion(reason, offBy, course_id) {
   return db('questions AS q')
     .update({
       off_time: db.fn.now(),
       off_reason: reason,
       off_by: offBy
-    });
+    }).where('q.course_id', course_id);
 }
 
 // freeze a student's question
-function freezeStudentQuestion(studentId) {
-  return freezeQuestion(studentId)
+function freezeStudentQuestion(studentId, course_id) {
+  return freezeQuestion(studentId, course_id)
     .where(questionOpen())
     .andWhere('q.student_user_id', studentId)
     .andWhere(questionNotAnswering())
@@ -663,30 +688,30 @@ function freezeStudentQuestion(studentId) {
 }
 
 // unfreeze a student's question
-function unfreezeStudentQuestion(studentId) {
-  return unfreezeQuestion(studentId)
+function unfreezeStudentQuestion(studentId, course_id) {
+  return unfreezeQuestion(studentId, course_id)
     .where(questionOpen())
     .andWhere('q.student_user_id', studentId)
     .then();
 }
 
 // freeze a ca's current question
-function freezeCaQuestion(caUserId) {
-  return freezeQuestion(caUserId)
+function freezeCaQuestion(caUserId, course_id) {
+  return freezeQuestion(caUserId, course_id)
     .where(questionAnswering())
     .andWhere('q.ca_user_id', caUserId)
     .then();
 }
 
 // freeze a specific question
-function freezeQuestionId(questionId, freezeByUserId) {
-  return freezeQuestion(freezeByUserId)
+function freezeQuestionId(questionId, freezeByUserId, course_id) {
+  return freezeQuestion(freezeByUserId, course_id)
     .where('q.id', questionId)
     .then();
 }
 
 // update clause for question freeze
-function freezeQuestion(frozenById) {
+function freezeQuestion(frozenById, course_id) {
   return db('questions AS q')
     .update({
       frozen_by: frozenById,
@@ -700,13 +725,14 @@ function freezeQuestion(frozenById) {
       help_time: null,
       ca_user_id: null
     })
-    .where('q.frozen_time', null);
+    .where({'q.frozen_time': null, 'course_id': course_id});
 }
 
 // update clause for question unfreeze
-function unfreezeQuestion(frozenById) {
+function unfreezeQuestion(frozenById, course_id) {
   return db('questions AS q')
-    .update({ frozen_end_time: db.fn.now()});
+    .update({ frozen_end_time: db.fn.now()})
+    .where("course_id", course_id);
 }
 
 //
@@ -728,12 +754,13 @@ var meta = (function() {
   return result;
 })();
 
-function setTimeLimit(minutes, userid) {
+function setTimeLimit(minutes, userid, course_id) {
   if (Number.isInteger(parseInt(minutes)) && minutes > 0) {
-    selectCurrentMeta().then(function(meta) {
+    selectCurrentMeta(course_id).then(function(meta) {
       meta.time_limit = parseInt(minutes);
       meta.user_id = userid;
       meta.time = db.fn.now();
+      meta.course_id = course_id;
       delete meta.id;
       return db('queue_meta')
         .insert(meta);
@@ -750,8 +777,8 @@ function cleanMeta(meta) {
 }
 
 function setQueueState(state) {
-  return function(userid) {
-    selectCurrentMeta().then(function(meta) {
+  return function(userid, course_id) {
+    selectCurrentMeta(course_id).then(function(meta) {
       meta.open = state;
       meta.user_id = userid;
       meta.time = db.fn.now();
@@ -762,16 +789,18 @@ function setQueueState(state) {
   };
 }
 
-function selectMeta(id) {
+function selectMeta(id, course_id) {
   return db.select('*')
     .from('queue_meta')
+    .where('course_id', course_id)
     .where('id', id)
     .first();
 }
 
-function selectCurrentMeta() {
+function selectCurrentMeta(course_id) {
   return db.select('*')
     .from('queue_meta')
+    .where('course_id', course_id)
     .orderBy('id', 'desc')
     .first();
 }
@@ -786,11 +815,11 @@ var locations = (function() {
     addLocation: addLocation,
     deleteLocation: deleteLocation,
     enableLocation: enableLocation,
-    emitter: new EventEmitter() 
+    emitter: new EventEmitter()
   };
 
   dbEvents.locations.on('insert', function(newLoc) {
-        db("locations").select("*").where({"id": newLoc.id}).then(function (loc){ 
+        db("locations").select("*").where({"id": newLoc.id}).then(function (loc){
           result.emitter.emit("new_location", loc)
         });
     });
@@ -801,35 +830,36 @@ var locations = (function() {
   return result;
 })();
 
-function enableLocation(loc) {
-  return db("locations").where("id", loc).update({
+function enableLocation(loc, course_id) {
+  return db("locations").where({"id": loc, "course_id": course_id}).update({
     "enabled": true
   }).return(null);
 }
 
-function deleteLocation(loc) {
-  return db("locations").where("id",loc).update({
+function deleteLocation(loc, course_id) {
+  return db("locations").where({"id": loc, "course_id": course_id}).update({
     "enabled": false
   }).return(null);
 }
 
-function addLocation(loc) {
-  db.insert({ "location": loc })
+function addLocation(loc, course_id) {
+  db.insert({ "location": loc, "course_id": course_id })
                 .into('locations')
                 .return(null);
 }
 
-function selectAllLocations() {
+function selectAllLocations(course_id) {
   return db.select(
       'id',
       'location',
       'enabled'
     )
-    .from('locations');
+    .from('locations')
+    .where('course_id', course_id);
 }
 
-function selectEnabledLocations() {
-  return selectAllLocations().where('enabled', true).orderByRaw('id DESC');
+function selectEnabledLocations(course_id) {
+  return selectAllLocations(course_id).where('enabled', true).orderByRaw('id DESC');
 }
 
 //
@@ -846,7 +876,7 @@ var topics = (function() {
   };
 
   dbEvents.topics.on('insert', function(newTopic) {
-        db("topics").select("*").where({"id": newTopic.id}).then(function (topic){ 
+        db("topics").select("*").where({"id": newTopic.id}).then(function (topic){
           result.emitter.emit("new_topic", topic)
         });
     });
@@ -858,40 +888,41 @@ var topics = (function() {
 
 })();
 
-function enableTopic(topic) {
-  return db("topics").where("id", topic).update({
+function enableTopic(topic, course_id) {
+  return db("topics").where({"id": topic, "course_id": course_id}).update({
     "enabled": true
   }).return(null);
 }
 
-function deleteTopic(topic) {
-  return db("topics").where("id",topic).update({
+function deleteTopic(topic, course_id) {
+  return db("topics").where({"id": topic, "course_id": course_id}).update({
     "enabled": false
   }).return(null);
 }
 
-function addTopic(topic) {
-   db.insert({ "topic": topic })
+function addTopic(topic, course_id) {
+   db.insert({ "topic": topic, "course_id": course_id })
                 .into('topics')
                 .return(null);
 }
 
-function selectAllTopics() {
+function selectAllTopics(course_id) {
   return db.select(
       'id',
       'topic',
       'enabled'
     )
-    .from('topics');
+    .from('topics')
+    .where('course_id', course_id);
 }
 
-function selectEnabledTopics() {
-  return selectAllTopics().where('enabled', true);
+function selectEnabledTopics(course_id) {
+  return selectAllTopics(course_id).where('enabled', true);
 }
 
 
 //
-// utility functions 
+// utility functions
 //
 
 

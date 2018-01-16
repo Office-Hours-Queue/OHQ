@@ -2,7 +2,6 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
   $rootScope.$db = $db;
   $rootScope.current_page = "student";
   $scope.name = "student";
-
   $rootScope.check_login();
 
   var example_questions = [
@@ -85,7 +84,8 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
       $db.add_question({
         "location_id": parseInt($scope.new_selected.location),
         "topic_id": parseInt($scope.new_selected.topic),
-        "help_text": $scope.new_selected.help_text
+        "help_text": $scope.new_selected.help_text,
+        "course_id": parseInt(sessionStorage.getItem('current_course'))
       });
       $scope.new_selected.help_text = '';
       $scope.new_selected.topic = '';
@@ -209,17 +209,17 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
     if (newQ.length > 0) {
       if (newQ[0].state !== 'answering') {
         if (newQ[0].queue_ps == 0) {
-          document.title = "112Q - next in line";
+          document.title = "OHQ - next in line";
         } else {
           var pos = String(newQ[0].queue_ps+1) + $scope.ordinal(newQ[0].queue_ps+1);
-          document.title = "112Q - " + pos + " in line";
+          document.title = "OHQ - " + pos + " in line";
         }
       } else {
         var ta_name = newQ[0].ca_first_name + ' ' + newQ[0].ca_last_name;
-        document.title = "112Q - TA " + ta_name + " is on the way"
+        document.title = "OHQ - TA " + ta_name + " is on the way"
       }
     } else {
-      document.title = "112Q";
+      document.title = "OHQ";
     }
 
     // question answered - show notification
