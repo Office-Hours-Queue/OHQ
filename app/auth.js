@@ -4,7 +4,6 @@
 
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var bcrypt = require('bcrypt');
 var db = require('./db');
 var config = require('./config');
 var cleanUser = require('./components/user/user').cleanUser;
