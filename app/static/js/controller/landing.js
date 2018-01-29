@@ -38,6 +38,12 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 		$scope.pinned_courses = [];
 
 		for(var i = 0; i < data.length; i++) {
+			var prefix = String(data[i].number).slice(0,2);
+			var suffix = String(data[i].number).slice(2);
+
+			if(data[i]["label"] === "") {
+				data[i]["label"] = prefix + "-" + suffix;
+			}
 			if ($scope.is_pinned(data[i]['id'])) {
 				$scope.pinned_courses.push(data[i]);
 			}
@@ -58,10 +64,8 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 	}
 	$scope.get_courses();
 
-	$scope.set_course = function (course_id, course_number) {
-			var prefix = String(course_number).slice(0,2);
-			var suffix = String(course_number).slice(2);
-			sessionStorage.setItem('current_course_number', prefix + "-" + suffix);
+	$scope.set_course = function (course_id, course_number, course_label) {
+			sessionStorage.setItem('current_course_number', course_label);
 			sessionStorage.setItem('current_course', course_id);
 			$rootScope.set_course();
 	}

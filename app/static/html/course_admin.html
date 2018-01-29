@@ -9,6 +9,7 @@
 
 			<ul class="collection">
 				<li class="{{ c.active ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="c in courses">
+            <span style="margin-right: 60px" class="new badge blue waves-effect clickable" data-badge-caption="Edit" ng-click="select_edit(c)" ng-href="#modaledit" modal></span>
 	          <span ng-if="c.active" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(c.name, c.id, c.active)" ng-href="#modaldelete" modal ></span>
 	          <span ng-if="!(c.active)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(c.name, c.id, c.active); enable_disable_course()"></span>
 	         {{ c.number }}
@@ -61,6 +62,27 @@
     </div>
     <div class="divider"></div>
   </div>
+
+  
+  <div class="modal modal-fullheight container" id="modaledit">
+    <div class="modal-content">
+      <h5> Edit Course: {{ edit_course.number }} </h5>
+      <div class="divider"></div>
+      <div class="section" style="padding-bottom: 0">
+        <label for="edit_course_num">Course Number</label>
+        <input id="edit_course_num" ng-value="selected_edit.number" type="text">
+        <label for="edit_course_name">Course Name</label>
+        <input id="edit_course_name" ng-model="selected_edit.name" type="text">
+        <label for="edit_course_color">Course Color</label>
+        <input id="edit_course_color" ng-model="selected_edit.color" type="text">
+        <label for="edit_course_label">Course Label</label>
+        <input id="edit_course_label" ng-model="selected_edit.label" type="text">
+        <button ng-click="edit_course()" class="btn blue">Edit Course</button>
+      </div>
+    </div>
+    <div class="divider"></div>
+  </div>
+
 
     <div class="modal bottom-sheet" id="modaldelete">
         <div class="modal-content">
