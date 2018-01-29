@@ -10,6 +10,17 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
     ga('send', 'event','FAQ','TA clicked',$rootScope.user["andrew_id"])
   };
 
+	var lastTime = (new Date()).getTime();
+
+	var checkSleep = window.setInterval(function() {
+	  var currentTime = (new Date()).getTime();
+	  if (currentTime > (lastTime + 5000)) {
+	    $rootScope.check_login();
+			$rootScope.set_course();
+	  }
+	  lastTime = currentTime;
+	}, 2000);
+
   var Notify = window.Notify.default;
 
   // Attach a listener to fire notifications
@@ -149,5 +160,9 @@ var ca_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,$db
     },
     maintainAspectRatio: false
   };
+
+	$scope.$on("$destroy", function(){
+		window.clearInterval(checkSleep);
+	});
 
 }];

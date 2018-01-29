@@ -4,7 +4,6 @@
 
 var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var bcrypt = require('bcrypt');
 var db = require('./db');
 var config = require('./config');
 var cleanUser = require('./components/user/user').cleanUser;
@@ -74,6 +73,7 @@ passport.use(
           }
         })
         .then(function(dbUser) {
+          console.log(dbUser);
           done(null, dbUser);
         })
         .catch(function(err) {
@@ -98,9 +98,9 @@ function transfer_future_roles(insertedUser) {
                                              "role": role.role}));
              return db.insert(toInsert).into("roles")
                       .then(function (insertedRoles) {
-                        db.del().from('future_roles')
-                                .where('andrew_id', andrew_id)
-                                .then((deleted) => Promise.resolve(insertedUser[0]))
+                        return db.del().from('future_roles')
+                                 .where('andrew_id', andrew_id)
+                                 .then((deleted) => Promise.resolve(insertedUser[0]))
                       });
            });
 }

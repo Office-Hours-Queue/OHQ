@@ -508,7 +508,7 @@ function addQuestion(question) {
                    .transacting(trx)
                    .where('q.student_user_id', insertQuestion.student_user_id)
                    .andWhere('q.course_id', insertQuestion.course_id)
-                   .where(questionOpen())
+                   .andWhere(questionOpen())
                    .first();
         })
         .then(function(activeQuestions) {
@@ -576,6 +576,7 @@ function answerQuestion(caUserId, course_id) {
                            .where(questionNotFrozen())
                            .andWhere(questionOpen())
                            .andWhere(questionNotAnswering())
+                           .andWhere('course_id', course_id)
                            .orderBy('on_time', 'asc')
                            .transacting(trx)
                            .first();

@@ -1,0 +1,2 @@
+rm ../bundle.zip
+zip ../bundle.zip -r * .[^.]*
