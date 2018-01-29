@@ -13,6 +13,8 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
   $scope.selected_del_active = false;
   $scope.selected_del_id = -1;
 
+  $scope.selected_edit = undefined;
+
 	$scope.find_id = function (course_num) {
 		for(var i = 0; i < $scope.courses.length; i++) {
       if ($scope.courses[i].number == course_num) {
@@ -37,16 +39,23 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
     });
   }
 
+  $scope.select_edit = function (course) {
+    $scope.selected_edit = course;
+  }
+
   $scope.edit_course = function () {
     var payload = {
-      id: find_id(parseInt($("#course_id").val(), 10)),
-      active: $scope.selected_del_active
+      id: $scope.selected_edit.id,
+      number: parseInt($('#edit_course_num').val()),
+      name: $('#edit_course_name').val(),
+      color: $('#edit_course_color').val(),
+      label: $('#edit_course_label').val()
     }
-
+    console.log(payload);
     $http.post("/api/course/edit", payload).then(function(success) {
       Materialize.toast('Saved', 5000);
 			$scope.get_courses();
-      $('#modal_edit_course').closeModal();
+      $('#modaledit').closeModal();
     }, function(fail) {
       Materialize.toast('There was an error', 5000);
     });
@@ -60,7 +69,6 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
     });
   }
   $scope.get_courses();
-
 
   $scope.select = function (del_item, del_id, del_active) {
     $scope.selected_del_course = del_item;
