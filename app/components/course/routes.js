@@ -77,6 +77,10 @@ var ValidCourseSchema = {
     color: {
       type: 'string',
       minlength: 1,
+    },
+    label: {
+      type: 'string',
+      minlength: 1
     }
   }
 };
@@ -102,6 +106,10 @@ var CourseEditSchema = {
     },
     active: {
       type: 'boolean',
+    },
+    label: {
+      type: 'string',
+      minlength: 1,
     }
   }
 }
