@@ -51,7 +51,6 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 				$scope.all_courses.push(data[i]);
 			}
 		}
-
 	}
 
 	$scope.get_courses = function () {
@@ -59,14 +58,21 @@ var landing_ctl = ["$scope","$rootScope","$db","$http","localStorageService",fun
 			$scope.courses = success.data;
 			$scope.sort_courses($scope.courses);
 	    }, function(fail) {
-			Materialize.toast('There was an error', 5000);
+			Materialize.toast('There was an error retrieving the course list', 5000);
 	    });
 	}
-	$scope.get_courses();
 
 	$scope.set_course = function (course_id, course_number, course_label) {
 			sessionStorage.setItem('current_course_number', course_label);
 			sessionStorage.setItem('current_course', course_id);
 			$rootScope.set_course();
+	}
+
+	if ($rootScope.user !== undefined) {
+		$scope.get_courses();
+	} else {
+		$rootScope.$on('user_ready', function() {
+			$scope.get_courses();
+		});
 	}
 }];
