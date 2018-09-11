@@ -6,7 +6,7 @@ Run postgresql locally, or run comment out the `nodeapp` parts of `docker-compos
 ```
 cd app
 npm install 
-npm install knex -g
+sudo npm install knex -g
 knex migrate:latest
 knex seed:run
 npm start
