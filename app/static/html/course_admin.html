@@ -1,89 +1,90 @@
 <div data-extend-template="/html/base.html">
 	<div data-block-append="content">
-	  <div class="container">
-     	<br />
-      <ul class="collapsible popout" data-collapsible="accordion">
-    		<li id="edit_course_li">
-    			<div class="collapsible-header"><b>Edit Courses</b></div>
-    			<div class="collapsible-body">
+	<div class="container">
+   	<br />
+	<ul class="collapsible popout" data-collapsible="accordion">
+		<li id="edit_course_li">
+			<div class="collapsible-header"><b>Edit Courses</b></div>
+			<div class="collapsible-body">
 
-    			<ul class="collection">
-    				<li class="{{ c.active ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="c in courses">
-                <span style="margin-right: 60px" class="new badge blue waves-effect clickable" data-badge-caption="Edit" ng-click="select_edit(c)" ng-href="#modaledit" modal></span>
-    	          <span ng-if="c.active" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(c.name, c.id, c.active)" ng-href="#modaldelete" modal ></span>
-    	          <span ng-if="!(c.active)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(c.name, c.id, c.active); enable_disable_course()"></span>
-    	         {{ c.number }}
-    	      </li>
-    				<a ng-href="#modal_add_course" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add course</li></a>
-    			</ul>
+			<ul class="collection">
+				<li class="{{ c.active ? '' : 'grey lighten-4 grey-text' }} collection-item" ng-repeat="c in courses">
+            <span style="margin-right: 60px" class="new badge blue waves-effect clickable" data-badge-caption="Edit" ng-click="select_edit(c)" ng-href="#modaledit" modal></span>
+	          <span ng-if="c.active" class=" new badge red darken-2 waves-effect clickable"  data-badge-caption="Disable" ng-click="select(c.name, c.id, c.active)" ng-href="#modaldelete" modal ></span>
+	          <span ng-if="!(c.active)" class="new badge blue waves-effect clickable"  data-badge-caption="Enable"  ng-click="select(c.name, c.id, c.active); enable_disable_course()"></span>
+	         {{ c.number }}
+	      </li>
+				<a ng-href="#modal_add_course" modal><li class="collection-item"><i class="tiny material-icons">add</i> Add course</li></a>
+			</ul>
 
 
-    			</div>
-    		</li>
+			</div>
+		</li>
 
-    		<li id="batch_role_assignment">
-    			<div class="collapsible-header"><b>Batch TA Assignment</b></div>
-    			<div class="collapsible-body">
+		<li id="batch_role_assignment">
+			<div class="collapsible-header"><b>Batch TA Assignment</b></div>
+			<div class="collapsible-body">
 
-          <p>
-            Add people to a course with a defined role.
-            <br/>
-            <br/>
-            <label for="batch_course_num">Course Number</label>
-            <input id="batch_course_num" type="text" style="margin-bottom: 0px">
-            <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
-            <div class="file-field input-field" style="padding-left: 29px; padding-right: 29px">
-              <div class="btn blue">
-                <span>Browse</span>
-                <input id="csv_input" type="file" accept=".txt">
-              </div>
-              <div class="file-path-wrapper">
-                <input class="file-path validate" type="text">
-              </div>
-              <br/>
-              <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Submit</button>
-            </div>
-
-          </p>
-    		</li>
-      </ul>
-    	<div class="modal modal-fullheight container" id="modal_add_course">
-        <div class="modal-content">
-          <h5> Add Course </h5>
-          <div class="divider"></div>
-          <div class="section" style="padding-bottom: 0">
-      			<label for="new_course_num">Course Number</label>
-      			<input id="new_course_num" type="text">
-      			<label for="new_course_name">Course Name</label>
-      			<input id="new_course_name" type="text">
-      			<button ng-click="add_course()" class="btn blue">Add Course</button>
+      <p>
+        Add people to a course with a defined role.
+        <br/>
+        <br/>
+        <label for="batch_course_num">Course Number</label>
+        <input id="batch_course_num" type="text" style="margin-bottom: 0px">
+        <div style="color: #9e9e9e; padding-left: 29px; font-size: 0.8rem">Upload File <a ng-href="#modal_instructions" modal>(Instructions)</a></div>
+        <div class="file-field input-field" style="padding-left: 29px; padding-right: 29px">
+          <div class="btn blue">
+            <span>Browse</span>
+            <input id="csv_input" type="file" accept=".txt">
           </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text">
+          </div>
+          <br/>
+          <button id="batch_role_btn" ng-click="batch_role()" class="btn blue">Submit</button>
         </div>
-        <div class="divider"></div>
+
+      </p>
+		</li>
+
+	</ul>
+	<div class="modal modal-fullheight container" id="modal_add_course">
+    <div class="modal-content">
+      <h5> Add Course </h5>
+      <div class="divider"></div>
+      <div class="section" style="padding-bottom: 0">
+  			<label for="new_course_num">Course Number</label>
+  			<input id="new_course_num" type="text">
+  			<label for="new_course_name">Course Name</label>
+  			<input id="new_course_name" type="text">
+  			<button ng-click="add_course()" class="btn blue">Add Course</button>
       </div>
+    </div>
+    <div class="divider"></div>
+  </div>
 
   
-      <div class="modal modal-fullheight container" id="modaledit">
-        <div class="modal-content">
-          <h5> Edit Course: {{ edit_course.number }} </h5>
-          <div class="divider"></div>
-          <div class="section" style="padding-bottom: 0">
-            <label for="edit_course_num">Course Number</label>
-            <input id="edit_course_num" ng-value="selected_edit.number" type="text">
-            <label for="edit_course_name">Course Name</label>
-            <input id="edit_course_name" ng-model="selected_edit.name" type="text">
-            <label for="edit_course_color">Course Color</label>
-            <input id="edit_course_color" ng-model="selected_edit.color" type="text">
-            <label for="edit_course_label">Course Label</label>
-            <input id="edit_course_label" ng-model="selected_edit.label" type="text">
-            <button ng-click="edit_course()" class="btn blue">Edit Course</button>
-          </div>
-        </div>
-        <div class="divider"></div>
+  <div class="modal modal-fullheight container" id="modaledit">
+    <div class="modal-content">
+      <h5> Edit Course: {{ edit_course.number }} </h5>
+      <div class="divider"></div>
+      <div class="section" style="padding-bottom: 0">
+        <label for="edit_course_num">Course Number</label>
+        <input id="edit_course_num" ng-value="selected_edit.number" type="text">
+        <label for="edit_course_name">Course Name</label>
+        <input id="edit_course_name" ng-model="selected_edit.name" type="text">
+        <label for="edit_course_color">Course Color</label>
+        <input id="edit_course_color" ng-model="selected_edit.color" type="text">
+        <label for="edit_course_label">Course Label</label>
+        <input id="edit_course_label" ng-model="selected_edit.label" type="text">
+        <button ng-click="edit_course()" class="btn blue">Edit Course</button>
       </div>
+    </div>
+    <div class="divider"></div>
+  </div>
 
 
-      <div class="modal bottom-sheet" id="modaldelete">
+    <div class="modal bottom-sheet" id="modaldelete">
         <div class="modal-content">
           <div class="container">
             <div class="row row-tight valign-wrapper">
@@ -98,35 +99,33 @@
             </div>
           </div>
         </div>
-      </div>
-
     </div>
+
+    <div class="modal modal-fullheight container" id="modal_instructions">
+      <div class="modal-content">
+        <h5> Instructions for Batch Assignment of Staff </h5>
+        <div class="divider"></div>
+        <div class="section" style="padding-bottom: 0">
+          Please upload a '.txt' file with the AndrewID's of the staff delimited by new-lines. For example, in my file 'staff.txt', I would put:
+          <br/>
+          <br/>
+          <code>
+            fmarsh@andrew.cmu.edu<br/>
+            aschick@andrew.cmu.edu<br/>
+            edryer@andrew.cmu.edu
+          </code>
+          <br/>
+          <br/>
+          Make sure that there are no additional characters in the file other than the AndrewID's.
+          <br/>
+          <div class="divider"></div>
+          <br/>
+          <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-blue">Close</a>
+        </div>
+      </div>
+      <div class="divider"></div>
+    </div>
+
   </div>
 </div>
-
-<!-- Batch add instructions modal -->
-<div class="modal modal-fullheight container" id="modal_instructions">
-  <div class="modal-content">
-    <h5> Instructions for Batch Assignment of Staff </h5>
-    <div class="divider"></div>
-    <div class="section" style="padding-bottom: 0">
-      Please upload a '.txt' file with the AndrewID's of the staff delimited by new-lines. For example, in my file 'staff.txt', I would put:
-      <br/>
-      <br/>
-      <code>
-        fmarsh@andrew.cmu.edu<br/>
-        aschick@andrew.cmu.edu<br/>
-        edryer@andrew.cmu.edu
-      </code>
-      <br/>
-      <br/>
-      Make sure that there are no additional characters in the file other than the AndrewID's.
-      <br/>
-      <br/>
-      <div class="divider"></div>
-      <br/>
-      <a id="prefbtn" class="modal-action modal-close waves-effect waves-light btn-blue">Close</a>
-    </div>
-  </div>
-  <div class="divider"></div>
 </div>
