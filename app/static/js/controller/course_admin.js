@@ -51,7 +51,7 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
       color: $('#edit_course_color').val(),
       label: $('#edit_course_label').val()
     }
-    console.log(payload);
+    
     $http.post("/api/course/edit", payload).then(function(success) {
       Materialize.toast('Saved', 5000);
 			$scope.get_courses();
