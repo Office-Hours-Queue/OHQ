@@ -77,6 +77,17 @@
         <input id="edit_course_color" ng-model="selected_edit.color" type="text">
         <label for="edit_course_label">Course Label</label>
         <input id="edit_course_label" ng-model="selected_edit.label" type="text">
+        <label for="edit_course_edit_q">Allow students to edit questions</label>
+        <div class="switch">
+          <label>
+            False
+            <input id="edit_course_edit_q" type="checkbox">
+            <span class="lever"></span>
+            True
+          </label>
+        </div>
+        <br/>
+        <br/>
         <button ng-click="edit_course()" class="btn blue">Edit Course</button>
       </div>
     </div>

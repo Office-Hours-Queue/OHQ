@@ -18,7 +18,6 @@ var login_ctl = ["$scope","$rootScope","$db","$http", function($scope,$rootScope
 			$("#non-google-modal").closeModal()
 			$rootScope.check_login();
 		}, function (failData) {
-			console.log(failData)
 			Materialize.toast("Login Failed.",3000)
 		});
 	}
