@@ -1,4 +1,4 @@
-var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($scope,$rootScope,$db,lss) {
+var student_ctl = ["$scope","$rootScope","$db","$http","localStorageService",function($scope,$rootScope,$db,$http,lss) {
   $rootScope.$db = $db;
   $rootScope.current_page = "student";
   $scope.name = "student";
@@ -10,6 +10,16 @@ var student_ctl = ["$scope","$rootScope","$db","localStorageService",function($s
   'Why do I need to use almostEquals?',
   'Should I use almostEquals in this function?',
   ];
+
+  // If a course does not want students to edit questions while on the queue,
+  // don't allow them to.
+  var id_payload = {params: {course_id: parseInt(sessionStorage.getItem('current_course'))}};
+  $http.get("/api/course/get_edit", id_payload).then(function(success) {
+    $scope.can_edit = success.data === 'true';
+  }, function(fail) {
+    $scope.can_edit = true;
+    Materialize.toast('Could not get edit', 5000);
+  });
 
 
   $scope.clicked_faq = function () {

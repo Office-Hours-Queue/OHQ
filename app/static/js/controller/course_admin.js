@@ -44,14 +44,17 @@ var course_admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$roo
   }
 
   $scope.edit_course = function () {
+    // Materialize switches only return 'on'...
+    var checkbox = document.getElementById('edit_course_edit_q');
     var payload = {
       id: $scope.selected_edit.id,
       number: parseInt($('#edit_course_num').val()),
       name: $('#edit_course_name').val(),
       color: $('#edit_course_color').val(),
-      label: $('#edit_course_label').val()
+      label: $('#edit_course_label').val(),
+      edit_questions: checkbox.checked
     }
-    console.log(payload);
+    
     $http.post("/api/course/edit", payload).then(function(success) {
       Materialize.toast('Saved', 5000);
 			$scope.get_courses();

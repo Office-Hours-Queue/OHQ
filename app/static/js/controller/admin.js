@@ -52,14 +52,13 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 	}
 
 	$scope.submit_roles = function(people) {
-			console.log("in submit roles");
 			people = people.filter((person) => person != "");
 			var payload = {
 				"andrew_ids": people,
 				"course_id": parseInt(sessionStorage.getItem('current_course')),
 				"role": "ca"
 			}
-			console.log(payload)
+
 			$http.post("/api/role/set", payload).then(function(success) {
 				$scope.get_tas();
 				Materialize.toast('TAs Added', 5000);
@@ -69,13 +68,11 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 	}
 
 	$scope.batch_role = function () {
-		console.log("pressed");
 		var input, file, fr, result;
 		input = document.getElementById('csv_input');
 		file = input.files[0]
 		fr = new FileReader();
 		fr.onload = function(e) {
-			console.log("read file");
 			$scope.submit_roles(e.target.result.split("\n"));
 		}
 		fr.readAsText(file);
@@ -86,7 +83,6 @@ var admin_ctl = ["$scope","$rootScope","$db","$http",function($scope,$rootScope,
 							{params: {course_id: parseInt(sessionStorage.getItem('current_course'))}})
 			.then(function(success) {
 				$scope.tas = success.data;
-				console.log($scope.tas);
 	    },
 			function(fail) {
 				Materialize.toast('There was an error', 5000);

@@ -82,12 +82,14 @@
                   <i class="material-icons">delete</i>
                 </span>
               </a>
-              <span class="right">&nbsp;&nbsp;</span>
-              <a id="edit_question" class="right grey-text text-lighten-1" href="#modaleditquestion" modal>
-                <span tooltipped data-position="top" data-delay="100" data-tooltip="Edit">
-                  <i class="material-icons">mode_edit</i>
-                </span>
-              </a>
+              <span ng-if="can_edit">
+                <span class="right">&nbsp;&nbsp;</span>
+                <a id="edit_question" class="right grey-text text-lighten-1" href="#modaleditquestion" modal>
+                  <span tooltipped data-position="top" data-delay="100" data-tooltip="Edit">
+                    <i class="material-icons">mode_edit</i>
+                  </span>
+                </a>
+              </span>
               <span class="right">&nbsp;&nbsp;</span>
               <a id="toggle_freeze" class="right grey-text {{ (q.can_freeze && q.state!== 'answering') || q.is_frozen ? 'text-lighten-1 clickable' : 'text-lighten-3 non-clickable' }}" ng-click="toggle_freeze(q.state)">
                 <span ng-if="q.is_frozen" tooltipped data-position="top" data-delay="100" data-tooltip="Unfreeze">

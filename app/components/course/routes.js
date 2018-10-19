@@ -57,9 +57,24 @@ router.get('/get_tas', auth.hasCourseRole('ca').errorJson, function (req, res, n
               return res.send(current_users.concat(future_users));
             })
         });
-    })
+    });
 
-})
+});
+
+router.get('/get_edit', auth.isAuthenticated.errorJson, function(req, res, next) {
+  return db.select('*')
+  .from('courses')
+  .where('id', req.query.course_id)
+  .then(function(courses) {
+    res.send(courses[0]['edit_questions']);
+    //return null so that the promise has a return value
+    return courses['edit_questions'];
+  })
+  .catch(function(err) {
+    res.status(400).send(err);
+  });
+});
+
 
 var ValidCourseSchema = {
   type: 'object',
@@ -81,6 +96,9 @@ var ValidCourseSchema = {
     label: {
       type: 'string',
       minlength: 1
+    },
+    edit_questions: {
+      type: 'boolean',
     }
   }
 };
@@ -110,6 +128,9 @@ var CourseEditSchema = {
     label: {
       type: 'string',
       minlength: 1,
+    },
+    edit_questions: {
+      type: 'boolean',
     }
   }
 }
